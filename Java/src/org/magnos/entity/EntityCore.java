@@ -14,6 +14,8 @@ public class EntityCore
 	private static Controller[] controllers = {};
 
 	private static View[] views = {};
+	
+	private static EntityList[][] listeners = {};
 
 
 	public static EntityType[] getEntityTypes()
@@ -107,7 +109,8 @@ public class EntityCore
 		int id = componentTypes.length;
 
 		componentTypes = add( new ComponentType( id, name, type, factory ), componentTypes );
-
+		listeners = add( new EntityList[0], listeners );
+		
 		return id;
 	}
 
@@ -116,7 +119,8 @@ public class EntityCore
 		int id = componentTypes.length;
 
 		componentTypes = add( new DynamicComponentType<T>( id, name, type, component ), componentTypes );
-
+		listeners = add( new EntityList[0], listeners );
+		
 		return id;
 	}
 	
@@ -194,6 +198,16 @@ public class EntityCore
 		array = Arrays.copyOf( array, index + 1 );
 		array[index] = item;
 		return array;
+	}
+	
+	public static void addListener(EntityList list, int ... components)
+	{
+		for (int i = 0; i < components.length; i++)
+		{
+			final int k = components[i]; 
+			
+			listeners[k] = add( list, listeners[k] );
+		}
 	}
 
 }

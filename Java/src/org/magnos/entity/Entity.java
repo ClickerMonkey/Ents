@@ -13,6 +13,8 @@ public class Entity
 
 	protected BitSet controllers;
 	
+	protected boolean expired;
+	
 
 	public Entity( int entityTypeId )
 	{
@@ -30,6 +32,29 @@ public class Entity
 		this.components = components;
 		this.controllers = new BitSet( type.controllers.size() );
 	}
+	
+	/*
+	 * Expire Methods
+	 */
+	
+	public boolean isExpired()
+	{
+		return expired;
+	}
+	
+	public void expire()
+	{
+		expired = true;
+	}
+	
+	public void onEntityListRemoval(EntityList list)
+	{
+		
+	}
+	
+	/*
+	 * View Draw
+	 */
 
 	public void draw( Object drawState )
 	{
@@ -40,6 +65,10 @@ public class Entity
 			view.draw( this, drawState );
 		}
 	}
+	
+	/*
+	 * Controller Update
+	 */
 
 	public void update( Object updateState )
 	{
