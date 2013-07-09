@@ -53,6 +53,69 @@ namespace EntityCore
       return calloc(bytes, 1);
    }
 
+   class IdMap {
+   public:
+
+     IdMap(const vector<int> &ids) {
+        this->ids = ids;
+        this->map = buildMap(ids);
+     }
+
+     inline bool has(const int id) const {
+        return (id < map.size() && map[id] >= 0);
+     }
+
+     inline void alias(const int id, const int aliasId) {
+        if (has(id)) {
+           mapIndex(aliasId, map[id]);
+        }
+     }
+
+     inline void add(const int id) {
+        if (!has(id)) {
+           const int index = ids.size();
+           ids.push_back(id);
+           mapIndex(id, index);
+        }
+     }
+
+     inline int getIndex(const int id) const {
+        return map[id];
+     }
+
+     inline int getIndexSafe(const int id) const {
+        return (id < map.size() ? map[id] : -1);
+     }
+
+     inline int size() const {
+        return ids.size();
+     }
+
+     static vector<int> buildMap(const vector<int> &ids) {
+        int n = 0;
+        for (int i = 0; i < ids.size(); i++) {
+           n = max( n, ids[i] );
+        }
+        vector<int> map(n + 1);
+        for (int i = 0; i <= n; i++) {
+           map[i] = -1;
+        }
+        for (int i = 0; i < ids.size(); i++) {
+           map[ids[i]] = i;
+        }
+        return map;
+     }
+
+   private:
+     vector<int> ids;
+     vector<int> map;
+
+     void mapIndex(const int id, const int index) {
+        map.reserve( id + 1 );
+        map[id] = index;
+     }
+   };
+
    class EntityType {
    public:
       const int id;

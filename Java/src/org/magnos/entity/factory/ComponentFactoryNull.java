@@ -4,7 +4,7 @@ import org.magnos.entity.ComponentFactory;
 
 public class ComponentFactoryNull implements ComponentFactory
 {
-	
+
 	private static final ComponentFactoryNull instance = new ComponentFactoryNull();
 
 	public static ComponentFactoryNull get()
@@ -13,13 +13,13 @@ public class ComponentFactoryNull implements ComponentFactory
 	}
 
 	@Override
-	public Object create() 
+	public Object create()
 	{
 		return null;
 	}
-	
+
 	@Override
-	public Object clone(Object value)
+	public Object clone( Object value )
 	{
 		return null;
 	}

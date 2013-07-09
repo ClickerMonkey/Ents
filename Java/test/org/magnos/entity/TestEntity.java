@@ -22,6 +22,16 @@ public class TestEntity
 		}
 	}
 	
+	static class PhysicsController implements Controller {
+		public void control( Entity e, Object updateState ) {
+			float dt = (float)updateState;
+			Point pos = e.get( Components.POSITION );
+			Point vel = e.get( Components.VELOCITY );
+			pos.x += vel.x * dt;
+			pos.y += vel.y * dt;
+		}
+	}
+	
 	static class Components {
 		public static int NAME = EntityCore.newComponent("name", String.class);
 		public static int POSITION = EntityCore.newComponent("position", Point.class);
@@ -33,16 +43,28 @@ public class TestEntity
 		public static int BOUNDS = EntityCore.newDynamicComponent("bounds", Rectangle.class, new DynamicBounds());
 	}
 	
+	static class Views {
+		public static int SPRITE = EntityCore.newView();
+	}
+	
+	static class Controllers {
+		public static int PHYSICS = EntityCore.addController( new PhysicsController() );
+	}
+	
 	static class Entities {
-		public static int SPRITE = EntityCore.newEntity(Components.NAME, Components.POSITION, Components.VELOCITY, Components.SIZE); 
+		public static int SPRITE = EntityCore.newEntity(
+			new IdMap(Components.NAME, Components.POSITION, Components.VELOCITY, Components.SIZE), 
+			new IdMap(Controllers.PHYSICS), 
+			Views.SPRITE
+		); 
 	}
 
 	@Test
 	public void testBasic()
 	{
 		EntityType spriteType = EntityCore.getEntityType(Entities.SPRITE);
-		spriteType.setAlias(Components.POSITION, Components.SPATIAL_POSITION);
-		spriteType.setAlias(Components.VELOCITY, Components.SPATIAL_VELOCITY);
+		spriteType.setComponentAlias(Components.POSITION, Components.SPATIAL_POSITION);
+		spriteType.setComponentAlias(Components.VELOCITY, Components.SPATIAL_VELOCITY);
 		
 		Entity x = new Entity(Entities.SPRITE);
 		x.set(Components.NAME, "Philip Diffenderfer");

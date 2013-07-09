@@ -1,6 +1,6 @@
 package org.magnos.entity;
 
-public interface View 
+public interface View
 {
-	public void draw(Entity entity);
+	public void draw( Entity entity, Object graphics );
 }

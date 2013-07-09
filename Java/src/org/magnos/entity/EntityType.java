@@ -1,116 +1,157 @@
 package org.magnos.entity;
 
-import java.util.Arrays;
 
-public class EntityType 
+public class EntityType
 {
 
 	public final int id;
+
 	public final EntityType parent;
-	protected int[] componentMap = {};
-	protected int[] components = {};
-	protected int[] behaviors = {};
-	protected int view = -1;
+
+	public IdMap components;
+
+	public IdMap controllers;
+
+	public int view;
+
 	
-	public EntityType(int id)
+	public EntityType( int id )
 	{
-		this( id, null, new int[] {}, new int[] {} );
+		this( id, null, new IdMap(), new IdMap(), -1 );
 	}
-	
-	protected EntityType(int id, int[] map, int[] components)
+
+	protected EntityType( int id, IdMap components, IdMap controllers, int view )
 	{
-		this( id, null, map, components );
+		this( id, null, components, controllers, view );
 	}
-	
-	protected EntityType(int id, EntityType parent, int[] map, int[] components)
+
+	protected EntityType( int id, EntityType parent, IdMap components, IdMap controllers, int view )
 	{
 		this.id = id;
 		this.parent = parent;
-		this.componentMap = map;
 		this.components = components;
-	}
-	
-	public final EntityType extend(int entityTypeId)
-	{
-		return new EntityType(entityTypeId, this, Arrays.copyOf(componentMap, componentMap.length), Arrays.copyOf(components, components.length));
+		this.controllers = controllers;
+		this.view = view;
 	}
 
-	public final boolean hasComponent(int componentId)
+	public final EntityType extend( int entityTypeId )
 	{
-		return componentId < componentMap.length && componentMap[componentId] != 0;
+		return new EntityType( entityTypeId, this, components.getCopy(), controllers.getCopy(), view );
 	}
-	
-	public final boolean hasComponents(int ... componentIds)
+
+	public final boolean hasComponent( int componentId )
 	{
-		for (int i = 0; i < componentIds.length; i++)
-		{
-			if (!hasComponent(componentIds[i]))
-			{
-				return false;
-			}
-		}
-		
-		return true;
+		return components.has( componentId );
 	}
-	
-	public final int getComponentIndex(int componentId)
+
+	public final boolean hasComponents( int... componentIds )
 	{
-		return componentMap[componentId] + 1;
+		return components.hasAll( componentIds );
 	}
-	
+
+	public final int getComponentIndex( int componentId )
+	{
+		return components.getIndex( componentId ) + 1;
+	}
+
 	public final int getComponentCount()
 	{
-		return components.length;
+		return components.size();
 	}
-	
-	public final void setAlias(int componentId, int aliasId)
+
+	public final void setComponentAlias( int componentId, int aliasId )
 	{
-		if (hasComponent(componentId))
-		{
-			map( aliasId, componentMap[componentId] );
-		}
+		components.alias( componentId, aliasId );
 	}
-	
+
 	public Object[] createComponents()
 	{
-		final int N = components.length + 1;
-		final Object[] values = new Object[ N ];
-		
+		final int N = components.size() + 1;
+		final Object[] values = new Object[N];
+
 		for (int i = 1; i < N; i++)
 		{
-			values[i] = EntityCore.getComponent(components[i - 1]).factory.create();
+			values[i] = EntityCore.getComponent( components.ids[i - 1] ).factory.create();
 		}
-		
+
 		return values;
 	}
-	
-	public void add(int componentId)
+
+	public Object cloneComponentAtIndex( int index, Object value )
 	{
-		final int N = components.length;
-		
-		components = Arrays.copyOf(components, N + 1);
-		components[ N ] = componentId;
-		
-		map( componentId, N );
+		return EntityCore.getComponent( components.ids[index - 1] ).factory.clone( value );
 	}
-	
-	public EntityType addDynamically(int componentId)
+
+	public final boolean hasController( int controllerId )
 	{
-		EntityTypeDynamic dynamic = new EntityTypeDynamic( id, this, Arrays.copyOf( componentMap, componentMap.length ), components );
-		
-		dynamic.add(componentId);
-		
-		return dynamic;
+		return controllers.has( controllerId );
 	}
-	
-	private void map(int componentId, int index)
+
+	public final boolean hasControllers( int... controllerIds )
 	{
-		if (componentMap.length <= componentId)
-		{
-			componentMap = Arrays.copyOf(componentMap, componentId + 1);
-		}
-		
-		componentMap[componentId] = index;
+		return controllers.hasAll( controllerIds );
 	}
-	
+
+	public final int getControllerCount()
+	{
+		return controllers.size();
+	}
+
+	public final int getControllerIndex( int controllerId )
+	{
+		return controllers.getIndex( controllerId );
+	}
+
+	public final void setControllerAlias( int controllerId, int aliasId )
+	{
+		controllers.alias( controllerId, aliasId );
+	}
+
+	public final void setView( int viewId )
+	{
+		view = viewId;
+	}
+
+	public final void add( int componentId )
+	{
+		components.add( componentId );
+	}
+
+	public final void addController( int controllerId )
+	{
+		controllers.add( controllerId );
+	}
+
+	public EntityType addCustomComponent( int componentId )
+	{
+		EntityTypeCustom custom = new EntityTypeCustom( id, this, components.getCopy(), controllers.getCopy(), view );
+
+		custom.add( componentId );
+
+		return custom;
+	}
+
+	public EntityType addCustomController( int controllerId )
+	{
+		EntityTypeCustom custom = new EntityTypeCustom( id, this, components.getCopy(), controllers.getCopy(), view );
+
+		custom.addController( controllerId );
+
+		return custom;
+	}
+
+	public EntityType setCustomView( int viewId )
+	{
+		EntityTypeCustom custom = new EntityTypeCustom( id, this, components.getCopy(), controllers.getCopy(), view );
+
+		custom.setView( viewId );
+
+		return custom;
+	}
+
+	public boolean isCustom()
+	{
+		return false;
+	}
+
 }
