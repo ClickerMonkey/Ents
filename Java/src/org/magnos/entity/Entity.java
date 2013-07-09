@@ -49,7 +49,7 @@ public class Entity
 		return ( correctType ? get( componentId, castType ) : null );
 	}
 	
-	public <T> T getDynamic(int componentId, T out)
+	public <T> T get(int componentId, T out)
 	{
 		ComponentType componentType = EntityCore.getComponent(componentId);
 		
