@@ -39,7 +39,7 @@ public class EntityCore
 		return ( entityTypeId >= 0 && entityTypeId < entityTypes.size() );
 	}
 
-	public static int newEntity( IdMap components, IdMap controllers, int view )
+	public static int newEntityType( IdMap components, IdMap controllers, int view )
 	{
 		int id = entityTypes.size();
 		
@@ -48,12 +48,12 @@ public class EntityCore
 		return id;
 	}
 
-	public static int newEntityExtension( int parentEntityTypeId, IdMap components, IdMap controllers, int view )
+	public static int newEntityTypeExtension( int parentEntityTypeId, IdMap components, IdMap controllers, int view )
 	{
-		return newEntityExtension( getEntityType( parentEntityTypeId ), components, controllers, view );
+		return newEntityTypeExtension( getEntityType( parentEntityTypeId ), components, controllers, view );
 	}
 
-	public static int newEntityExtension( EntityType parent, IdMap components, IdMap controllers, int view )
+	public static int newEntityTypeExtension( EntityType parent, IdMap components, IdMap controllers, int view )
 	{
 		int id = entityTypes.size();
 
@@ -192,7 +192,6 @@ public class EntityCore
 	{
 		views.set( viewId, view );
 	}
-	
 	
 	public static void clean()
 	{

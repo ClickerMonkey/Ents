@@ -55,7 +55,7 @@ public class TestEntity
 	}
 	
 	static class Entities {
-		public static int SPRITE = EntityCore.newEntity(
+		public static int SPRITE = EntityCore.newEntityType(
 			new IdMap(Components.NAME, Components.POSITION, Components.VELOCITY, Components.SIZE), 
 			new IdMap(Controllers.PHYSICS), 
 			Views.SPRITE
