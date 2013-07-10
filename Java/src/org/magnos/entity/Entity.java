@@ -15,6 +15,10 @@ public class Entity
 	
 	protected boolean expired;
 	
+	protected boolean visible;
+	
+	protected boolean enabled;
+	
 
 	public Entity( int entityTypeId )
 	{
@@ -31,6 +35,9 @@ public class Entity
 		this.type = entityType;
 		this.components = components;
 		this.controllers = new BitSet( type.controllers.size() );
+		this.expired = false;
+		this.visible = true;
+		this.enabled = true;
 	}
 	
 	/*
@@ -47,38 +54,79 @@ public class Entity
 		expired = true;
 	}
 	
-	public void onEntityListRemoval(EntityList list)
-	{
-		
-	}
-	
 	/*
 	 * View Draw
 	 */
-
+	
+	public void setVisible(boolean visible)
+	{
+		this.visible = visible;
+	}
+	
+	public void show()
+	{
+		visible = false;
+	}
+	
+	public void hide()
+	{
+		visible = false;
+	}
+	
+	public boolean isVisible()
+	{
+		return visible;
+	}
+	
 	public void draw( Object drawState )
 	{
-		View view = EntityCore.getViewSafe( type.view );
-
-		if ( view != null )
+		if ( visible )
 		{
-			view.draw( this, drawState );
+			View view = EntityCore.getViewSafe( type.view );
+
+			if ( view != null )
+			{
+				view.draw( this, drawState );
+			}
 		}
 	}
 	
 	/*
 	 * Controller Update
 	 */
-
+	
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+	
+	public void enable()
+	{
+		enabled = true;
+	}
+	
+	public void disable()
+	{
+		enabled = true;
+	}
+	
+	public boolean isEnabled()
+	{
+		return enabled;
+	}
+	
 	public void update( Object updateState )
 	{
-		int[] controllerIds = type.controllers.ids;
-
-		for (int i = 0; i < controllerIds.length; i++)
+		if ( enabled )
 		{
-			if ( controllers.get( i ) )
+			int[] controllerIds = type.controllers.ids;
+
+			for (int i = 0; i < controllerIds.length; i++)
 			{
-				EntityCore.getController( controllerIds[i] ).control( this, updateState );
+				if ( controllers.get( i ) )
+				{
+					EntityCore.getController( controllerIds[i] ).control( this, updateState );
+				}
 			}
 		}
 	}
@@ -87,29 +135,29 @@ public class Entity
 	 * Controller Functions 
 	 */
 
-	public boolean isEnabled( int controllerId )
+	public boolean isControllerEnabled( int controllerId )
 	{
 		return controllers.get( type.getControllerIndex( controllerId ) );
 	}
 
-	public void setEnabled( int controllerId, boolean enabled )
+	public void setControllerEnabled( int controllerId, boolean enabled )
 	{
 		controllers.set( type.getControllerIndex( controllerId ), enabled );
 	}
 
-	public void setEnabledAll( boolean enabled )
+	public void setControllerEnabledAll( boolean enabled )
 	{
 		controllers.set( 0, type.getControllerCount(), enabled );
 	}
 
 	public void enable( int controllerId )
 	{
-		setEnabled( controllerId, true );
+		setControllerEnabled( controllerId, true );
 	}
 
 	public void disable( int controllerId )
 	{
-		setEnabled( controllerId, false );
+		setControllerEnabled( controllerId, false );
 	}
 
 	/*
@@ -221,6 +269,65 @@ public class Entity
 	public BitSet getControllerFlags()
 	{
 		return controllers;
+	}
+	
+	/*
+	 * hashCode(), equals() and toString
+	 */
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append( '[' );
+		
+		for (int i = 0; i < type.getComponentCount(); i++)
+		{
+			if (i > 0 )
+			{
+				sb.append(',');
+			}
+			
+			ComponentType componentType = EntityCore.getComponent( type.components.ids[i] );
+		
+			sb.append( componentType.name ) ;
+			sb.append( '=' );
+			sb.append( components[i] );
+		}
+		
+		sb.append( ']' );
+		
+		return sb.toString();
+	}
+
+	@Override
+	public int hashCode() 
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(components);
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Entity)) {
+			return false;
+		}
+		
+		Entity e = (Entity)obj;
+		
+		return EntityUtility.equals(type, e.type) &&
+			   EntityUtility.equals(components, e.components);
 	}
 
 }

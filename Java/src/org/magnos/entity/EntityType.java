@@ -11,7 +11,7 @@ public class EntityType
 	public IdMap components;
 
 	public IdMap controllers;
-
+	
 	public int view;
 
 	

@@ -1,6 +1,7 @@
 package org.magnos.entity;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 public final class IdMap
 {
@@ -9,6 +10,9 @@ public final class IdMap
 
 	public int[] map;
 
+	public BitSet bitset;
+	
+	
 	public IdMap( int... ids )
 	{
 		this( ids, buildMap( ids ) );
@@ -18,6 +22,7 @@ public final class IdMap
 	{
 		this.ids = ids;
 		this.map = map;
+		this.bitset = EntityUtility.createBitset( ids );
 	}
 
 	public boolean has( int id )
@@ -64,6 +69,8 @@ public final class IdMap
 		}
 
 		map[id] = index;
+
+		bitset.set( id );
 	}
 
 	public int getIndex( int id )
