@@ -7,7 +7,9 @@ class View
 {
 public:
 
-  virtual void draw(Entity *e, void *drawState) = 0;
+   static const size_t NONE = 0xFFFFFFFF;
+
+   virtual void draw(Entity *e, void *drawState) = 0;
 
 };
 

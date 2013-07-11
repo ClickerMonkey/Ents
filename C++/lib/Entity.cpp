@@ -1,6 +1,12 @@
 #include <Entity.h>
 #include <EntityCore.h>
 
+Entity::Entity()
+  : expired(false), visible(true), enabled(true)
+{
+  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, {}, {}, View::NONE, AnyMemory(), {}}));
+}
+
 Entity::Entity(const size_t entityTypeId) 
   : expired(false), visible(true), enabled(true)
 {
@@ -47,7 +53,10 @@ void Entity::setEntityType(EntityType* newType)
 {
   if (type != newType)
   {
-    type->removeInstance();
+    if (type != NULL)
+    {
+      type->removeInstance();  
+    }
     newType->addInstance();
   }
 

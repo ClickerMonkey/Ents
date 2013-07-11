@@ -31,15 +31,29 @@ void EntityType::setView(const size_t view)
   viewId = view;
 }
 
-void EntityType::add(const size_t componentId)
+bool EntityType::add(const size_t componentId)
 {
-  components.add(componentId);
-  offsets.push_back(defaultComponents.append(EntityCore::getComponent(componentId)->defaultValue));
+  bool missing = !hasComponent(componentId);
+
+  if (missing)
+  {
+    components.add(componentId);
+    offsets.push_back(defaultComponents.append(EntityCore::getComponent(componentId)->defaultValue));
+  }
+
+  return missing;
 }
 
-void EntityType::addController(const size_t controllerId) 
+bool EntityType::addController(const size_t controllerId) 
 {
-  controllers.add(controllerId);
+  bool missing = !hasController(controllerId);
+
+  if (missing)
+  {
+    controllers.add(controllerId);  
+  }
+
+  return missing;
 }
 
 void EntityType::setDefaultComponents(AnyMemory& components) 
@@ -49,21 +63,21 @@ void EntityType::setDefaultComponents(AnyMemory& components)
 
 EntityType* EntityType::addCustomComponent(const size_t componentId)
 {
-  EntityType *custom = new EntityTypeCustom( id, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
   custom->add(componentId);
   return custom;
 }
 
 EntityType* EntityType::addCustomController(const size_t controllerId)
 {
-  EntityType *custom = new EntityTypeCustom( id, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
   custom->addController(controllerId);
   return custom;
 }
 
 EntityType* EntityType::setCustomView(const size_t viewId)
 {
-  EntityType *custom = new EntityTypeCustom( id, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
   custom->setView(viewId);
   return custom;
 }

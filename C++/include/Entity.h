@@ -5,6 +5,7 @@
 #include <EntityType.h>
 #include <BitSet.h>
 #include <AnyMemory.h>
+#include <EntityCore.h>
 
 class Entity 
 {
@@ -24,11 +25,13 @@ private:
 
 public:
 
+  Entity();
+
   Entity(const size_t entityTypeId);
 
   Entity(EntityType *entityType);
 
-  ~Entity();
+  virtual ~Entity();
 
   template<typename T>
   inline T* ptr(const size_t componentId) 
@@ -40,6 +43,19 @@ public:
   inline T& get(const size_t componentId) 
   {
     return components.get<T>( type->getComponentOffset(componentId) );
+  }
+
+  template<typename T>
+  inline T& get(const size_t componentId, T &out)
+  {
+    DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent(componentId);
+
+    if (dynamic != NULL)
+    {
+      out = dynamic->compute( this, out );
+    }
+
+    return out;
   }
 
   template<typename T>
@@ -153,6 +169,11 @@ public:
   inline EntityType* getEntityType()
   {
     return type;
+  }
+
+  inline bool hasCustomType()
+  {
+    return type->isCustom();
   }
 
   inline AnyMemory& getComponents()

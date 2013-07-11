@@ -1,7 +1,7 @@
 #include <EntityList.h>
 
 EntityList::EntityList()
-	: Entity( NULL )
+	: Entity()
 {
 }
 

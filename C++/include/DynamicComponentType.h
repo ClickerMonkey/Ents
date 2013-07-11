@@ -42,8 +42,8 @@ struct DynamicComponentType : public ComponentType
 
    const DynamicComponent<T> dynamicComponent;
 
-   DynamicComponentType(const size_t id, const char *name, const AnyMemory &defaultValue, const DynamicComponent<T> &dynamicComponent) 
-    : ComponentType(id, name, defaultValue), dynamicComponent(dynamicComponent)
+   DynamicComponentType(const size_t id, const char *name, DynamicComponent<T> &dynamicComponent) 
+    : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent)
    {
    }
 

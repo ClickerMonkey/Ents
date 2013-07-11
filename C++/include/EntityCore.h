@@ -6,6 +6,7 @@
 #include <View.h>
 #include <Controller.h>
 #include <ComponentType.h>
+#include <DynamicComponentType.h>
 #include <IdMap.h>
 
 class EntityCore 
@@ -60,6 +61,25 @@ public:
     size_t id = componentTypes.size();
     componentTypes.push_back(new ComponentType(id, name, AnyMemory(defaultValue)));
     return id;
+  }
+
+  template<typename T>
+  static size_t newDynamicComponent(const char *name, DynamicComponent<T> &dynamicComponent)
+  {
+    size_t id = componentTypes.size();
+    componentTypes.push_back(new DynamicComponentType(id, name, dynamicComponent));
+    return id;
+  }
+
+  template<typename T>
+  static DynamicComponent<T>* getDynamicComponent(const size_t componentId)
+  {
+    if (!hasComponent(componentId))
+    {
+      return NULL;
+    }
+
+    return dynamic_cast<DynamicComponent<T>*>( componentTypes[componentId] );
   }
 
   static vector<View*> getViews() 

@@ -13,6 +13,8 @@ private:
 
 public:
 
+  AnyMemory();
+
   template<typename T>
   AnyMemory(const T &x) : size(0), data(NULL) 
   {
@@ -20,8 +22,6 @@ public:
   }
 
   AnyMemory(const AnyMemory &copy);
-
-  AnyMemory();
 
   ~AnyMemory();
 

@@ -27,6 +27,8 @@ private:
 
 public:
 
+  static const size_t CUSTOM = 0xFFFFFFFF;
+
   EntityType(const size_t id, const EntityType *parent, const IdMap &components, const IdMap &controllers, const size_t viewId, const AnyMemory &defaultComponents, const vector<size_t> &offsets);
 
   virtual ~EntityType();
@@ -74,9 +76,35 @@ public:
     return viewId;
   }
 
-  void add(const size_t componentId);
+  bool add(const size_t componentId);
 
-  void addController(const size_t controllerId);
+  template<typename T>
+  inline bool add(const size_t componentId, const T &value )
+  {
+    bool added = add(componentId);
+
+    if ( added )
+    {
+      added = setDefaultValue( componentId, value );
+    }
+
+    return added;
+  }
+
+  template<typename T>
+  inline bool setDefaultValue(const size_t componentId, const T &value)
+  {
+    bool exists = hasComponent(componentId);
+
+    if (exists)
+    {
+      defaultComponents.set( getComponentOffset(componentId), value );
+    }
+
+    return exists;
+  }
+
+  bool addController(const size_t controllerId);
 
   void setDefaultComponents(AnyMemory& components);
 
@@ -96,7 +124,9 @@ public:
   inline void removeInstance() 
   {
     instances--;
-    if (isCustom() && instances == 0) {
+
+    if (isCustom() && instances == 0) 
+    {
       delete this;
     }
   }
