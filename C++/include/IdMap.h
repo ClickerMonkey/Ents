@@ -66,6 +66,16 @@ public:
       return ids.size();
    }
 
+   inline vector<size_t>& getIds()
+   {
+      return ids;
+   }
+
+   inline BitSet* getBitSet()
+   {
+      return bitset;
+   }
+
    static vector<int> buildMap(const vector<size_t> &ids) 
    {
       size_t n = 0;

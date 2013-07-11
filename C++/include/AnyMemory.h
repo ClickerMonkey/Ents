@@ -96,6 +96,12 @@ public:
     return offset;
   }
 
+  bool equals(const AnyMemory &other) const;
+
+  int hashCode() const;
+
+  int compareTo(const AnyMemory &other) const;
+
   template<typename T>
   inline AnyMemory& operator+=(const T &item) 
   {
@@ -108,6 +114,41 @@ public:
   {
     add<T>(item);
     return *this;
+  }
+
+  inline bool operator==(const AnyMemory &a, const AnyMemory &b)
+  {
+    return a.equals( b );
+  }
+
+  inline bool operator!=(const AnyMemory &a, const AnyMemory &b)
+  {
+    return !a.equals( b );
+  }
+
+  inline bool operator<(const AnyMemory &a, const AnyMemory &b)
+  {
+    return a.compareTo( b ) < 0;
+  }
+
+  inline bool operator>(const AnyMemory &a, const AnyMemory &b)
+  {
+    return a.compareTo( b ) > 0;
+  }
+
+  inline bool operator<=(const AnyMemory &a, const AnyMemory &b)
+  {
+    return a.compareTo( b ) <= 0;
+  }
+
+  inline bool operator>=(const AnyMemory &a, const AnyMemory &b)
+  {
+    return a.compareTo( b ) >= 0;
+  }
+
+  inline char* operator[](const size_t index)
+  {
+    return ( index < size ? (data + index) : NULL );
   }
 
 };

@@ -33,6 +33,7 @@ public:
    {
       return function(e, out);
    }
+   
 };
 
 template<typename T>

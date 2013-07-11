@@ -69,6 +69,11 @@ public:
 
   void setView(const size_t view);
 
+  inline size_t getView()
+  {
+    return viewId;
+  }
+
   void add(const size_t componentId);
 
   void addController(const size_t controllerId);
@@ -99,6 +104,21 @@ public:
   inline int getInstances() const 
   {
     return instances;
+  }
+
+  inline IdMap& getControllers()
+  {
+    return controllers;
+  }
+
+  inline IdMap& getComponents()
+  {
+    return components;
+  }
+
+  inline size_t getId() const
+  {
+    return id;
   }
 
 };

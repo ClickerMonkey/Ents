@@ -221,11 +221,11 @@ public class Entity
 		}
 	}
 
-	public void addController( int behaviorId )
+	public void addController( int controllerId )
 	{
-		if ( !type.hasController( behaviorId ) )
+		if ( !type.hasController( controllerId ) )
 		{
-			type = type.addCustomController( behaviorId );
+			type = type.addCustomController( controllerId );
 		}
 	}
 

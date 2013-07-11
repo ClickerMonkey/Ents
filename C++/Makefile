@@ -5,7 +5,7 @@ FLAGS_CXX = -O -Wall -Wextra -g -std=c++0x
 FLAGS_LD = -O -Wall -Wextra -g -std=c++0x
 SOURCES = lib/*.cpp
 INCLUDE = include/
-OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o
+OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o
 DEPENDENCIES = $(OBJECTS) BitSet.o IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o
 
 
@@ -44,6 +44,9 @@ EntityTypeCustom.o: lib/EntityTypeCustom.cpp
 
 Entity.o: lib/Entity.cpp
 	$(CXX) $(FLAGS_CXX) -c lib/Entity.cpp -I$(INCLUDE)
+
+EntityList.o: lib/EntityList.cpp
+	$(CXX) $(FLAGS_CXX) -c lib/EntityList.cpp -I$(INCLUDE)
 
 # Compiling Tests
 

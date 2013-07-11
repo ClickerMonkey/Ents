@@ -9,16 +9,6 @@ private:
 
   vector<size_t> bits;
 
-  inline size_t indexOf(const size_t bitIndex) const 
-  {
-    return (bitIndex >> 5);
-  }
-
-  inline size_t offsetOf(const size_t bitIndex) const 
-  {
-    return (bitIndex & 31);
-  }
-
 public:
 
   BitSet() 
@@ -37,9 +27,7 @@ public:
 
   void setFromIndices(const vector<size_t> &indices) 
   {
-    for (auto i : indices) {
-      set(i);
-    }
+    for (auto i : indices) set(i);
   }
 
   void set(const size_t bitIndex) 
@@ -50,7 +38,7 @@ public:
   void set(const size_t bitIndex, const bool value) 
   {
     const size_t i = indexOf(bitIndex);
-    const size_t mask = (1 << offsetOf(bitIndex));
+    const size_t mask = maskOf(bitIndex);
     while (i >= bits.size()) bits.push_back(0);
     bits[i] &= ~mask;
     if (value) {
@@ -61,7 +49,7 @@ public:
   bool get(const size_t bitIndex) const 
   {
     const size_t i = indexOf(bitIndex);
-    const size_t mask = (1 << offsetOf(bitIndex));
+    const size_t mask = maskOf(bitIndex);
     return (i < bits.size() && bits[i] & mask);
   }
 
@@ -79,6 +67,18 @@ public:
   inline size_t size() 
   {
     return bits.size() << 5;
+  }
+
+private:
+  
+  inline size_t indexOf(const size_t bitIndex) const 
+  {
+    return (bitIndex >> 5);
+  }
+
+  inline size_t maskOf(const size_t bitIndex) const 
+  {
+    return (1 << (bitIndex & 31));
   }
 
 };

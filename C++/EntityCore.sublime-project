@@ -1,10 +1,16 @@
 {
 	"folders":
 	[
-
 		{
-			"path": "/home/pdiffenderfer/git/EntityCore/C++",
-         "file_exclude_patterns": ["*.gch", "TestAnyMemory", "TestBitSet", "TestEntity", "TestVectorIterator"]
+			"file_exclude_patterns":
+			[
+				"*.gch",
+				"TestAnyMemory",
+				"TestBitSet",
+				"TestEntity",
+				"TestVectorIterator"
+			],
+			"path": "C:/DevelopmentTools/Git/EntityCore/C++"
 		}
-   ]
+	]
 }

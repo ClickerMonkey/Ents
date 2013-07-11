@@ -16,6 +16,7 @@ typedef void (*ControllerFunctionPointer)(Entity *e, void *updateState);
 class ControllerFunction : public Controller
 {
 private:
+   
    const ControllerFunctionPointer function;
 
 public:
