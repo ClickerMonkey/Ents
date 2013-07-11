@@ -71,7 +71,7 @@ public:
       return ids;
    }
 
-   inline BitSet* getBitSet()
+   inline BitSet& getBitSet()
    {
       return bitset;
    }

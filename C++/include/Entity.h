@@ -48,7 +48,7 @@ public:
   template<typename T>
   inline T& get(const size_t componentId, T &out)
   {
-    DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent(componentId);
+    DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent<T>(componentId);
 
     if (dynamic != NULL)
     {
@@ -192,34 +192,34 @@ public:
 
   int compareTo(const Entity &other) const;
 
-  inline bool operator==(const Entity &a, const Entity &b)
+  inline bool operator==(const Entity &b) const
   {
-    return a.equals( b );
+    return equals( b );
   }
 
-  inline bool operator!=(const Entity &a, const Entity &b)
+  inline bool operator!=(const Entity &b) const
   {
-    return !a.equals( b );
+    return !equals( b );
   }
 
-  inline bool operator<(const Entity &a, const Entity &b)
+  inline bool operator<(const Entity &b) const
   {
-    return a.compareTo( b ) < 0;
+    return compareTo( b ) < 0;
   }
 
-  inline bool operator>(const Entity &a, const Entity &b)
+  inline bool operator>(const Entity &b) const
   {
-    return a.compareTo( b ) > 0;
+    return compareTo( b ) > 0;
   }
 
-  inline bool operator<=(const Entity &a, const Entity &b)
+  inline bool operator<=(const Entity &b) const
   {
-    return a.compareTo( b ) <= 0;
+    return compareTo( b ) <= 0;
   }
 
-  inline bool operator>=(const Entity &a, const Entity &b)
+  inline bool operator>=(const Entity &b) const
   {
-    return a.compareTo( b ) >= 0;
+    return compareTo( b ) >= 0;
   }
   
 private:

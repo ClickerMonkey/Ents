@@ -1,9 +1,11 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <Entity.h>
+#include "Common.h"
 
-class View 
+class Entity;
+
+class View
 {
 public:
 

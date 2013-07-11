@@ -116,34 +116,34 @@ public:
     return *this;
   }
 
-  inline bool operator==(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator==(const AnyMemory &b) const
   {
-    return a.equals( b );
+    return equals( b );
   }
 
-  inline bool operator!=(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator!=(const AnyMemory &b) const
   {
-    return !a.equals( b );
+    return !equals( b );
   }
 
-  inline bool operator<(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator<(const AnyMemory &b) const
   {
-    return a.compareTo( b ) < 0;
+    return compareTo( b ) < 0;
   }
 
-  inline bool operator>(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator>(const AnyMemory &b) const
   {
-    return a.compareTo( b ) > 0;
+    return compareTo( b ) > 0;
   }
 
-  inline bool operator<=(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator<=(const AnyMemory &b) const
   {
-    return a.compareTo( b ) <= 0;
+    return compareTo( b ) <= 0;
   }
 
-  inline bool operator>=(const AnyMemory &a, const AnyMemory &b)
+  inline bool operator>=(const AnyMemory &b) const
   {
-    return a.compareTo( b ) >= 0;
+    return compareTo( b ) >= 0;
   }
 
   inline char* operator[](const size_t index)

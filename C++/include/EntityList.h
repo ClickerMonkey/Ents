@@ -4,6 +4,20 @@
 #include <Entity.h>
 #include <VectorIterator.h>
 
+typedef bool (*EntityFilter)( Entity *e);
+
+struct EntityFilterFunctor
+{
+	virtual bool operator()( Entity *e );
+};
+
+struct EntityComponentFilter;
+struct EntityControllerFilter;
+struct EntityValueFilter;
+struct EntityVisibleFilter;
+struct EntityEnabledFilter;
+
+
 class EntityList : public Entity
 {
 private:
@@ -39,16 +53,7 @@ public:
 
 	void update( void *updateState );
 
-
-   	typedef bool (*EntityFilter)(const Entity *e);
-
-	struct FilterFunctor
-	{
-		virtual bool operator()( Entity *e );
-	};
-
-
-	VectorIteratorPointer<Entity*, EntityFilter> begin();
+   	VectorIteratorPointer<Entity*, EntityFilter> begin();
 
 	VectorIteratorPointer<Entity*, EntityFilter> end();
 
@@ -58,15 +63,15 @@ public:
 		return VectorIterator<Entity*, F>(&entities, filterFunction);
 	}
 
- 	VectorIterator<Entity*, FilterFunctor> filterByComponents(initializer_list<size_t> componentIds);
+ 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(initializer_list<size_t> componentIds);
 
-	VectorIterator<Entity*, FilterFunctor> filterByControllers(initializer_list<size_t> controllerIds);
+	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(initializer_list<size_t> controllerIds);
 
-	VectorIterator<Entity*, FilterFunctor> filterByValue(const size_t componentId, const AnyMemory &value);
+	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, const AnyMemory &value);
 
-	VectorIterator<Entity*, FilterFunctor> filterByVisible(bool visible);
+	VectorIterator<Entity*, EntityVisibleFilter> filterByVisible(bool visible);
 
-	VectorIterator<Entity*, FilterFunctor> filterByEnabled(bool enabled);
+	VectorIterator<Entity*, EntityEnabledFilter> filterByEnabled(bool enabled);
 
 	vector<Entity*>& getEntities()
 	{

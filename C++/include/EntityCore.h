@@ -67,7 +67,7 @@ public:
   static size_t newDynamicComponent(const char *name, DynamicComponent<T> &dynamicComponent)
   {
     size_t id = componentTypes.size();
-    componentTypes.push_back(new DynamicComponentType(id, name, dynamicComponent));
+    componentTypes.push_back(new DynamicComponentType<T>(id, name, dynamicComponent));
     return id;
   }
 

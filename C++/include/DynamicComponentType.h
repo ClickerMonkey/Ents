@@ -1,8 +1,9 @@
 #ifndef DYNAMICCOMPONENT_H
 #define DYNAMICCOMPONENT_H
 
-#include <Entity.h>
 #include <ComponentType.h>
+
+class Entity;
 
 template<typename T>
 class DynamicComponent 
@@ -14,7 +15,7 @@ public:
 };
 
 template<typename T>
-class DynamicComponentFunction : public DynamicComponent
+class DynamicComponentFunction : public DynamicComponent<T>
 {
 private:
    

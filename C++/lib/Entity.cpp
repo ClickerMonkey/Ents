@@ -1,10 +1,11 @@
 #include <Entity.h>
 #include <EntityCore.h>
+#include <EntityTypeCustom.h>
 
 Entity::Entity()
   : expired(false), visible(true), enabled(true)
 {
-  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, {}, {}, View::NONE, AnyMemory(), {}}));
+  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, NULL, {}, {}, View::NONE, AnyMemory(), {}));
 }
 
 Entity::Entity(const size_t entityTypeId) 

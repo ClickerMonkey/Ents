@@ -40,7 +40,7 @@ int AnyMemory::hashCode() const
   int hash = 0;
   for (size_t i = 0; i < size; i++)
   {
-    hash = hash * prime + get<char>(i);
+    hash = hash * prime + (*((char*)(data + i)));
   }
   return hash;
 }
