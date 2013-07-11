@@ -3,3 +3,6 @@
 .bin-all/
 bin/
 doc/
+*.o
+*.gch
+*.sublime-workspace
