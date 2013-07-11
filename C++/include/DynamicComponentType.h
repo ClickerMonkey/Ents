@@ -14,6 +14,28 @@ public:
 };
 
 template<typename T>
+class DynamicComponentFunction : public DynamicComponent
+{
+private:
+   
+   typedef T& (*DynamicComponentFunctionPointer)(Entity *e, T &out);
+
+   DynamicComponentFunctionPointer function;
+
+public:
+
+   DynamicComponentFunction(DynamicComponentFunctionPointer function)  
+      : function(function)
+   {
+   }
+
+   T& compute(Entity *e, T &out)
+   {
+      return function(e, out);
+   }
+};
+
+template<typename T>
 struct DynamicComponentType : public ComponentType 
 {
 
