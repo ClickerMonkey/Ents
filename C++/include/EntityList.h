@@ -6,17 +6,11 @@
 
 typedef bool (*EntityFilter)( Entity *e);
 
-struct EntityFilterFunctor
-{
-	virtual bool operator()( Entity *e );
-};
-
 struct EntityComponentFilter;
 struct EntityControllerFilter;
 struct EntityValueFilter;
 struct EntityVisibleFilter;
 struct EntityEnabledFilter;
-
 
 class EntityList : public Entity
 {
@@ -53,7 +47,7 @@ public:
 
 	void update( void *updateState );
 
-   	VectorIteratorPointer<Entity*, EntityFilter> begin();
+   VectorIteratorPointer<Entity*, EntityFilter> begin();
 
 	VectorIteratorPointer<Entity*, EntityFilter> end();
 
@@ -67,7 +61,7 @@ public:
 
 	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(initializer_list<size_t> controllerIds);
 
-	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, const AnyMemory &value);
+	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, AnyMemory &value);
 
 	VectorIterator<Entity*, EntityVisibleFilter> filterByVisible(bool visible);
 
@@ -102,11 +96,11 @@ public:
 
 protected:
 
-	virtual void onEntityAdd( Entity *e, const size_t index ) {}
+	virtual void onEntityAdd( Entity*, const size_t ) {}
 
-	virtual void onEntityRemove( Entity *e, const size_t index ) {}
+	virtual void onEntityRemove( Entity*, const size_t ) {}
 
-	virtual void onEntityUpdated( Entity *e, void *updateState ) {}
+	virtual void onEntityUpdated( Entity*, void* ) {}
 
 private:
 

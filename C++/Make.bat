@@ -2,8 +2,9 @@
 
 set PROGRAM_NAME=EntityCore
 set CXX=g++
-set FLAGS_CXX=-O -Wall -Wextra -g -std=c++0x
-set FLAGS_LD=-O -Wall -Wextra -g -std=c++0x
+set FLAGS_CXX=-O -Wall -Wextra -g -std=c++0x -fPIC
+set FLAGS_LD=%FLAGS_CXX%
+set FLAGS_LIB=%FLAGS_CXX% -shared
 set SOURCES=lib/*.cpp
 set INCLUDE=include/
 set OBJECTS=AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o
@@ -35,31 +36,29 @@ echo Compiling Entity...
 %CXX% %FLAGS_CXX% -c lib/Entity.cpp -I%INCLUDE%
 echo Compiling EntityList...
 %CXX% %FLAGS_CXX% -c lib/EntityList.cpp -I%INCLUDE%
+echo Compiling DLL...
+%CXX% %FLAGS_LIB% -o %PROGRAM_NAME%.dll %OBJECTS% -I%INCLUDE%
 
 if "%~1"=="TestEntity.o" (
 	echo Compiling and Running TestEntity...
 	%CXX% %FLAGS_CXX% -c tests/TestEntity.cpp -I%INCLUDE%
 	%CXX% %FLAGS_LD% -o TestEntity.exe %OBJECTS% TestEntity.o -I%INCLUDE%
 	TestEntity.exe
-)
-else if "%~1"=="TestBitSet.o" (
+) else if "%~1"=="TestBitSet.o" (
 	echo Compiling and Running TestBitSet...
 	%CXX% %FLAGS_CXX% -c tests/TestBitSet.cpp -I%INCLUDE%
 	%CXX% %FLAGS_LD% -o TestBitSet.exe %OBJECTS% TestBitSet.o -I%INCLUDE%
 	TestBitSet.exe
-)
-else if "%~1"=="TestAnyMemory.o" (
+) else if "%~1"=="TestAnyMemory.o" (
 	echo Compiling and Running TestAnyMemory...
 	%CXX% %FLAGS_CXX% -c tests/TestAnyMemory.cpp -I%INCLUDE%
 	%CXX% %FLAGS_LD% -o TestAnyMemory.exe %OBJECTS% TestAnyMemory.o -I%INCLUDE%
 	TestAnyMemory.exe
-)
-else if "%~1"=="TestVectorIterator.o" (
+) else if "%~1"=="TestVectorIterator.o" (
 	echo Compiling and Running TestVectorIterator...
 	%CXX% %FLAGS_CXX% -c tests/TestVectorIterator.cpp -I%INCLUDE%
 	%CXX% %FLAGS_LD% -o TestVectorIterator.exe %OBJECTS% TestVectorIterator.o -I%INCLUDE%
 	TestVectorIterator.exe
-)
-else (
+) else (
 	echo No Tests Ran.
 )

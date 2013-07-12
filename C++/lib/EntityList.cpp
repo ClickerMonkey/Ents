@@ -112,7 +112,7 @@ VectorIteratorPointer<Entity*, EntityFilter> EntityList::end()
  	return VectorIteratorPointer<Entity*, EntityFilter>(&entities, FilterNone, entities.size() - 1, -1, -1);
 }
 
-struct EntityComponentFilter : EntityFilterFunctor
+struct EntityComponentFilter
 {
 	BitSet components;
 
@@ -132,7 +132,7 @@ VectorIterator<Entity*, EntityComponentFilter> EntityList::filterByComponents(in
 	return filter( EntityComponentFilter(BitSet(componentIds)) );
 }
 
-struct EntityControllerFilter : EntityFilterFunctor
+struct EntityControllerFilter
 {
 	BitSet controllers;
 
@@ -153,12 +153,12 @@ VectorIterator<Entity*, EntityControllerFilter> EntityList::filterByControllers(
 }
 
 
-struct EntityValueFilter : EntityFilterFunctor
+struct EntityValueFilter
 {
 	const size_t componentId;
-	const AnyMemory value;
+	AnyMemory value;
 
-	EntityValueFilter( const size_t componentId, const AnyMemory &value )
+	EntityValueFilter( const size_t componentId, AnyMemory &value )
 		: componentId(componentId), value(value)
 	{
 	}
@@ -176,7 +176,10 @@ struct EntityValueFilter : EntityFilterFunctor
 
 			if (equals)
 			{
-				equals = memcmp( components.getData() + offset, value.getData(), value.getSize() ) == 0;	
+				void *componentPointer = (void*)(components.getData() + offset);
+				void *valuePointer = (void*)value.getData();
+
+				equals = ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
 			}
 		}
 
@@ -184,13 +187,13 @@ struct EntityValueFilter : EntityFilterFunctor
 	}
 };
 
-VectorIterator<Entity*, EntityValueFilter> EntityList::filterByValue(const size_t componentId, const AnyMemory &value)
+VectorIterator<Entity*, EntityValueFilter> EntityList::filterByValue(const size_t componentId, AnyMemory &value)
 {
 	return filter( EntityValueFilter(componentId, value) );
 }
 
 
-struct EntityVisibleFilter : EntityFilterFunctor
+struct EntityVisibleFilter
 {
 	bool visible;
 
@@ -211,7 +214,7 @@ VectorIterator<Entity*, EntityVisibleFilter> EntityList::filterByVisible(bool vi
 }
 
 
-struct EntityEnabledFilter : EntityFilterFunctor
+struct EntityEnabledFilter
 {
 	bool enabled;
 

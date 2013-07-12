@@ -1,17 +1,18 @@
 PROGRAM_NAME = EntityCore
 CXX = g++
 LIBS = 
-FLAGS_CXX = -O -Wall -Wextra -g -std=c++0x
-FLAGS_LD = -O -Wall -Wextra -g -std=c++0x
+FLAGS_CXX = -O -Wall -Wextra -g -std=c++0x -fPIC -O0
+FLAGS_LD = $(FLAGS_CXX) 
+FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp
 INCLUDE = include/
 OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o
-DEPENDENCIES = $(OBJECTS) BitSet.o IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o
+DEPENDENCIES = $(OBJECTS) BitSet.o IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o View.o Controller.o
 
 
 # Compile and run Testing
 all: $(DEPENDENCIES)
-	$(CXX) $(FLAGS_LD) -o $(PROGRAM_NAME) $(OBJECTS) -I$(INCLUDE)
+	$(CXX) $(FLAGS_LIB) -o lib$(PROGRAM_NAME).so $(OBJECTS) -I$(INCLUDE)
 
 # Compiling Headers without Source Files
 BitSet.o: include/BitSet.h
@@ -28,6 +29,12 @@ VectorIterator.o: include/VectorIterator.h
 
 DynamicComponentType.o: include/DynamicComponentType.h
 	$(CXX) $(FLAGS_CXX) -c include/DynamicComponentType.h -I$(INCLUDE)
+
+Controller.o: include/Controller.h
+	$(CXX) $(FLAGS_CXX) -c include/Controller.h -I$(INCLUDE)
+
+View.o: include/View.h
+	$(CXX) $(FLAGS_CXX) -c include/View.h -I$(INCLUDE)
 
 # Compiling Source Files
 AnyMemory.o: lib/AnyMemory.cpp
@@ -50,17 +57,17 @@ EntityList.o: lib/EntityList.cpp
 
 # Compiling Tests
 
-TestEntity.o: $(DEPENDENCIES) tests/TestEntity.cpp
+TestEntity.o: $(DEPENDENCIES)
 	$(CXX) $(FLAGS_CXX) -c tests/TestEntity.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestEntity $(OBJECTS) TestEntity.o -I$(INCLUDE)
 	./TestEntity
 
-TestBitSet.o: $(DEPENDENCIES) tests/TestBitSet.cpp
+TestBitSet.o: $(DEPENDENCIES)
 	$(CXX) $(FLAGS_CXX) -c tests/TestBitSet.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestBitSet $(OBJECTS) TestBitSet.o -I$(INCLUDE)
 	./TestBitSet
 
-TestAnyMemory.o: $(DEPENDENCIES) tests/TestAnyMemory.cpp
+TestAnyMemory.o: $(DEPENDENCIES)
 	$(CXX) $(FLAGS_CXX) -c tests/TestAnyMemory.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestAnyMemory $(OBJECTS) TestAnyMemory.o -I$(INCLUDE)
 	./TestAnyMemory
@@ -75,4 +82,4 @@ run:
 	./$(PROGRAM_NAME)
 
 clean:
-	rm -f $(PROGRAM_NAME) *.o
+	rm -f lib$(PROGRAM_NAME).so *.o TestEntity TestBitSet TestAnyMemory TestVectorIterator

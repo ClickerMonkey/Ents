@@ -39,7 +39,7 @@ struct VectorIteratorPointer
    {
       while (start != stop) 
       {
-         if (filter(&v->at(start))) 
+         if (filter(v->at(start))) 
          {
             break;
          }
