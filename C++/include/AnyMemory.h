@@ -5,24 +5,16 @@
 
 struct AnyMemory 
 {
-private:
-
-  size_t size;
-
-  char *data;
+  private:
+    size_t size;
+    char* data;
 
 public:
-
   AnyMemory();
 
-  template<typename T>
-  AnyMemory(const T &x) : size(0), data(NULL) 
-  {
-    add<T>(x);
-  }
+  template<typename T> AnyMemory(const T &x) : size(0), data(nullptr) { add<T>(x); }
 
   AnyMemory(const AnyMemory &copy);
-
   ~AnyMemory();
 
   inline size_t getSize() const 
