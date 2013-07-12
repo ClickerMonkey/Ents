@@ -123,13 +123,15 @@ struct EntityComponentFilter
 
 	bool operator()( Entity *e )
 	{
-		return components.intersects( e->getEntityType()->getComponents().getBitSet() );
+		return (components &  e->getEntityType()->getComponents().getBitSet() ).all();
 	}
 };
 
-VectorIterator<Entity*, EntityComponentFilter> EntityList::filterByComponents(initializer_list<size_t> componentIds)
+VectorIterator<Entity*, EntityComponentFilter> EntityList::filterByComponents(vector<size_t> componentIds)
 {
-	return filter( EntityComponentFilter(BitSet(componentIds)) );
+	BitSet bitset;
+	for(unsigned int i{0}; i < componentIds.size(); ++i) bitset.set(i, componentIds[i]);
+	return filter( EntityComponentFilter(bitset) );
 }
 
 struct EntityControllerFilter
@@ -143,13 +145,15 @@ struct EntityControllerFilter
 
 	bool operator()( Entity *e )
 	{
-		return controllers.intersects( e->getEntityType()->getControllers().getBitSet() );
+		return (controllers &  e->getEntityType()->getControllers().getBitSet() ).all();
 	}
 };
 
-VectorIterator<Entity*, EntityControllerFilter> EntityList::filterByControllers(initializer_list<size_t> controllerIds)
+VectorIterator<Entity*, EntityControllerFilter> EntityList::filterByControllers(vector<size_t> controllerIds)
 {
-	return filter( EntityControllerFilter(BitSet(controllerIds)) );
+	BitSet bitset;
+	for(unsigned int i{0}; i < controllerIds.size(); ++i) bitset.set(i, controllerIds[i]);
+	return filter( EntityControllerFilter(bitset) );
 }
 
 

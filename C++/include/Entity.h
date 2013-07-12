@@ -57,7 +57,7 @@ class Entity
 
     template<typename T> inline T* getSafe(size_t componentId) 
     {
-      const int offset{type->getComponentOffset(componentId)};
+      const int offset = type->getComponentOffset(componentId);
       return (offset == -1 ? nullptr : components.getSafe<T>( offset ));
     }
 
