@@ -6,12 +6,12 @@
 template<typename T, typename F>
 struct VectorIteratorPointer 
 {
-   vector<T> *v;
+   std::vector<T> *v;
    F filter;
    const int dir, stop;
    int index, last;
 
-   VectorIteratorPointer(vector<T> *v, F filter, int start, int dir, int stop) 
+   VectorIteratorPointer(std::vector<T> *v, F filter, int start, int dir, int stop) 
       : v(v), filter(filter), dir(dir), stop(stop) 
    {
       last = -1;
@@ -53,10 +53,10 @@ struct VectorIteratorPointer
 template<typename T, typename F>
 struct VectorIterator 
 {
-   vector<T> *v;
+   std::vector<T> *v;
    F filter;
 
-   VectorIterator(vector<T> *v, F filter) 
+   VectorIterator(std::vector<T> *v, F filter) 
       : v(v), filter(filter) 
    {
    }

@@ -1,5 +1,7 @@
  #include <EntityTypeCustom.h>
 
+using namespace std;
+
 EntityTypeCustom::EntityTypeCustom(const size_t id, const EntityType *parent, const IdMap &components, const IdMap &controllers, const size_t viewId, const AnyMemory &defaultComponents, const vector<size_t> &offsets) 
    : EntityType(id, parent, components, controllers, viewId, defaultComponents, offsets) 
 { 

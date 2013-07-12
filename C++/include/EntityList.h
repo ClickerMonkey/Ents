@@ -16,7 +16,7 @@ class EntityList : public Entity
 {
 private:
 	
-	vector<Entity*> entities;
+	std::vector<Entity*> entities;
 	
 public:
 
@@ -26,9 +26,11 @@ public:
 
 	EntityList( EntityType *type );
 
+	EntityList( std::initializer_list<Entity*> e );
+
 	void add( Entity *e );
 
-	void add( initializer_list<Entity*> e );
+	void add( std::initializer_list<Entity*> e );
 	
 	template<typename Iterator>
 	void add( Iterator first, Iterator end )
@@ -39,7 +41,7 @@ public:
 		}
 	}
 
-	void add( const vector<Entity*> &e );
+	void add( const std::vector<Entity*> &e );
 
 	void clean();
 
@@ -57,9 +59,9 @@ public:
 		return VectorIterator<Entity*, F>(&entities, filterFunction);
 	}
 
- 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(initializer_list<size_t> componentIds);
+ 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(std::initializer_list<size_t> componentIds);
 
-	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(initializer_list<size_t> controllerIds);
+	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(std::initializer_list<size_t> controllerIds);
 
 	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, AnyMemory &value);
 
@@ -67,7 +69,7 @@ public:
 
 	VectorIterator<Entity*, EntityEnabledFilter> filterByEnabled(bool enabled);
 
-	vector<Entity*>& getEntities()
+	std::vector<Entity*>& getEntities()
 	{
 		return entities;
 	}
@@ -79,7 +81,7 @@ public:
 
 	inline Entity* operator[](const size_t index)
 	{
-		return ( index < entities.size() ? entities.at(index) : NULL );
+		return ( index < entities.size() ? entities.at(index) : nullptr );
 	}
 
 	inline EntityList& operator+=(Entity *e)

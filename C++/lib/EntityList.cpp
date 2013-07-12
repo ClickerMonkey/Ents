@@ -1,5 +1,7 @@
 #include <EntityList.h>
 
+using namespace std;
+
 EntityList::EntityList()
 	: Entity()
 {
@@ -15,6 +17,12 @@ EntityList::EntityList( EntityType *type )
 {
 }
 
+EntityList::EntityList( initializer_list<Entity*> e )
+	: Entity()
+{
+	add( e );
+}
+
 void EntityList::add( Entity *e )
 {
 	internalAdd( e );
@@ -22,7 +30,7 @@ void EntityList::add( Entity *e )
 
 void EntityList::add( initializer_list<Entity*> e )
 {
-	for (auto x : e) 
+	for (const auto &x : e) 
 	{
 		internalAdd(x);
 	}
@@ -30,7 +38,7 @@ void EntityList::add( initializer_list<Entity*> e )
 
 void EntityList::add( const vector<Entity*> &e )
 {
-	for (auto x : e) 
+	for (const auto &x : e) 
 	{
 		internalAdd(x);	
 	}
@@ -64,7 +72,7 @@ void EntityList::draw( void *drawState )
 {
 	Entity::draw( drawState );
 
-	for (auto e : entities)
+	for (const auto &e : entities)
 	{
 		e->draw( drawState );
 	}
@@ -79,7 +87,7 @@ void EntityList::update( void *updateState )
 		return;
 	}
 
-	for (auto e : entities)
+	for (const auto &e : entities)
 	{
 		e->update( updateState );
 
@@ -99,7 +107,7 @@ void EntityList::internalAdd( Entity *e )
 
 bool FilterNone( Entity *e )
 {
-	return (e != NULL);
+	return (e != nullptr);
 }
 
 VectorIteratorPointer<Entity*, EntityFilter> EntityList::begin()

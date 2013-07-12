@@ -7,7 +7,7 @@ struct BitSet
 {
 private:
 
-  vector<size_t> bits;
+  std::vector<size_t> bits;
 
 public:
 
@@ -15,59 +15,45 @@ public:
   {
   }
 
-  BitSet(const vector<size_t> &indices) 
+  BitSet(const std::vector<size_t> &indices) 
   {
     setFromIndices(indices);
   }
 
-  BitSet(initializer_list<size_t> indices) 
+  BitSet(std::initializer_list<size_t> indices) 
   {
-    for (auto i : indices) set(i);
+    for (const auto &i : indices) {
+      set(i);
+    } 
   }
 
-  void setFromIndices(const vector<size_t> &indices) 
+  void setFromIndices(const std::vector<size_t> &indices) 
   {
-    for (auto i : indices) set(i);
+    for (const auto &i : indices) {
+      set(i);
+    }
   }
 
-  void set(const size_t bitIndex) 
+  inline void set(const size_t bitIndex) 
   { 
     set(bitIndex, true);
   }
 
-  void set(const size_t bitIndex, const bool value) 
-  {
-    const size_t i = indexOf(bitIndex);
-    const size_t mask = maskOf(bitIndex);
-    while (i >= bits.size()) bits.push_back(0);
-    bits[i] &= ~mask;
-    if (value) {
-      bits[i] |= mask;
-    }
-  }
+  void set(const size_t bitIndex, const bool value);
 
-  bool get(const size_t bitIndex) const 
-  {
-    const size_t i = indexOf(bitIndex);
-    const size_t mask = maskOf(bitIndex);
-    return (i < bits.size() && bits[i] & mask);
-  }
+  bool get(const size_t bitIndex, const bool defaultValue = false) const;
 
-  bool intersects(const BitSet &other) const 
-  {
-    int m = min(bits.size(), other.bits.size());
-    while (--m >= 0) {
-      if (bits[m] & other.bits[m] ) {
-        return true;
-      }
-    }
-    return false;
-  }
+  bool intersects(const BitSet &other) const;
 
-  inline size_t size() 
+  inline size_t size() const
   {
     return bits.size() << 5;
   }
+
+  bool equals(const BitSet &other) const;
+
+  inline bool operator==(const BitSet &b) const  { return equals( b ); }
+  inline bool operator!=(const BitSet &b) const  { return !equals( b );  }
 
 private:
   
@@ -82,5 +68,7 @@ private:
   }
 
 };
+
+std::ostream& operator<<(std::ostream &out, const BitSet &a);
 
 #endif

@@ -50,7 +50,7 @@ public:
   {
     DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent<T>(componentId);
 
-    if (dynamic != NULL)
+    if (dynamic != nullptr)
     {
       out = dynamic->compute( this, out );
     }
@@ -69,7 +69,7 @@ public:
   {
     T* ptr = getSafe<T>(componentId);
 
-    bool set = (ptr != NULL);
+    bool set = (ptr != nullptr);
 
     if (set)
     {
@@ -82,8 +82,8 @@ public:
   template<typename T>
   inline T* getSafe(const size_t componentId) 
   {
-    const int offset = type->getComponentOffset(componentId);
-    return (offset == -1 ? NULL : components.getSafe<T>( offset ));
+    const int offset = type->getComponentOffsetSafe(componentId);
+    return (offset == -1 ? nullptr : components.getSafe<T>( offset ));
   }
 
   template<typename T>

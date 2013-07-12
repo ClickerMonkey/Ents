@@ -1,23 +1,23 @@
 #include <assert.h>
 #include <Entity.h>
 
+using namespace std;
+
 // Normal Components and Entity Type
 size_t RIGHT = EntityCore::newComponent<float>("right", 0.0f);
 size_t LEFT = EntityCore::newComponent<float>("left", 0.0f);
 size_t XAXIS = EntityCore::newEntityType({RIGHT, LEFT}, {}, View::NONE);
 
 // Dynamic Component Function 
-float& center(Entity *e, float &out)
+DynamicComponentFunction<float> CenterDynamicComponent([](Entity *e, float &out) -> float& 
 {
-  float l = e->get<float>(LEFT);
-  float r = e->get<float>(RIGHT);
-
-  return ( out = (l + r) * 0.5f );
-}
-DynamicComponentFunction<float> centerDynamicComponent(center);
+    float l = e->get<float>(LEFT);
+    float r = e->get<float>(RIGHT);
+    return ( out = (l + r) * 0.5f );
+});
 
 // Add to EntityCore
-size_t CENTER = EntityCore::newDynamicComponent<float>("center", &centerDynamicComponent);
+size_t CENTER = EntityCore::newDynamicComponent<float>("center", &CenterDynamicComponent);
 
 
 
@@ -55,7 +55,7 @@ int main()
   testSimple();
   testWithDefault();
 
-  cout << "SUCCESS" << endl;
+  cout << "ALL TESTS PASS" << endl;
 
   return 0;
 }

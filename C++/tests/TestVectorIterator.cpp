@@ -1,5 +1,7 @@
 #include <VectorIterator.h>
 
+using namespace std;
+
 struct Vector 
 {
    float x, y;
@@ -13,7 +15,7 @@ struct Vector
 template<typename T>
 bool FilterNone(const T* item) 
 {
-  return (item != NULL);
+  return (item != nullptr);
 }
 
 template<typename T>

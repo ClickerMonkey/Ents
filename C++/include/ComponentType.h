@@ -8,11 +8,11 @@ struct ComponentType
 
    const size_t id;
 
-   const char *name;
+   const std::string name;
    
    const AnyMemory defaultValue;
 
-   ComponentType(const size_t id, const char *name, const AnyMemory &defaultValue) 
+   ComponentType(const size_t id, const std::string name, const AnyMemory &defaultValue) 
     : id(id), name(name), defaultValue(defaultValue) 
    {
    }
@@ -20,6 +20,8 @@ struct ComponentType
    virtual ~ComponentType()
    {
    }
+
+   friend std::ostream& operator<<(std::ostream &out, const ComponentType &a);   
 
 };
 

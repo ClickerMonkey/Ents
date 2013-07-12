@@ -1,6 +1,8 @@
 #include <EntityCore.h>
 #include <Entity.h>
 
+using namespace std;
+
 struct Vector 
 {
    float x, y;

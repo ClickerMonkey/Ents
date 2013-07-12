@@ -43,7 +43,7 @@ struct DynamicComponentType : public ComponentType
 
    DynamicComponent<T> *dynamicComponent;
 
-   DynamicComponentType(const size_t id, const char *name, DynamicComponent<T> *dynamicComponent) 
+   DynamicComponentType(const size_t id, const std::string name, DynamicComponent<T> *dynamicComponent) 
     : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent)
    {
    }

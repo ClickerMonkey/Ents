@@ -2,10 +2,13 @@
 #include <EntityCore.h>
 #include <EntityTypeCustom.h>
 
+using namespace std;
+
 Entity::Entity()
-  : expired(false), visible(true), enabled(true)
+  : type(nullptr), expired(false), visible(true), enabled(true) 
 {
-  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, NULL, {}, {}, View::NONE, AnyMemory(), {}));
+  AnyMemory defaultComponents;
+  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, defaultComponents, {}));
 }
 
 Entity::Entity(const size_t entityTypeId) 
@@ -54,9 +57,9 @@ void Entity::setEntityType(EntityType* newType)
 {
   if (type != newType)
   {
-    if (type != NULL)
+    if (type != nullptr)
     {
-      type->removeInstance();  
+      type->removeInstance();
     }
     newType->addInstance();
   }
@@ -70,7 +73,7 @@ void Entity::draw( void *drawState )
   {
      View* view = EntityCore::getViewSafe( type->getView() );
 
-     if (view != NULL)
+     if (view != nullptr)
      {
         view->draw( this, drawState );
      }
@@ -85,7 +88,7 @@ void Entity::update( void *updateState )
 
     for (size_t i = 0; i < ids.size(); i++)
     {
-      if (controllers.get(i))
+      if (controllers.get(i, true))
       {
          Controller* controller = EntityCore::getController(ids[i]);
 

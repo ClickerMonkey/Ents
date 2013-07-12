@@ -6,8 +6,8 @@ FLAGS_LD = $(FLAGS_CXX)
 FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp
 INCLUDE = include/
-OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o
-DEPENDENCIES = $(OBJECTS) BitSet.o IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o View.o Controller.o
+OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o BitSet.o 
+DEPENDENCIES = $(OBJECTS) IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o View.o Controller.o
 
 
 # Compile and run Testing
@@ -15,14 +15,8 @@ all: $(DEPENDENCIES)
 	$(CXX) $(FLAGS_LIB) -o lib$(PROGRAM_NAME).so $(OBJECTS) -I$(INCLUDE)
 
 # Compiling Headers without Source Files
-BitSet.o: include/BitSet.h
-	$(CXX) $(FLAGS_CXX) -c include/BitSet.h -I$(INCLUDE)
-
 IdMap.o: include/IdMap.h
 	$(CXX) $(FLAGS_CXX) -c include/IdMap.h -I$(INCLUDE)
-
-ComponentType.o: include/ComponentType.h
-	$(CXX) $(FLAGS_CXX) -c include/ComponentType.h -I$(INCLUDE)
 
 VectorIterator.o: include/VectorIterator.h
 	$(CXX) $(FLAGS_CXX) -c include/VectorIterator.h -I$(INCLUDE)
@@ -37,8 +31,14 @@ View.o: include/View.h
 	$(CXX) $(FLAGS_CXX) -c include/View.h -I$(INCLUDE)
 
 # Compiling Source Files
+BitSet.o: lib/BitSet.cpp
+	$(CXX) $(FLAGS_CXX) -c lib/BitSet.cpp -I$(INCLUDE)
+
 AnyMemory.o: lib/AnyMemory.cpp
 	$(CXX) $(FLAGS_CXX) -c lib/AnyMemory.cpp -I$(INCLUDE)
+
+ComponentType.o: lib/ComponentType.h
+	$(CXX) $(FLAGS_CXX) -c lib/ComponentType.h -I$(INCLUDE)
 
 EntityCore.o: lib/EntityCore.cpp
 	$(CXX) $(FLAGS_CXX) -c lib/EntityCore.cpp -I$(INCLUDE)
@@ -57,15 +57,17 @@ EntityList.o: lib/EntityList.cpp
 
 # Compiling Tests
 
-TestEntity.o: $(DEPENDENCIES)
+TestEntity.o-fast: tests/TestEntity.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestEntity.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestEntity $(OBJECTS) TestEntity.o -I$(INCLUDE)
 	./TestEntity
+TestEntity.o: $(DEPENDENCIES) TestEntity.o-fast
 
-TestBitSet.o: $(DEPENDENCIES)
+TestBitSet.o-fast: tests/TestBitSet.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestBitSet.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestBitSet $(OBJECTS) TestBitSet.o -I$(INCLUDE)
 	./TestBitSet
+TestBitSet.o: $(DEPENDENCIES) TestBitSet.o-fast
 
 TestAnyMemory.o-fast:
 	$(CXX) $(FLAGS_CXX) -c tests/TestAnyMemory.cpp -I$(INCLUDE)
@@ -73,16 +75,47 @@ TestAnyMemory.o-fast:
 	./TestAnyMemory
 TestAnyMemory.o: $(DEPENDENCIES) TestAnyMemory.o-fast
 	
-TestVectorIterator.o: $(DEPENDENCIES) tests/TestVectorIterator.cpp
+TestVectorIterator.o-fast: tests/TestVectorIterator.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestVectorIterator.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestVectorIterator $(OBJECTS) TestVectorIterator.o -I$(INCLUDE)
 	./TestVectorIterator
+TestVectorIterator.o: $(DEPENDENCIES) TestVectorIterator.o-fast
 
 TestDynamicComponent.o-fast: tests/TestDynamicComponent.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestDynamicComponent.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestDynamicComponent $(OBJECTS) TestDynamicComponent.o -I$(INCLUDE)
 	./TestDynamicComponent
 TestDynamicComponent.o: $(DEPENDENCIES) TestDynamicComponent.o-fast
+
+TestComponentType.o-fast: tests/TestComponentType.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestComponentType.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestComponentType $(OBJECTS) TestComponentType.o -I$(INCLUDE)
+	./TestComponentType
+TestComponentType.o: $(DEPENDENCIES) TestComponentType.o-fast
+
+TestController.o-fast: tests/TestController.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestController.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestController $(OBJECTS) TestController.o -I$(INCLUDE)
+	./TestController
+TestController.o: $(DEPENDENCIES) TestController.o-fast
+
+TestView.o-fast: tests/TestView.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestView.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestView $(OBJECTS) TestView.o -I$(INCLUDE)
+	./TestView
+TestView.o: $(DEPENDENCIES) TestView.o-fast
+
+TestIdMap.o-fast: tests/TestIdMap.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestIdMap.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestIdMap $(OBJECTS) TestIdMap.o -I$(INCLUDE)
+	./TestIdMap
+TestIdMap.o: $(DEPENDENCIES) TestIdMap.o-fast
+
+TestEntity2.o-fast: tests/TestEntity2.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestEntity2.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestEntity2 $(OBJECTS) TestEntity2.o -I$(INCLUDE)
+	./TestEntity2
+TestEntity2.o: $(DEPENDENCIES) TestEntity2.o-fast
 
 # Running
 run:
