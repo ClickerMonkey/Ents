@@ -67,15 +67,22 @@ TestBitSet.o: $(DEPENDENCIES)
 	$(CXX) $(FLAGS_LD) -o TestBitSet $(OBJECTS) TestBitSet.o -I$(INCLUDE)
 	./TestBitSet
 
-TestAnyMemory.o: $(DEPENDENCIES)
+TestAnyMemory.o-fast:
 	$(CXX) $(FLAGS_CXX) -c tests/TestAnyMemory.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestAnyMemory $(OBJECTS) TestAnyMemory.o -I$(INCLUDE)
 	./TestAnyMemory
-
+TestAnyMemory.o: $(DEPENDENCIES) TestAnyMemory.o-fast
+	
 TestVectorIterator.o: $(DEPENDENCIES) tests/TestVectorIterator.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestVectorIterator.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestVectorIterator $(OBJECTS) TestVectorIterator.o -I$(INCLUDE)
 	./TestVectorIterator
+
+TestDynamicComponent.o-fast: tests/TestDynamicComponent.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestDynamicComponent.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestDynamicComponent $(OBJECTS) TestDynamicComponent.o -I$(INCLUDE)
+	./TestDynamicComponent
+TestDynamicComponent.o: $(DEPENDENCIES) TestDynamicComponent.o-fast
 
 # Running
 run:

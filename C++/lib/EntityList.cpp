@@ -42,7 +42,7 @@ void EntityList::clean()
 
 	for (size_t i = 0; i < entities.size(); i++)
 	{
-		Entity *e = entities[i];
+		Entity *e = entities.at(i);
 
 		if ( e->isExpired() )
 		{

@@ -20,7 +20,7 @@ public:
 
   inline static EntityType* getEntityType(const size_t entityTypeId) 
   {
-    return entityTypes[entityTypeId];
+    return entityTypes.at(entityTypeId);
   }
 
   inline static bool hasEntityType(const size_t entityTypeId) 
@@ -42,7 +42,7 @@ public:
 
   inline static ComponentType* getComponent(const size_t componentId) 
   {
-    return componentTypes[componentId];
+    return componentTypes.at(componentId);
   }
 
   inline static bool hasComponent(const size_t componentId) 
@@ -64,7 +64,7 @@ public:
   }
 
   template<typename T>
-  static size_t newDynamicComponent(const char *name, DynamicComponent<T> &dynamicComponent)
+  static size_t newDynamicComponent(const char *name, DynamicComponent<T> *dynamicComponent)
   {
     size_t id = componentTypes.size();
     componentTypes.push_back(new DynamicComponentType<T>(id, name, dynamicComponent));
@@ -79,7 +79,16 @@ public:
       return NULL;
     }
 
-    return dynamic_cast<DynamicComponent<T>*>( componentTypes[componentId] );
+    ComponentType *componentType = componentTypes.at(componentId);
+
+    DynamicComponentType<T> *dynamicComponentType = dynamic_cast<DynamicComponentType<T>*>( componentType );
+
+    if ( dynamicComponentType == NULL )
+    {
+      return NULL;
+    }
+
+    return dynamicComponentType->dynamicComponent;
   }
 
   static vector<View*> getViews() 
@@ -89,12 +98,12 @@ public:
 
   inline static View* getView(const size_t viewId) 
   {
-    return views[viewId];
+    return views.at(viewId);
   }
 
   inline static bool hasView(const size_t viewId) 
   {
-    return (viewId < views.size() && views[viewId] != NULL);
+    return (viewId < views.size() && views.at(viewId) != NULL);
   }
 
   inline static View* getViewSafe(const size_t viewId) 
@@ -121,7 +130,7 @@ public:
 
   inline static Controller* getController(const size_t controllerId) 
   {
-    return controllers[controllerId];
+    return controllers.at(controllerId);
   }
 
   inline static bool hasController(const size_t controllerId) 

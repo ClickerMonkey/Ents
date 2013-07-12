@@ -41,9 +41,9 @@ template<typename T>
 struct DynamicComponentType : public ComponentType 
 {
 
-   const DynamicComponent<T> dynamicComponent;
+   DynamicComponent<T> *dynamicComponent;
 
-   DynamicComponentType(const size_t id, const char *name, DynamicComponent<T> &dynamicComponent) 
+   DynamicComponentType(const size_t id, const char *name, DynamicComponent<T> *dynamicComponent) 
     : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent)
    {
    }

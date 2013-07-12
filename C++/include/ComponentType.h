@@ -17,6 +17,10 @@ struct ComponentType
    {
    }
 
+   virtual ~ComponentType()
+   {
+   }
+
 };
 
 #endif

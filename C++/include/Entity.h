@@ -59,6 +59,27 @@ public:
   }
 
   template<typename T>
+  inline T& getTry(const size_t componentId, T &defaultIfMissing)
+  {
+    return has(componentId) ? get<T>(componentId) : defaultIfMissing;
+  }
+
+  template<typename T>
+  inline bool getAndSet(const size_t componentId, T *target)
+  {
+    T* ptr = getSafe<T>(componentId);
+
+    bool set = (ptr != NULL);
+
+    if (set)
+    {
+      *target = *ptr;
+    }
+
+    return set;
+  }
+
+  template<typename T>
   inline T* getSafe(const size_t componentId) 
   {
     const int offset = type->getComponentOffset(componentId);
