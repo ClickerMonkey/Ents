@@ -57,9 +57,9 @@ public:
 		return VectorIterator<Entity*, F>(&entities, filterFunction);
 	}
 
- 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(initializer_list<size_t> componentIds);
+ 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(vector<size_t> componentIds);
 
-	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(initializer_list<size_t> controllerIds);
+	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(vector<size_t> controllerIds);
 
 	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, AnyMemory &value);
 
@@ -79,7 +79,7 @@ public:
 
 	inline Entity* operator[](const size_t index)
 	{
-		return ( index < entities.size() ? entities.at(index) : NULL );
+		return ( index < entities.size() ? entities.at(index) : nullptr );
 	}
 
 	inline EntityList& operator+=(Entity *e)

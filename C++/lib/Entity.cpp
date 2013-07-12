@@ -3,21 +3,18 @@
 #include <EntityTypeCustom.h>
 
 Entity::Entity()
-  : expired(false), visible(true), enabled(true)
 {
-  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, NULL, {}, {}, View::NONE, AnyMemory(), {}));
+  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, AnyMemory(), {}));
 }
 
-Entity::Entity(const size_t entityTypeId) 
-  : expired(false), visible(true), enabled(true)
+Entity::Entity(size_t entityTypeId) 
 {
   type = EntityCore::getEntityType( entityTypeId );
   type->setDefaultComponents(components);
   type->addInstance();
 }
 
-Entity::Entity(EntityType *entityType) 
-  : expired(false), visible(true), enabled(true)
+Entity::Entity(EntityType* entityType) 
 {
   type = entityType;
   type->setDefaultComponents(components);
@@ -43,7 +40,6 @@ bool Entity::add(const size_t componentId)
 }
 
 Entity::Entity(EntityType *entityType, AnyMemory defaultComponents) 
-  : expired(false), visible(true), enabled(true)
 {
   type = entityType;
   type->addInstance();
@@ -54,10 +50,7 @@ void Entity::setEntityType(EntityType* newType)
 {
   if (type != newType)
   {
-    if (type != NULL)
-    {
-      type->removeInstance();  
-    }
+    if (type != nullptr) type->removeInstance();  
     newType->addInstance();
   }
 
@@ -66,49 +59,42 @@ void Entity::setEntityType(EntityType* newType)
 
 void Entity::draw( void *drawState )
 {
-  if ( visible )
-  {
-     View* view = EntityCore::getViewSafe( type->getView() );
-
-     if (view != NULL)
-     {
-        view->draw( this, drawState );
-     }
-  }
+  // Try to avoid nesting
+  if ( !visible ) return;
+  
+  View* view = EntityCore::getViewSafe( type->getView() );
+  if (view != nullptr) view->draw( this, drawState );
 }
 
 void Entity::update( void *updateState )
 {
-  if ( enabled )
+  if ( !enabled ) return;
+
+  vector<size_t> ids = type->getControllers().getIds();
+
+  for (size_t i = 0; i < ids.size(); i++)
   {
-    vector<size_t> ids = type->getControllers().getIds();
-
-    for (size_t i = 0; i < ids.size(); i++)
-    {
-      if (controllers.get(i))
-      {
-         Controller* controller = EntityCore::getController(ids[i]);
-
-         controller->control( this, updateState );
-      }
-    }
+    if (!controllers.test(i)) continue;
+    Controller* controller = EntityCore::getController(ids[i]);
+    controller->control( this, updateState );
   }
+  
 }
 
-void Entity::addController( const size_t controllerId )
+void Entity::addController( size_t controllerId )
 {
-  if ( !type->hasController(controllerId) )
-  {
-    setEntityType( type->addCustomController(controllerId) );
-  }
+  if ( type->hasController(controllerId) ) return;
+  
+  setEntityType( type->addCustomController(controllerId) );
+  
 }
 
-void Entity::setView( const size_t viewId )
+void Entity::setView( size_t viewId )
 {
-  if ( type->getView() != viewId )
-  {
-    setEntityType( type->setCustomView(viewId) );
-  }
+  if ( !type->getView() != viewId ) return;
+  
+  setEntityType( type->setCustomView(viewId) );
+  
 }
 
 Entity* Entity::clone()

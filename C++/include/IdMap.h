@@ -15,12 +15,12 @@ public:
    IdMap(const vector<size_t> &ids) : ids(ids) 
    {
       map = buildMap(ids);
-      bitset.setFromIndices(ids);
+      for(unsigned int i{0}; i < ids.size(); ++i) bitset.set(i, ids[i]);
    }
 
    IdMap(initializer_list<size_t> indices) 
    {
-      for (auto i : indices) add(i);
+      for (const auto& i : indices) add(i);
    }
 
    inline bool has(const size_t id) const 

@@ -1,7 +1,9 @@
 PROGRAM_NAME = EntityCore
 CXX = g++
 LIBS = 
-FLAGS_CXX = -O -Wall -Wextra -g -std=c++0x -fPIC -O0
+# Consider updating to a more modern compiler that allows -std=c++11
+# G++ 4.8.1 and clang++ 3.2 are the best around, but also consider going for G*+ 4.9 and clang++ 3.4
+FLAGS_CXX = -Wall -Wextra -g -std=c++11 -fPIC -O3 -pedantic
 FLAGS_LD = $(FLAGS_CXX) 
 FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp

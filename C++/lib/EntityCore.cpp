@@ -13,7 +13,7 @@ size_t EntityCore::newEntityType(IdMap components, IdMap controllers, size_t vie
     offsets.push_back( defaultComponents.append( type->defaultValue ) );
   }
 
-  entityTypes.push_back(new EntityType(id, NULL, components, controllers, viewId, defaultComponents, offsets));
+  entityTypes.push_back(new EntityType(id, nullptr, components, controllers, viewId, defaultComponents, offsets));
 
   return id;
 }

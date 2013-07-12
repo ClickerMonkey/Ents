@@ -5,32 +5,23 @@ class Entity;
 
 class Controller 
 {
-public:
-
-  virtual void control(Entity *e, void *updateState) = 0;
-
+   public:
+      virtual void control(Entity* e, void *updateState) = 0;
 };
 
-typedef void (*ControllerFunctionPointer)(Entity *e, void *updateState);
+// Using is much better than typedef
+using ControllerFunctionPointer = void(*)(Entity* e, void* updateState);
 
 class ControllerFunction : public Controller
 {
-private:
-   
-   const ControllerFunctionPointer function;
+   private:
+      const ControllerFunctionPointer& function;
 
-public:
+   public:
+      // Do not use same names for arguments and memebers
+      ControllerFunction(ControllerFunctionPointer func) : function(func) { }
 
-   ControllerFunction(ControllerFunctionPointer function) 
-      : function(function)
-   {
-   }
-
-   void control(Entity *e, void *updateState)
-   {
-      function(e, updateState);
-   }
-
+      void control(Entity* e, void* updateState) { function(e, updateState); }
 };
 
 #endif
