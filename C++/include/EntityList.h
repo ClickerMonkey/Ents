@@ -79,7 +79,7 @@ public:
 
 	inline Entity* operator[](const size_t index)
 	{
-		return ( index < entities.size() ? entities.at(index) : NULL );
+		return ( index < entities.size() ? entities.at(index) : nullptr );
 	}
 
 	inline EntityList& operator+=(Entity *e)

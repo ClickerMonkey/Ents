@@ -13,7 +13,7 @@ struct Vector
 template<typename T>
 bool FilterNone(const T* item) 
 {
-  return (item != NULL);
+  return (item != nullptr);
 }
 
 template<typename T>

@@ -99,7 +99,7 @@ void EntityList::internalAdd( Entity *e )
 
 bool FilterNone( Entity *e )
 {
-	return (e != NULL);
+	return (e != nullptr);
 }
 
 VectorIteratorPointer<Entity*, EntityFilter> EntityList::begin()

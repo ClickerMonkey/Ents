@@ -86,12 +86,12 @@ void testSafe()
 
    int *x = am.getSafe<int>(0);
 
-   assert( x != NULL );
+   assert( x != nullptr );
    assert( *x == 345 );
 
    int *y = am.getSafe<int>(1);
 
-   assert( y == NULL );
+   assert( y == nullptr );
 }
 
 int main()

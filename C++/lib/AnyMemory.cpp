@@ -1,21 +1,21 @@
 #include <AnyMemory.h>
 
-AnyMemory::AnyMemory(const AnyMemory &copy) : size(0), data(NULL) 
+AnyMemory::AnyMemory(const AnyMemory &copy) : size(0), data(nullptr) 
 {
   setSize(copy.size);
   memcpy(data, copy.data, copy.size);
 }
 
-AnyMemory::AnyMemory() : size(0), data(NULL) 
+AnyMemory::AnyMemory() : size(0), data(nullptr) 
 {
 }
 
 AnyMemory::~AnyMemory() 
 {
-  if (data != NULL) 
+  if (data != nullptr) 
   {
     free(data);
-    data = NULL;
+    data = nullptr;
   }
 }
 

@@ -30,7 +30,7 @@ public:
 
   inline static EntityType* getEntityTypeSafe(const size_t entityTypeId) 
   {
-    return hasEntityType(entityTypeId) ? getEntityType(entityTypeId) : NULL;
+    return hasEntityType(entityTypeId) ? getEntityType(entityTypeId) : nullptr;
   }
 
   static size_t newEntityType(IdMap components, IdMap controllers, size_t viewId);
@@ -52,7 +52,7 @@ public:
 
   inline static ComponentType* getComponentSafe(const size_t componentId) 
   {
-    return hasComponent(componentId) ? getComponent(componentId) : NULL;
+    return hasComponent(componentId) ? getComponent(componentId) : nullptr;
   }
 
   template<typename T>
@@ -76,16 +76,16 @@ public:
   {
     if (!hasComponent(componentId))
     {
-      return NULL;
+      return nullptr;
     }
 
     ComponentType *componentType = componentTypes.at(componentId);
 
     DynamicComponentType<T> *dynamicComponentType = dynamic_cast<DynamicComponentType<T>*>( componentType );
 
-    if ( dynamicComponentType == NULL )
+    if ( dynamicComponentType == nullptr )
     {
-      return NULL;
+      return nullptr;
     }
 
     return dynamicComponentType->dynamicComponent;
@@ -103,19 +103,19 @@ public:
 
   inline static bool hasView(const size_t viewId) 
   {
-    return (viewId < views.size() && views.at(viewId) != NULL);
+    return (viewId < views.size() && views.at(viewId) != nullptr);
   }
 
   inline static View* getViewSafe(const size_t viewId) 
   {
-    return hasView(viewId) ? getView(viewId) : NULL;
+    return hasView(viewId) ? getView(viewId) : nullptr;
   }
 
   static size_t addView(View *view);
 
   static size_t newView() 
   {
-    return addView(NULL);
+    return addView(nullptr);
   }
 
   static void setView(const size_t viewId, View* view) 
@@ -140,7 +140,7 @@ public:
 
   inline static Controller* getControllerSafe(const size_t controllerId) 
   {
-    return hasController(controllerId) ? getController(controllerId) : NULL;
+    return hasController(controllerId) ? getController(controllerId) : nullptr;
   }
 
   static size_t addController(Controller *controller);
