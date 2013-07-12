@@ -5,48 +5,29 @@
 
 class Entity;
 
-template<typename T>
-class DynamicComponent 
+// Use structs if there are no private members
+template<typename T> struct DynamicComponent 
 {
-public:
-
    virtual T& compute(Entity *e, T &out) = 0;
-
 };
 
-template<typename T>
-class DynamicComponentFunction : public DynamicComponent<T>
+template<typename T> class DynamicComponentFunction : public DynamicComponent<T>
 {
-private:
-   
-   typedef T& (*DynamicComponentFunctionPointer)(Entity *e, T &out);
+   private:
+      typedef T& (*DynamicComponentFunctionPointer)(Entity *e, T &out);
+      DynamicComponentFunctionPointer function;
 
-   DynamicComponentFunctionPointer function;
-
-public:
-
-   DynamicComponentFunction(DynamicComponentFunctionPointer function)  
-      : function(function)
-   {
-   }
-
-   T& compute(Entity *e, T &out)
-   {
-      return function(e, out);
-   }
-   
+   public:
+      DynamicComponentFunction(DynamicComponentFunctionPointer func) : function(func) { }
+      T& compute(Entity* e, T& out) { return function(e, out); }
 };
 
-template<typename T>
-struct DynamicComponentType : public ComponentType 
+template<typename T> struct DynamicComponentType : public ComponentType 
 {
-
    DynamicComponent<T> *dynamicComponent;
 
    DynamicComponentType(const size_t id, const char *name, DynamicComponent<T> *dynamicComponent) 
-    : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent)
-   {
-   }
+    : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent) { }
 
 };
 

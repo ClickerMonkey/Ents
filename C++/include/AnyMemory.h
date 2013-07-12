@@ -9,140 +9,61 @@ struct AnyMemory
     size_t size;
     char* data;
 
-public:
-  AnyMemory();
+  public:
+    AnyMemory();
 
-  template<typename T> AnyMemory(const T &x) : size(0), data(nullptr) { add<T>(x); }
+    // in C++11 it's not a good idea to use NULL, use nullptr
+    template<typename T> AnyMemory(const T &x) : size(0), data(nullptr) { add<T>(x); }
 
-  AnyMemory(const AnyMemory &copy);
-  ~AnyMemory();
+    AnyMemory(const AnyMemory &copy);
+    ~AnyMemory();
 
-  inline size_t getSize() const 
-  {
-    return size;
-  }
+    inline size_t getSize() const { return size; }
+    inline char* getData() const { return data; }
 
-  inline char* getData() 
-  {
-    return data;
-  }
+    // if you are passing parameters by value there's no sense in using const
+    inline void setSize(size_t newSize) { data = (char*)realloc(data, size = newSize); }
+    inline void expand(size_t bytes)    { setSize(size + bytes); }
 
-  inline void setSize(const size_t newSize) 
-  {
-    data = (char*)realloc(data, size = newSize);
-  }
+    size_t append(const AnyMemory &copy);
 
-  inline void expand(const size_t bytes) 
-  {
-    setSize(size + bytes);
-  }
+    template<typename T> inline bool exists(size_t offset) const    { return (offset + sizeof(T) <= size); }
+    template<typename T> inline T* getPointer(size_t offset) const  { return static_cast<T*>(data + offset); } // Don't use C-style casts as they are ambiguous
+    template<typename T> inline T* getSafe(size_t offset) const     { return exists<T>(offset) ? getPointer<T>(offset) : nullptr; }
 
-  size_t append(const AnyMemory &copy);
+    template<typename T> inline T& get(size_t offset)  { return *getPointer<T>(offset); }
+    template<typename T> inline void set(size_t offset, const T& item) { *getPointer<T>(offset) = item; }
 
-  template<typename T>
-  inline bool exists(const size_t offset) const 
-  {
-    return (offset + sizeof(T) <= size);
-  }
-
-  template<typename T>
-  inline T* getPointer(const size_t offset) 
-  {
-    return (T*)(data + offset);
-  }
-
-  template<typename T>
-  inline T* getSafe(const size_t offset) 
-  {
-    return exists<T>(offset) ? getPointer<T>(offset) : NULL;
-  }
-
-  template<typename T>
-  inline T& get(const size_t offset) 
-  {
-    return *getPointer<T>(offset);
-  }
-
-  template<typename T>
-  inline void set(const size_t offset, const T &item) 
-  {
-    *getPointer<T>(offset) = item;
-  }
-
-  template<typename T>
-  inline bool setSafe(const size_t offset, const T &item) 
-  {
-    T* ptr = getSafe<T>(offset);
-    if (ptr != NULL) {
-      *ptr = item;
+    template<typename T> inline bool setSafe(size_t offset, const T& item) 
+    {
+      // I like using brace initaliziation whenever possible
+      T* ptr{getSafe<T>(offset)};
+      if(ptr != nullptr) { *ptr = item; return true; }
+      return false;
     }
-    return (ptr != NULL);
-  }
+    template<typename T> inline size_t add(const T& item) 
+    {
+      const size_t offset{size};
+      setSize(size + sizeof(T));
+      set<T>(offset, item);
+      return offset;
+    }
 
-  template<typename T>
-  inline size_t add(const T &item) 
-  {
-    const size_t offset = size;
-    setSize(size + sizeof(T));
-    set<T>(offset, item);
-    return offset;
-  }
+    bool equals(const AnyMemory& other) const;
+    int hashCode() const;
+    int compareTo(const AnyMemory& other) const;
 
-  bool equals(const AnyMemory &other) const;
+    template<typename T> inline AnyMemory& operator+=(const T& item) { add<T>(item); return *this; }
+    template<typename T> inline AnyMemory& operator<<(const T& item) { add<T>(item); return *this; }
 
-  int hashCode() const;
+    inline bool operator==(const AnyMemory& b) const  { return equals(b); }
+    inline bool operator!=(const AnyMemory& b) const  { return !equals(b); }
+    inline bool operator<(const AnyMemory& b) const   { return compareTo(b) < 0; }
+    inline bool operator>(const AnyMemory& b) const   { return compareTo(b) > 0; }
+    inline bool operator<=(const AnyMemory& b) const  { return compareTo(b) <= 0; }
+    inline bool operator>=(const AnyMemory& b) const  { return compareTo(b) >= 0; }
 
-  int compareTo(const AnyMemory &other) const;
-
-  template<typename T>
-  inline AnyMemory& operator+=(const T &item) 
-  {
-    add<T>(item);
-    return *this;
-  }
-
-  template<typename T>
-  inline AnyMemory& operator<<(const T &item) 
-  {
-    add<T>(item);
-    return *this;
-  }
-
-  inline bool operator==(const AnyMemory &b) const
-  {
-    return equals( b );
-  }
-
-  inline bool operator!=(const AnyMemory &b) const
-  {
-    return !equals( b );
-  }
-
-  inline bool operator<(const AnyMemory &b) const
-  {
-    return compareTo( b ) < 0;
-  }
-
-  inline bool operator>(const AnyMemory &b) const
-  {
-    return compareTo( b ) > 0;
-  }
-
-  inline bool operator<=(const AnyMemory &b) const
-  {
-    return compareTo( b ) <= 0;
-  }
-
-  inline bool operator>=(const AnyMemory &b) const
-  {
-    return compareTo( b ) >= 0;
-  }
-
-  inline char* operator[](const size_t index)
-  {
-    return ( index < size ? (data + index) : NULL );
-  }
-
+    inline char* operator[](size_t index) const { return (index < size ? (data + index) : nullptr); }
 };
 
 #endif

@@ -20,7 +20,7 @@ public:
 
    IdMap(initializer_list<size_t> indices) 
    {
-      for (auto i : indices) add(i);
+      for (const auto& i : indices) add(i);
    }
 
    inline bool has(const size_t id) const 

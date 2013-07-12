@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <vector>
 
-using namespace std;
+using namespace std; // very bad idea, if some user includes your library headers he will automatically include this too!
 
 #endif
