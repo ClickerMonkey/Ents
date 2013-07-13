@@ -21,6 +21,12 @@ Entity::Entity(EntityType *m_entityType)
   type->setEntityDefaultComponents(components);
 }
 
+Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
+{
+  setEntityType( new EntityTypeCustom(m_components, m_controllers, m_viewId) );
+  type->setEntityDefaultComponents(components);
+}
+
 Entity::Entity(EntityType *m_entityType, AnyMemory m_defaultComponents)
 {
   setEntityType( m_entityType );
@@ -34,40 +40,32 @@ Entity::~Entity()
 
 bool Entity::add(const size_t componentId) 
 {
-  bool addable = !type->hasComponent(componentId);
+  bool missing = !type->hasComponent(componentId);
 
-  if (addable) 
-  {
+  if (missing) {
     setEntityType( type->addCustomComponent(componentId) );
     components.append(EntityCore::getComponent(componentId)->defaultValue);
   }
 
-  return addable;
+  return missing;
 }
 
 void Entity::setEntityType(EntityType* newType)
 {
-  if (type != newType)
-  {
-    if (type != nullptr) 
-    {
+  if (type != newType) {
+    if (type != nullptr) {
       type->removeInstance();
     }
-
-    newType->addInstance();
+    (type = newType)->addInstance();
   }
-
-  type = newType;
 }
 
 void Entity::draw( void *drawState )
 {
-  if ( visible )
-  {
+  if (visible) {
      View* view = EntityCore::getViewSafe( type->getView() );
 
-     if (view != nullptr)
-     {
+     if (view != nullptr && has(view->required)) {
         view->draw( this, drawState );
      }
   }
@@ -75,17 +73,15 @@ void Entity::draw( void *drawState )
 
 void Entity::update( void *updateState )
 {
-  if ( enabled )
-  {
+  if (enabled) {
     vector<size_t> ids = type->getControllers().getIds();
 
-    for (size_t i = 0; i < ids.size(); i++)
-    {
-      if (controllers.get(i, true))
-      {
+    for (size_t i = 0; i < ids.size(); i++) {
+      if (controllers.get(i, true)) {
          Controller* controller = EntityCore::getController(ids[i]);
-
-         controller->control( this, updateState );
+         if (controller != nullptr && has(controller->required)) {
+            controller->control( this, updateState );
+         }
       }
     }
   }
@@ -93,16 +89,14 @@ void Entity::update( void *updateState )
 
 void Entity::addController( const size_t controllerId )
 {
-  if ( !type->hasController(controllerId) )
-  {
+  if (!type->hasController(controllerId)) {
     setEntityType( type->addCustomController(controllerId) );
   }
 }
 
 void Entity::setView( const size_t viewId )
 {
-  if ( type->getView() != viewId )
-  {
+  if (type->getView() != viewId) {
     setEntityType( type->setCustomView(viewId) );
   }
 }
@@ -131,4 +125,48 @@ int Entity::compareTo(const Entity &other) const
   int d = (type->getId() - other.type->getId());
 
   return ( d != 0 ? d : components.compareTo( other.components ) );
+}
+
+std::ostream& operator<<(std::ostream &out, Entity &e)
+{
+  const size_t type = e.type->getId();
+
+  out << "{";
+
+  if (type == EntityType::CUSTOM) {
+    out << "type:custom, "; 
+  } else {
+    out << "type:" << type << ", ";
+  }
+  
+  out << "expired:" << (e.expired ? "true" : "false") << ", ";
+  out << "visible:" << (e.visible ? "true" : "false") << ", ";
+  out << "enabled:" << (e.enabled ? "true" : "false") << ", ";
+
+  IdMap components = e.type->getComponents();
+
+  for (size_t i = 0; i < components.size(); i++) {
+    size_t componentId = components.getId(i);
+    size_t offset = components.getIndex(componentId);
+
+    ComponentType *componentType = EntityCore::getComponent(componentId);
+    AnyMemory value = e.components.sub(offset, componentType->defaultValue.getSize());
+
+    out << componentType->name << ":" << value << ", ";
+  }
+
+  out << "controllers:{";
+
+  IdMap controllers = e.type->getControllers();
+
+  for (size_t i = 0; i < controllers.size(); i++) {
+    if (i > 0) {
+      out << ",";
+    }
+    out << controllers.getId(i);
+  }
+
+  out << "}}";
+
+  return out;
 }

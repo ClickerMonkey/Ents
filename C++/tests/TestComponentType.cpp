@@ -5,18 +5,22 @@ using namespace std;
 
 void testToString()
 {
-	cout << __func__ << endl;
+	cout << "Running " << __func__ << "() ... ";
 
 	ComponentType ct(0, "position", AnyMemory(5.4f));
 
 	cout << ct << endl;
+
+  	cout << "Pass" << endl;
 }
 
 int main()
 {
+	cout << "Starting " << __FILE__ << "..." << endl;
+
 	testToString();
 
-  	cout << "ALL TESTS PASS" << endl;
+  	cout << __FILE__ << " has ran successfully." << endl;
 
 	return 0;
 }

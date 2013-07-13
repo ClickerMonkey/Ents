@@ -14,6 +14,8 @@ public:
 
    EntityTypeCustom(const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents);
 
+   EntityTypeCustom(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId);
+
    bool isCustom();
 
    EntityType* addCustomComponent( const size_t componentId );

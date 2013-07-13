@@ -69,8 +69,7 @@ public:
   template<typename T>
   static DynamicComponent<T>* getDynamicComponent(const size_t componentId)
   {
-    if (!hasComponent(componentId))
-    {
+    if (!hasComponent(componentId)) {
       return nullptr;
     }
 
@@ -78,8 +77,7 @@ public:
 
     DynamicComponentType<T> *dynamicComponentType = dynamic_cast<DynamicComponentType<T>*>( componentType );
 
-    if ( dynamicComponentType == nullptr)
-    {
+    if (dynamicComponentType == nullptr) {
       return nullptr;
     }
 

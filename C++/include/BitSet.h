@@ -57,6 +57,8 @@ public:
   inline bool operator==(const BitSet &b) const  { return equals( b ); }
   inline bool operator!=(const BitSet &b) const  { return !equals( b );  }
 
+  friend std::ostream& operator<<(std::ostream &out, const BitSet &a);
+
 private:
   
   inline size_t indexOf(const size_t bitIndex) const 
@@ -72,7 +74,5 @@ private:
   int getMax() const;
 
 };
-
-std::ostream& operator<<(std::ostream &out, const BitSet &a);
 
 #endif

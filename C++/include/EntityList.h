@@ -35,8 +35,7 @@ public:
 	template<typename Iterator>
 	void add( Iterator first, Iterator end )
 	{
-		for (Iterator i = first; i != end; i++)
-		{
+		for (Iterator i = first; i != end; i++) {
 			add(i);
 		}
 	}

@@ -9,48 +9,56 @@ using namespace std;
 
 void testValueConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
 
    AnyMemory am(3.0f);
 
    assert( am.getSize() == 4 );
    assert( am.get<float>(0) == 3.0f );
+
+   cout << "Pass" << endl;
 }
 
 void testDefaultConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
 
    AnyMemory am;
 
    assert( am.getSize() == 0 );
+
+   cout << "Pass" << endl;
 }
 
 void testCopyConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
 
    AnyMemory am1(3.0f);
    AnyMemory am2(am1);
 
    assert( am2.getSize() == 4 );
    assert( am2.get<float>(0) == 3.0f );
+
+   cout << "Pass" << endl;
 }
 
 void testInitializerListConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 4, 8};
 
    assert( am.getSize() == 16 );
    assert( am.get<int>(0) == 1 );
    assert( am.get<int>(4) == 2 );
+
+   cout << "Pass" << endl;
 }
 
 void testAdd()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am;
 
@@ -60,11 +68,13 @@ void testAdd()
    assert( am.getSize() == 8 );
    assert( am.get<int>(0) == 1 );
    assert( am.get<int>(4) == 2 );
+
+   cout << "Pass" << endl;
 }
 
 void testInputOperator()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am;
    am << 345 << 4.0f;
@@ -72,11 +82,13 @@ void testInputOperator()
    assert( am.getSize() == 8 );
    assert( am.get<int>(0) == 345 );
    assert( am.get<float>(4) == 4.0f );
+
+   cout << "Pass" << endl;
 }
 
 void testSetSize()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am;
 
@@ -85,11 +97,13 @@ void testSetSize()
    am.setSize( 1024 );
 
    assert( am.getSize() == 1024 );
+
+   cout << "Pass" << endl;
 }
 
 void testExpand()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am;
 
@@ -102,11 +116,13 @@ void testExpand()
    am.expand( 4 );
 
    assert( am.getSize() == 8 );   
+
+   cout << "Pass" << endl;
 }
 
 void testExists()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am;
 
@@ -128,11 +144,13 @@ void testExists()
 
    assert( am.exists<short>(6) );
    assert( !am.exists<short>(7) );
+
+   cout << "Pass" << endl;
 }
 
 void testGetSafe()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am(345);
 
@@ -144,11 +162,13 @@ void testGetSafe()
    int *y = am.getSafe<int>(1);
 
    assert( y == nullptr );
+
+   cout << "Pass" << endl;
 }
 
 void testSetSafe()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2};
 
@@ -158,11 +178,13 @@ void testSetSafe()
 
    assert( am.get<int>(0) == 4 );
    assert( am.get<int>(4) == 8 );
+
+   cout << "Pass" << endl;
 }
 
 void testPointer()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am(345);
 
@@ -174,20 +196,24 @@ void testPointer()
    *x = 698;
 
    assert( am.get<int>(0) == 698 );
+
+   cout << "Pass" << endl;
 }
 
 void testToString()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am(345);
 
-   cout << am << endl;
+   cout << am << " ";
+
+   cout << "Pass" << endl;
 }
 
 void testAppend()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am1(3.0f);
    AnyMemory am2(345);
@@ -201,11 +227,27 @@ void testAppend()
    assert( am4.get<float>(0) == 3.0f );
    assert( am4.get<int>(4) == 345 );
    assert( am4.get<bool>(8) == true );
+
+   cout << "Pass" << endl;
+}
+
+void testSub()
+{
+   cout << "Running " << __func__ << "() ... ";
+   
+   AnyMemory am1 = {1, 2, 4, 8};
+   AnyMemory am2 = am1.sub(4, 8);
+
+   assert( am2.getSize() == 8 );
+   assert( am2.get<int>(0) == 2 );
+   assert( am2.get<int>(4) == 4 );
+
+   cout << "Pass" << endl;
 }
 
 void testGetAligned()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 4, 8};
 
@@ -213,11 +255,13 @@ void testGetAligned()
    assert( am.getAligned<int>(1) == 2 );
    assert( am.getAligned<int>(2) == 4 );
    assert( am.getAligned<int>(3) == 8 );
+
+   cout << "Pass" << endl;
 }
 
 void testGetAlignedPointer()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 3, 4};
 
@@ -225,11 +269,13 @@ void testGetAlignedPointer()
    assert( am.getAlignedPointer<int>(1) != nullptr );
    assert( am.getAlignedPointer<int>(2) != nullptr );
    assert( am.getAlignedPointer<int>(3) != nullptr );
+
+   cout << "Pass" << endl;
 }
 
 void testGetAlignedSafe()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 3, 4};
 
@@ -238,11 +284,13 @@ void testGetAlignedSafe()
    assert( am.getAlignedSafe<int>(2) != nullptr );
    assert( am.getAlignedSafe<int>(3) != nullptr );
    assert( am.getAlignedSafe<int>(4) == nullptr );
+
+   cout << "Pass" << endl;
 }
 
 void testSetAligned()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 3, 4};
 
@@ -255,11 +303,13 @@ void testSetAligned()
    assert( am.getAligned<int>(1) == 6 );
    assert( am.getAligned<int>(2) == 7 );
    assert( am.getAligned<int>(3) == 8 );
+
+   cout << "Pass" << endl;
 }
 
 void testSetAlignedSafe()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 3, 4};
 
@@ -274,11 +324,13 @@ void testSetAlignedSafe()
    assert( am.getAlignedSafe<int>(2) != nullptr );
    assert( am.getAlignedSafe<int>(3) != nullptr );
    assert( am.getAlignedSafe<int>(4) == nullptr );
+
+   cout << "Pass" << endl;
 }
 
 void testCapacity()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am = {1, 2, 3, 4};
 
@@ -286,11 +338,13 @@ void testCapacity()
    assert( am.getCapacity<char>() == 16 );
    assert( am.getCapacity<long long>() == 2 );
    assert( am.getCapacity<int[4]>() == 1 );
+
+   cout << "Pass" << endl;
 }
 
 void testEquals()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am1 = {1, 2, 3};
    AnyMemory am2 = {3, 4};
@@ -305,11 +359,13 @@ void testEquals()
    assert( am2 == am4 );
 
    assert( am3 != am4 );
+
+   cout << "Pass" << endl;
 }
 
 void testHashCode()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am1 = {1, 2, 3};
    AnyMemory am2 = {3, 4};
@@ -324,11 +380,13 @@ void testHashCode()
    assert( am2.hashCode() == am4.hashCode() );
 
    assert( am3.hashCode() != am4.hashCode() );
+
+   cout << "Pass" << endl;
 }
 
 void testCompareTo()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    AnyMemory am1 = {1};
    AnyMemory am2 = {1, 2};
@@ -343,10 +401,14 @@ void testCompareTo()
    assert( am2 < am4 );
 
    assert( am3 > am4 );
+
+   cout << "Pass" << endl;
 }
 
 int main()
 {
+   cout << "Starting " << __FILE__ << "..." << endl;
+
    testValueConstructor();
    testDefaultConstructor();
    testCopyConstructor();
@@ -361,6 +423,7 @@ int main()
    testPointer();
    testToString();
    testAppend();
+   testSub();
    testGetAligned();
    testGetAlignedPointer();
    testGetAlignedSafe();
@@ -371,7 +434,7 @@ int main()
    testHashCode();
    testCompareTo();
 
-   cout << "ALL TESTS PASS" << endl;
+   cout << __FILE__ << " has ran successfully." << endl;
 
    return 0;
 }

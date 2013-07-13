@@ -60,7 +60,7 @@ bool BitSet::contains(const BitSet &other) const
 	}
 
 	while (--om >= 0) {
-		if ( (bits[om] & other.bits[om]) != other.bits[om] ) {
+		if ((bits[om] & other.bits[om]) != other.bits[om]) {
 			return false;
 		}
 	}

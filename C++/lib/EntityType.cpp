@@ -37,8 +37,7 @@ bool EntityType::add(const size_t componentId)
 {
   bool missing = !hasComponent(componentId);
 
-  if (missing)
-  {
+  if (missing) {
     ComponentType* componentType = EntityCore::getComponent(componentId);
     size_t offset = defaultComponents.append(componentType->defaultValue);
     components.add(componentId, offset);
@@ -51,8 +50,7 @@ bool EntityType::addController(const size_t controllerId)
 {
   bool missing = !hasController(controllerId);
 
-  if (missing)
-  {
+  if (missing) {
     controllers.add(controllerId, controllers.size());  
   }
 

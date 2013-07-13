@@ -24,16 +24,14 @@ public:
 template<typename T>
 class DynamicComponentFunction : public DynamicComponent<T>
 {
-private:
-   
+public:
+
    typedef T& (*DynamicComponentFunctionPointer)(Entity *e, T &out);
 
    DynamicComponentFunctionPointer function;
 
-public:
-
-   DynamicComponentFunction(const BitSet &m_required, DynamicComponentFunctionPointer m_function)  
-      : DynamicComponent(m_required), function(m_function)
+   DynamicComponentFunction(const BitSet &m_required, DynamicComponentFunctionPointer m_function)
+      : DynamicComponent<T>(m_required), function(m_function)
    {
    }
 
@@ -50,7 +48,7 @@ struct DynamicComponentType : public ComponentType
 
    DynamicComponent<T> *dynamicComponent;
 
-   DynamicComponentType(const size_t m_id, const std::string m_name, DynamicComponent<T> *m_dynamicComponent, BitSet &m_required) 
+   DynamicComponentType(const size_t m_id, const std::string m_name, DynamicComponent<T> *m_dynamicComponent) 
     : ComponentType(m_id, m_name, AnyMemory()), dynamicComponent(m_dynamicComponent)
    {
    }

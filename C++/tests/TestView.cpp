@@ -15,15 +15,15 @@ ViewFunction SpriteView({POSITION},
 
 		Vector *p = e->ptr<Vector>(POSITION);
 		
-		cout << "Drawing sprite at {" << p->x << ", " << p->y << "} with " << graphics << "." << endl;
+		cout << "Drawing sprite at {" << p->x << ", " << p->y << "} with " << graphics << "." << " ";
 	}
 );
 
 void testDraw()
 {
+   	cout << "Running " << __func__ << "() ... ";
+   
 	string graphics = "OpenGL";
-
-	cout << __func__ << endl;
 
 	Entity e(SPRITE);
 
@@ -33,15 +33,19 @@ void testDraw()
 	p->y = 2.34f;
 
 	e.draw( &graphics );
+
+	cout << "Pass" << endl;
 }
 
 int main()
 {
+	cout << "Starting " << __FILE__ << "..." << endl;
+
 	EntityCore::setView(SPRITE_VIEW, &SpriteView);
 
 	testDraw();
 
-  	cout << "ALL TESTS PASS" << endl;
+  	cout << __FILE__ << " has ran successfully." << endl;
 
 	return 0;
 }

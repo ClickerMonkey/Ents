@@ -105,6 +105,11 @@ TestIdMap.o-fast: tests/TestIdMap.cpp
 	./TestIdMap
 TestIdMap.o: $(DEPENDENCIES) TestIdMap.o-fast
 
+TestAll-fast: TestIdMap.o-fast TestView.o-fast TestController.o-fast TestComponentType.o-fast \
+			  TestDynamicComponent.o-fast TestAnyMemory.o-fast TestBitSet.o-fast TestEntity.o-fast
+TestAll: $(DEPENDENCIES) TestAll-fast
+
+
 # Running
 run:
 	./$(PROGRAM_NAME)

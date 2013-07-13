@@ -31,6 +31,8 @@ public:
 
   Entity(EntityType *m_entityType);
 
+  Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId);
+
   virtual ~Entity();
 
   template<typename T>
@@ -65,9 +67,9 @@ public:
   }
 
   template<typename T>
-  inline T& gets(const size_t componentId, T &defaultIfMissing)
+  inline T gets(const size_t componentId, const T &defaultIfMissing)
   {
-    return has(componentId) ? get<T>(componentId) : defaultIfMissing;
+    return (has(componentId) ? get<T>(componentId) : defaultIfMissing);
   }
 
   template<typename T>
@@ -93,7 +95,7 @@ public:
     const int offset = type->getComponentOffsetSafe(componentId);
     bool found = (offset != -1);
     if (found) {
-      set<T>(componentId, value);
+      components.set<T>(size_t(offset), value);
     }
     return found;
   }
@@ -108,9 +110,20 @@ public:
     return type->getComponents().getBitSet().contains( components );
   }
 
+  template<typename T>
+  inline bool operator()(const size_t componentId, const T &value)
+  {
+    return sets<T>(componentId, value);
+  }
+
   inline bool hasController(const size_t controllerId)
   {
     return type->hasController(controllerId);
+  }
+
+  inline bool hasControllers(const BitSet& components)
+  {
+    return type->getControllers().getBitSet().contains( components );
   }
 
   inline bool isCustom()
@@ -250,6 +263,8 @@ public:
   inline bool operator<=(const Entity &b) const   { return compareTo( b ) <= 0; }
   inline bool operator>=(const Entity &b) const   { return compareTo( b ) >= 0; }
   
+  friend std::ostream& operator<<(std::ostream &out, Entity &e);
+
 private:
 
   Entity(EntityType *entityType, AnyMemory defaultComponents);

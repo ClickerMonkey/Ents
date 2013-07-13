@@ -1,5 +1,7 @@
 #include <EntityTypeCustom.h>
 #include <View.h>
+#include <ComponentType.h>
+#include <EntityCore.h>
 
 using namespace std;
 
@@ -8,8 +10,18 @@ EntityTypeCustom::EntityTypeCustom(const size_t m_id, const EntityType *m_parent
 { 
 }
 
+EntityTypeCustom::EntityTypeCustom(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
+   : EntityType(EntityType::CUSTOM, nullptr, m_components, m_controllers, m_viewId, {})
+{
+   for (size_t i = 0; i < components.size(); i++) {
+      size_t componentId = components.getId(i);
+      ComponentType *componentType = EntityCore::getComponent(componentId);
+      components.setIndex( componentId, defaultComponents.append( componentType->defaultValue ) );
+   }
+}
+
 EntityTypeCustom::EntityTypeCustom()
-   :EntityType(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, {})
+   : EntityType(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, {})
 {
 }
 

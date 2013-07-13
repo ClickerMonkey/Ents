@@ -28,6 +28,8 @@ size_t CENTER = EntityCore::newDynamicComponent<float>("center", &CenterDynamicC
 
 void testSimple()
 {
+  cout << "Running " << __func__ << "() ... ";
+  
   Entity e(XAXIS);
 
   e.set(LEFT, 1.0f);
@@ -37,10 +39,14 @@ void testSimple()
   e.get(CENTER, centerOut);
 
   assert( centerOut == 3.0f );
+
+  cout << "Pass" << endl;
 }
 
 void testWithDefault()
 {
+  cout << "Running " << __func__ << "() ... ";
+  
   Entity e(XAXIS);
 
   e.set(RIGHT, 4.0f);
@@ -49,14 +55,18 @@ void testWithDefault()
   e.get(CENTER, centerOut);
 
   assert( centerOut == 2.0f );
+
+  cout << "Pass" << endl;
 }
 
 int main()
 {  
+  cout << "Starting " << __FILE__ << "..." << endl;
+
   testSimple();
   testWithDefault();
 
-  cout << "ALL TESTS PASS" << endl;
+  cout << __FILE__ << " has ran successfully." << endl;
 
   return 0;
 }

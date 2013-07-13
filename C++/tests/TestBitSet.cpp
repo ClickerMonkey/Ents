@@ -5,18 +5,20 @@ using namespace std;
 
 void testEmptyConstructor()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a;
 
   assert( a.size() == 0 );
   assert( a.get(0) == false );
   assert( a.get(0, true) == true );
+
+   cout << "Pass" << endl;
 }
 
 void testVectorConstructor()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   vector<size_t> indices = {0, 1, 4, 5};
 
@@ -30,11 +32,13 @@ void testVectorConstructor()
   assert( a.get(4) );
   assert( a.get(5) );
   assert(!a.get(6) );
+
+  cout << "Pass" << endl;
 }
 
 void testInitializerListConstructor()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a = {0, 1, 4, 5, 32};
 
@@ -49,11 +53,13 @@ void testInitializerListConstructor()
   assert(!a.get(31) );
   assert( a.get(32) );
   assert(!a.get(33) );
+
+  cout << "Pass" << endl;
 }
 
 void testFromIndices()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a;
 
@@ -71,11 +77,13 @@ void testFromIndices()
   assert( a.get(4) );
   assert( a.get(5) );
   assert(!a.get(6) );
+
+  cout << "Pass" << endl;
 }
 
 void testSet()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a;
 
@@ -97,11 +105,13 @@ void testSet()
   a.set(345);
 
   assert( a.get(345) );
+
+  cout << "Pass" << endl;
 }
 
 void testIntersects()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
   
   BitSet a = {1, 2, 4, 5};
   BitSet b = {1, 6};
@@ -110,11 +120,13 @@ void testIntersects()
   assert( a.intersects(b) );
   assert(!a.intersects(c) );
   assert( b.intersects(c) );
+
+  cout << "Pass" << endl;
 }
 
 void testContains()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
   
   BitSet a = {1, 2, 3, 4, 6, 7};
   BitSet b = {2, 3};
@@ -124,20 +136,24 @@ void testContains()
   assert(!a.contains(c) );
   assert(!b.contains(a) );
   assert(!c.contains(a) );
+
+  cout << "Pass" << endl;
 }
 
 void testToString()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a = {0, 1, 2, 3, 5};
 
-  cout << a << endl;
+  cout << a << " ";
+
+  cout << "Pass" << endl;
 }
 
 void testEquals()
 {
-  cout << __func__ << endl;
+  cout << "Running " << __func__ << "() ... ";
    
   BitSet a = {0, 1, 2, 3, 5};
   BitSet b = {0, 1, 2, 3, 5};
@@ -146,10 +162,14 @@ void testEquals()
   assert( a == b );
   assert( a != c );
   assert( b != c );
+
+  cout << "Pass" << endl;
 }
 
 int main()
 {
+  cout << "Starting " << __FILE__ << "..." << endl;
+
   testEmptyConstructor();
   testVectorConstructor();
   testInitializerListConstructor();
@@ -160,7 +180,7 @@ int main()
   testToString();
   testEquals();
 
-  cout << "ALL TESTS PASS" << endl;
+  cout << __FILE__ << " has ran successfully." << endl;
 
   return 0;
 }

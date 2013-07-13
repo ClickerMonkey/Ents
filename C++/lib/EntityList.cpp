@@ -30,16 +30,14 @@ void EntityList::add( Entity *e )
 
 void EntityList::add( initializer_list<Entity*> e )
 {
-	for (const auto &x : e) 
-	{
+	for (const auto &x : e) {
 		internalAdd(x);
 	}
 }
 
 void EntityList::add( const vector<Entity*> &e )
 {
-	for (const auto &x : e) 
-	{
+	for (const auto &x : e) {
 		internalAdd(x);	
 	}
 }
@@ -48,22 +46,17 @@ void EntityList::clean()
 {
 	size_t alive = 0;
 
-	for (size_t i = 0; i < entities.size(); i++)
-	{
+	for (size_t i = 0; i < entities.size(); i++) {
 		Entity *e = entities.at(i);
 
-		if ( e->isExpired() )
-		{
+		if (e->isExpired()) {
 			onEntityRemove( e, i );
-		}
-		else
-		{
+		} else {
 			entities[alive++] = e;
 		}
 	}
 
-	if (alive != entities.size())
-	{
+	if (alive != entities.size()) {
 		entities.erase( entities.begin() + alive, entities.end() + entities.size() );
 	}
 }
@@ -72,8 +65,7 @@ void EntityList::draw( void *drawState )
 {
 	Entity::draw( drawState );
 
-	for (const auto &e : entities)
-	{
+	for (const auto &e : entities) {
 		e->draw( drawState );
 	}
 }
@@ -82,15 +74,12 @@ void EntityList::update( void *updateState )
 {
 	Entity::update( updateState );
 
-	if ( isExpired() )
-	{
+	if (isExpired()) {
 		return;
 	}
 
-	for (const auto &e : entities)
-	{
+	for (const auto &e : entities) {
 		e->update( updateState );
-
 		onEntityUpdated( e, updateState );
 	}
 
@@ -173,25 +162,21 @@ struct EntityValueFilter
 
 	bool operator()( Entity *e )
 	{
-		bool equals = e->has(componentId);
+		if (e->has(componentId)) {
 
-		if ( equals )
-		{
 			size_t offset = e->getEntityType()->getComponentOffset(componentId);
 			AnyMemory components = e->getComponents();
 
-			equals = ( offset + value.getSize() <= components.getSize() );
+			if (offset + value.getSize() <= components.getSize()) {
 
-			if (equals)
-			{
 				void *componentPointer = (void*)(components.getData() + offset);
 				void *valuePointer = (void*)value.getData();
 
-				equals = ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
+				return ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
 			}
 		}
 
-		return equals;
+		return false;
 	}
 };
 

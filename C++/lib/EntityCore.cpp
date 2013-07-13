@@ -32,8 +32,7 @@ size_t EntityCore::newEntityType(IdMap components, IdMap controllers, size_t vie
 
   AnyMemory defaultComponents;
 
-  for (size_t i = 0; i < components.size(); i++) 
-  {
+  for (size_t i = 0; i < components.size(); i++) {
     size_t componentId = components.getId(i);
     ComponentType *componentType = getComponent(componentId);
     components.setIndex( componentId, defaultComponents.append( componentType->defaultValue ) );

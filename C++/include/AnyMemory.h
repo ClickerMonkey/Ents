@@ -53,6 +53,8 @@ public:
     setSize(size + bytes);
   }
 
+  AnyMemory sub(const size_t offset, const size_t bytes);
+
   size_t append(const AnyMemory &copy);
 
   template<typename T>

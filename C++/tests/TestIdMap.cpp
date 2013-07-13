@@ -9,16 +9,18 @@ using namespace std;
 
 void testDefaultConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
 
    IdMap im;
 
    assert( im.size() == 0 );
+
+   cout << "Pass" << endl;
 }
 
 void testVectorConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
 
    vector<size_t> indices = {0, 1, 5};
 
@@ -32,11 +34,13 @@ void testVectorConstructor()
    assert(!im.has(4) );
    assert( im.has(5) );
    assert(!im.has(6) );
+
+   cout << "Pass" << endl;
 }
 
 void testInitializerListConstructor()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
 
@@ -48,22 +52,26 @@ void testInitializerListConstructor()
    assert(!im.has(4) );
    assert( im.has(5) );
    assert(!im.has(6) );
+
+   cout << "Pass" << endl;
 }
 
 void testGetIndex()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
 
    assert( im.getIndex(0) == 0 );
    assert( im.getIndex(1) == 1 );
    assert( im.getIndex(5) == 2 );
+
+   cout << "Pass" << endl;
 }
 
 void testGetIndexSafe()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
 
@@ -71,11 +79,13 @@ void testGetIndexSafe()
    assert( im.getIndexSafe(1) == 1 );
    assert( im.getIndexSafe(5) == 2 );
    assert( im.getIndexSafe(7) ==-1 );
+
+   cout << "Pass" << endl;
 }
 
 void testAlias()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
    im.alias(1, 6); // index of 6 is now 1
@@ -83,35 +93,54 @@ void testAlias()
 
    assert( im.getIndex(6) == 1 );
    assert( im.getIndex(7) == 2 );
+
+   cout << "Pass" << endl;
 }
 
 void testAdd()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
 
    assert( im.size() == 3 );
 
-   im.add(7);
+   im.add(7, im.size());
 
    assert( im.size() == 4 );
    assert( im.getIndex(7) == 3 );
+
+   cout << "Pass" << endl;
 }
 
 void testGetId()
 {
-   cout << __func__ << endl;
+   cout << "Running " << __func__ << "() ... ";
    
    IdMap im = {0, 1, 5};
 
    assert( im.getId(0) == 0 );
    assert( im.getId(1) == 1 );
    assert( im.getId(2) == 5 );
+
+   cout << "Pass" << endl;
+}
+
+void testToString()
+{
+   cout << "Running " << __func__ << "() ... ";
+   
+   IdMap im = {0, 1, 5};
+
+   cout << im << " ";
+
+   cout << "Pass" << endl;
 }
 
 int main()
 {
+   cout << "Starting " << __FILE__ << "..." << endl;
+
    testDefaultConstructor();
    testVectorConstructor();
    testInitializerListConstructor();
@@ -120,8 +149,9 @@ int main()
    testAlias();
    testAdd();
    testGetId();
+   testToString();
 
-   cout << "ALL TESTS PASS" << endl;
+   cout << __FILE__ << " has ran successfully." << endl;
 
    return 0;
 }

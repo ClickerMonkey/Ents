@@ -14,8 +14,7 @@ public:
 
    IdMap(const std::vector<size_t> &ids)
    {
-      for (size_t i = 0; i < ids.size(); i++) 
-      {
+      for (size_t i = 0; i < ids.size(); i++) {
          add(ids[i], i);
       }
    }
@@ -23,8 +22,7 @@ public:
    IdMap(std::initializer_list<size_t> ids) 
    {
       int index = 0;
-      for (auto const &x : ids)
-      {
+      for (auto const &x : ids) {
          add(x, index++);
       }
    }
@@ -82,6 +80,22 @@ public:
    inline BitSet& getBitSet()
    {
       return bitset;
+   }
+
+   friend std::ostream& operator<<(std::ostream &out, const IdMap &im)
+   {
+      out << "{";
+
+      for (size_t i = 0; i < im.ids.size(); i++) {
+         if (i > 0) { 
+            out << ", ";
+         }
+         out << im.ids[i] << "->" << im.map[im.ids[i]];
+      }
+
+      out << "}";
+
+      return out;
    }
 
 private:

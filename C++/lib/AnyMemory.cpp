@@ -15,11 +15,18 @@ AnyMemory::AnyMemory()
 
 AnyMemory::~AnyMemory() 
 {
-  if (data != nullptr) 
-  {
+  if (data != nullptr) {
     free(data);
     data = nullptr;
   }
+}
+
+AnyMemory AnyMemory::sub(const size_t offset, const size_t bytes)
+{
+  AnyMemory am;
+  am.setSize(bytes);
+  memcpy(am.data, data + offset, bytes);
+  return am;
 }
 
 size_t AnyMemory::append(const AnyMemory &copy) 
@@ -41,8 +48,7 @@ int AnyMemory::hashCode() const
 {
   const int prime = 31;
   int hash = 0;
-  for (size_t i = 0; i < size; i++)
-  {
+  for (size_t i = 0; i < size; i++) {
     hash = hash * prime + (*((char*)(data + i)));
   }
   return hash;
@@ -61,8 +67,7 @@ ostream& operator<<(ostream &out, AnyMemory const &a)
 
   out << "{size:" << a.size << ", ptr:0x" << HEX(sizeof(void*), a.data) << ", data:0x";
 
-  for (size_t i = 0; i < a.size; i++) 
-  {
+  for (size_t i = 0; i < a.size; i++) {
     out << HEX(2, a.get<char>(i));
   }
 

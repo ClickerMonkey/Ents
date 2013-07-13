@@ -37,15 +37,13 @@ struct VectorIteratorPointer
 
    int findNext(int start) 
    {
-      while (start != stop) 
-      {
-         if (filter(v->at(start))) 
-         {
+      while (start != stop) {
+         if (filter(v->at(start))) {
             break;
          }
-
          start += dir;
       }
+      
       return (start == stop ? -1 : start);
    }
 };

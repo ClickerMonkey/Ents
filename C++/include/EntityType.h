@@ -7,7 +7,7 @@
 
 class EntityType 
 {
-private:
+protected:
 
   const size_t id;
 
@@ -43,7 +43,7 @@ public:
     return components.getIndex(componentId);
   }
 
-  inline size_t getComponentOffsetSafe(const size_t componentId) const 
+  inline int getComponentOffsetSafe(const size_t componentId) const 
   {
     return components.getIndexSafe(componentId);
   }
@@ -85,12 +85,9 @@ public:
   inline bool add(const size_t componentId, const T &value )
   {
     bool added = add(componentId);
-
-    if ( added )
-    {
+    if (added) {
       added = setDefaultValue( componentId, value );
     }
-
     return added;
   }
 
@@ -98,9 +95,7 @@ public:
   inline bool setDefaultValue(const size_t componentId, const T &value)
   {
     bool exists = hasComponent(componentId);
-
-    if (exists)
-    {
+    if (exists) {
       defaultComponents.set( getComponentOffset(componentId), value );
     }
 
@@ -128,8 +123,7 @@ public:
   {
     instances--;
 
-    if (isCustom() && instances == 0) 
-    {
+    if (isCustom() && instances == 0) {
       delete this;
     }
   }
