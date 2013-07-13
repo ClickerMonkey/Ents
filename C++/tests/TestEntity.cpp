@@ -178,6 +178,21 @@ void testPtrSafe()
 	cout << "Pass" << endl;
 }
 
+void testGet()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(EXTENT);
+
+	e.get<float>(LEFT) = 3.0f;
+	e.get<float>(RIGHT) = 5.0f;
+
+	assert( e.get<float>(LEFT) == 3.0f );
+	assert( e.get<float>(RIGHT) == 5.0f );
+
+	cout << "Pass" << endl;
+}
+
 void testGetDynamic()
 {
 	cout << "Running " << __func__ << "() ... ";
@@ -295,6 +310,328 @@ void testAdd()
 	assert( e.gets(RIGHT, 0.0f) == 3.4f );
 	assert( e.isCustom() );
 
+	assert(!e.add(LEFT) );
+	assert(!e.add(RIGHT) );
+	assert( e.add(SPEED) );
+
+	e(SPEED, 3.0f);
+
+	assert( e.gets(SPEED, 0.0f) == 3.0f );
+
+	cout << "Pass" << endl;
+}
+
+void testExpire()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(EXTENT);
+
+	assert(!e.isExpired() );
+
+	e.expire();
+
+	assert( e.isExpired() );
+
+	cout << "Pass" << endl;
+}
+
+void testVisible()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(EXTENT);
+
+	assert( e.isVisible() );
+
+	e.hide();
+
+	assert(!e.isVisible() );
+
+	e.show();
+
+	assert( e.isVisible() );
+
+	cout << "Pass" << endl;
+}
+
+// testVisibleDraw() 
+size_t DRAWS = EntityCore::newComponent<int>("draws", 0);
+
+ViewFunction DrawView({DRAWS}, 
+	[](Entity *e, void *drawState) {
+		e->get<int>(DRAWS)++;
+	}
+);
+
+size_t DRAWS_VIEW = EntityCore::addView(&DrawView);
+size_t DRAWS_TYPE = EntityCore::newEntityType({DRAWS}, {}, DRAWS_VIEW);
+
+void testVisibleDraw()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(DRAWS_TYPE);
+
+	assert( e.get<int>(DRAWS) == 0 );
+
+	e.draw(nullptr);
+
+	assert( e.get<int>(DRAWS) == 1 );
+
+	e.hide();
+	e.draw(nullptr);
+
+	assert( e.get<int>(DRAWS) == 1 );
+
+	e.show();
+	e.draw(nullptr);
+
+	assert( e.get<int>(DRAWS) == 2 );
+
+	cout << "Pass" << endl;
+}
+
+void testSetView()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(DRAWS_TYPE);
+
+	assert( e.hasView() );
+	assert( e.getView() == DRAWS_VIEW );
+	assert(!e.isCustom() );
+
+	e.setView( View::NONE );
+
+	assert( e.isCustom() );
+	assert(!e.hasView() );
+	assert( e.getView() == View::NONE );
+	
+	cout << "Pass" << endl;
+}
+
+void testEnabled()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(EXTENT);
+
+	assert( e.isEnabled() );
+
+	e.disable();
+
+	assert(!e.isEnabled() );
+
+	e.enable();
+
+	assert( e.isEnabled() );
+
+	cout << "Pass" << endl;
+}
+
+// testVisibleDraw() 
+size_t UPDATES = EntityCore::newComponent<int>("draws", 0);
+
+ControllerFunction UpdateController({UPDATES}, 
+	[](Entity *e, void *updateState) {
+		e->get<int>(UPDATES)++;
+	}
+);
+
+size_t UPDATES_CONTROLLER = EntityCore::addController(&UpdateController);
+size_t UPDATES_TYPE = EntityCore::newEntityType({UPDATES}, {UPDATES_CONTROLLER}, View::NONE);
+
+void testEnabledUpdate()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(UPDATES_TYPE);
+
+	assert( e.get<int>(UPDATES) == 0 );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 1 );
+
+	e.disable();
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 1 );
+
+	e.enable();
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 2 );
+
+	cout << "Pass" << endl;
+}
+
+void testControllerEnabled()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(UPDATES_TYPE);
+
+	assert( e.get<int>(UPDATES) == 0 );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 1 );
+
+	assert( e.isControllerEnabled(UPDATES_CONTROLLER) );
+
+	e.disable( UPDATES_CONTROLLER );
+
+	assert( !e.isControllerEnabled(UPDATES_CONTROLLER) );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 1 );
+
+	e.enable( UPDATES_CONTROLLER );
+
+	assert( e.isControllerEnabled(UPDATES_CONTROLLER) );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 2 );
+
+	cout << "Pass" << endl;
+}
+
+void testAddController()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e({UPDATES}, {}, View::NONE);
+
+	assert(!e.hasController(UPDATES_CONTROLLER) );
+	assert( e.get<int>(UPDATES) == 0 );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 0 );
+
+	e.addController(UPDATES_CONTROLLER);
+	assert( e.hasController(UPDATES_CONTROLLER) );
+
+	e.update(nullptr);
+
+	assert( e.get<int>(UPDATES) == 1 );
+
+	cout << "Pass" << endl;
+}
+
+void testClone()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity *a = new Entity(EXTENT);
+	a->set(LEFT, 2.0f);
+	a->set(RIGHT, 3.7f);
+
+	Entity *b = a->clone();
+
+	assert( a != b );
+	assert( b->get<float>(LEFT) == 2.0f );
+	assert( b->get<float>(RIGHT) == 3.7f );
+
+	a->set(LEFT, -3.5f);
+	a->set(RIGHT, 5.6f);
+
+	assert( b->get<float>(LEFT) == 2.0f );
+	assert( b->get<float>(RIGHT) == 3.7f );
+
+	delete b;
+	delete a;
+
+	cout << "Pass" << endl;
+}
+
+void testSetMap()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity e(EXTENT);
+	e.set({{LEFT,3.0f},{RIGHT,4.5f}});
+
+	assert( e.get<float>(LEFT) == 3.0f );
+	assert( e.get<float>(RIGHT) == 4.5f );
+	
+	cout << "Pass" << endl;
+}
+
+void testEquals()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
+	Entity b(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
+	Entity c(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
+	Entity d;
+	Entity e;
+
+	assert( a == b );
+	assert( a != c );
+	assert( a != d );
+	assert( a != e );
+
+	assert( b != c );
+	assert( b != d );
+	assert( b != e );
+
+	assert( c != d );
+	assert( c != e );
+
+	assert( d != e ); // Their types are different, maybe I should do more than testing address?
+
+	cout << "Pass" << endl;
+}
+
+void testHashCode()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
+	Entity b(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
+	Entity c(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
+	Entity d;
+	Entity e;
+
+	assert( a.hashCode() == b.hashCode() );
+	assert( a.hashCode() != c.hashCode() );
+	assert( a.hashCode() != d.hashCode() );
+	assert( a.hashCode() != e.hashCode() );
+
+	assert( b.hashCode() != c.hashCode() );
+	assert( b.hashCode() != d.hashCode() );
+	assert( b.hashCode() != e.hashCode() );
+
+	assert( c.hashCode() != d.hashCode() );
+	assert( c.hashCode() != e.hashCode() );
+
+	assert( d.hashCode() == e.hashCode() );
+	
+	cout << "Pass" << endl;
+}
+
+void testCompareTo()
+{
+	cout << "Running " << __func__ << "() ... ";
+
+	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
+	Entity b(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
+	Entity c(EXTENT, {{LEFT,3.0f},{RIGHT,4.6f}});
+	Entity d;
+	
+	assert( a < b );
+	assert( a < b );
+	assert( a > d ); // Entities without type go first
+	assert( b > c );
+	assert( b > d );
+	assert( c > d );
+
 	cout << "Pass" << endl;
 }
 
@@ -310,6 +647,7 @@ int main()
 	testToString();
 	testPtr();
 	testPtrSafe();
+	testGet();
 	testGetDynamic();
 	testGetDynamicMissing();
 	testGetSafe();
@@ -317,7 +655,19 @@ int main()
 	testHasComponents();
 	testHasController();
 	testAdd();
-
+	testExpire();
+	testVisible();
+	testVisibleDraw();
+	testSetView();
+	testEnabled();
+	testEnabledUpdate();
+	testControllerEnabled();
+	testAddController();
+	testClone();
+	testSetMap();
+	testEquals();
+	testHashCode();
+	testCompareTo();
 
    	cout << __FILE__ << " has ran successfully." << endl;
 

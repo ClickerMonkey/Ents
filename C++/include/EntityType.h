@@ -74,7 +74,7 @@ public:
 
   void setView(const size_t view);
 
-  inline size_t getView()
+  inline size_t getView() const
   {
     return viewId;
   }
@@ -98,7 +98,6 @@ public:
     if (exists) {
       defaultComponents.set( getComponentOffset(componentId), value );
     }
-
     return exists;
   }
 
@@ -141,6 +140,16 @@ public:
   inline IdMap& getComponents()
   {
     return components;
+  }
+
+  inline AnyMemory& getDefaultComponents()
+  {
+    return defaultComponents;
+  }
+
+  inline const EntityType* getParent()
+  {
+    return parent;
   }
 
   inline size_t getId() const

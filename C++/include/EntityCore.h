@@ -33,8 +33,20 @@ public:
     return hasEntityType(entityTypeId) ? getEntityType(entityTypeId) : nullptr;
   }
 
-  static size_t newEntityType(IdMap components, IdMap controllers, size_t viewId);
+  static size_t newEntityType(IdMap components, IdMap controllers, const size_t viewId);
   
+  inline static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers)
+  {
+    return newEntityTypeExtension(entityTypeId, components, controllers, View::NONE);
+  }
+
+  inline static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components)
+  {
+    return newEntityTypeExtension(entityTypeId, components, {}, View::NONE);
+  }
+
+  static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers, const size_t viewId);
+
   inline static ComponentType* getComponent(const size_t componentId) 
   {
     return getComponents().at(componentId);

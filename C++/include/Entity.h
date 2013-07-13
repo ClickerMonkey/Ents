@@ -2,10 +2,13 @@
 #define ENTITY_H
 
 #include <Common.h>
+#include <map>
+
 #include <EntityType.h>
 #include <BitSet.h>
 #include <AnyMemory.h>
 #include <EntityCore.h>
+
 
 class Entity 
 {
@@ -29,9 +32,15 @@ public:
 
   Entity(const size_t m_entityTypeId);
 
+  Entity(const size_t m_entityTypeId, const std::map<size_t,AnyMemory> &m_values);
+
   Entity(EntityType *m_entityType);
 
+  Entity(EntityType *m_entityType, const std::map<size_t,AnyMemory> &m_values);  
+
   Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId);
+
+  Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const std::map<size_t,AnyMemory> &m_values);
 
   virtual ~Entity();
 
@@ -100,6 +109,8 @@ public:
     return found;
   }
 
+  void set(const std::map<size_t,AnyMemory> &values);
+
   inline bool has(const size_t componentId) 
   {
     return type->hasComponent(componentId);
@@ -160,12 +171,12 @@ public:
 
   inline void show()
   {
-    visible = false;
+    visible = true;
   }
 
   inline void hide()
   {
-    visible = true;
+    visible = false;
   }
 
   inline bool isVisible() 
@@ -199,7 +210,7 @@ public:
   
   inline bool isControllerEnabled( const size_t controllerId )
   {
-    return controllers.get( type->getControllerIndex( controllerId ) );
+    return controllers.get( type->getControllerIndex( controllerId ), true );
   }
 
   inline void setControllerEnabled( const size_t controllerId, bool enabled )
@@ -228,16 +239,23 @@ public:
 
   void setView( const size_t viewId );
 
+  inline size_t getView() const
+  {
+    return type->getView();
+  }
+
+  inline bool hasView() const
+  {
+    return ( type->getView() != View::NONE );
+  }
+
+  virtual Entity* clone(Entity* target);
+
   virtual Entity* clone();
 
   inline EntityType* getEntityType()
   {
     return type;
-  }
-
-  inline bool hasCustomType()
-  {
-    return type->isCustom();
   }
 
   inline AnyMemory& getComponents()

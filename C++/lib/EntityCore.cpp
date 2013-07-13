@@ -26,7 +26,7 @@ vector<ComponentType*>& getComponents()
   return components;
 }
 
-size_t EntityCore::newEntityType(IdMap components, IdMap controllers, size_t viewId) 
+size_t EntityCore::newEntityType(IdMap components, IdMap controllers, const size_t viewId) 
 {
   size_t id = getEntityTypes().size();
 
@@ -39,6 +39,29 @@ size_t EntityCore::newEntityType(IdMap components, IdMap controllers, size_t vie
   }
 
   getEntityTypes().push_back(new EntityType(id, nullptr, components, controllers, viewId, defaultComponents));
+
+  return id;
+}
+
+size_t EntityCore::newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers, const size_t viewId)
+{
+  size_t id = getEntityTypes().size();
+
+  EntityType *type = getEntityType(entityTypeId)->extend( id );
+
+  for (size_t i = 0; i < components.size(); i++) {
+    type->add(components.getId(i));
+  }
+
+  for (size_t i = 0; i < controllers.size(); i++) {
+    type->addController(controllers.getId(i));
+  }
+
+  if (viewId != View::NONE) {
+    type->setView(viewId);
+  }
+
+  getEntityTypes().push_back(type);
 
   return id;
 }

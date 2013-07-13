@@ -33,6 +33,8 @@ public:
 
   ~AnyMemory();
 
+  void set(const AnyMemory &copy);
+
   inline size_t getSize() const 
   {
     return size;
@@ -115,6 +117,14 @@ public:
     return (ptr != nullptr);
   }
 
+  inline bool set(const size_t offset, const AnyMemory& other) {
+    bool large = (offset + other.size <= size);
+    if (large) {
+      memcpy(data + offset, other.data, other.size);
+    }
+    return large;
+  }
+
   template<typename T>
   inline void setAligned(const size_t index, const T &value)
   {
@@ -159,6 +169,12 @@ public:
   inline AnyMemory& operator<<(const T &value) 
   {
     add<T>(value);
+    return *this;
+  }
+
+  inline AnyMemory& operator=(const AnyMemory &other)
+  {
+    set(other);
     return *this;
   }
 

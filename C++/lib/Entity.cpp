@@ -9,22 +9,38 @@ Entity::Entity()
   setEntityType( new EntityTypeCustom() );
 }
 
-Entity::Entity(const size_t m_entityTypeId)
-{
-  setEntityType( EntityCore::getEntityType( m_entityTypeId ) );
-  type->setEntityDefaultComponents(components);
-}
-
 Entity::Entity(EntityType *m_entityType)
 {
   setEntityType( m_entityType );
   type->setEntityDefaultComponents(components);
 }
 
-Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
+Entity::Entity(EntityType *m_entityType, const map<size_t,AnyMemory> &m_values)
+  : Entity( m_entityType )
 {
-  setEntityType( new EntityTypeCustom(m_components, m_controllers, m_viewId) );
-  type->setEntityDefaultComponents(components);
+  set(m_values);
+}
+
+Entity::Entity(const size_t m_entityTypeId)
+  : Entity(EntityCore::getEntityType( m_entityTypeId ))
+{
+}
+
+Entity::Entity(const size_t m_entityTypeId, const map<size_t,AnyMemory> &m_values)
+  : Entity(m_entityTypeId)
+{
+  set(m_values);
+}
+
+Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
+  : Entity(new EntityTypeCustom(m_components, m_controllers, m_viewId))
+{
+}
+
+Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const map<size_t,AnyMemory> &m_values)
+  : Entity(m_components, m_controllers, m_viewId)
+{
+  set(m_values);
 }
 
 Entity::Entity(EntityType *m_entityType, AnyMemory m_defaultComponents)
@@ -36,6 +52,17 @@ Entity::Entity(EntityType *m_entityType, AnyMemory m_defaultComponents)
 Entity::~Entity() 
 {
   type->removeInstance();
+}
+
+void Entity::set(const map<size_t,AnyMemory> &values)
+{
+  for (auto const &entry : values) {
+    size_t componentId = entry.first;
+    int offset = type->getComponentOffsetSafe(componentId);
+    if (offset != -1) {
+      components.set(size_t(offset), entry.second);
+    }
+  }
 }
 
 bool Entity::add(const size_t componentId) 
@@ -101,9 +128,26 @@ void Entity::setView( const size_t viewId )
   }
 }
 
+Entity* Entity::clone(Entity* target)
+{
+  target->expired = expired;
+  target->visible = visible;
+  target->enabled = enabled;
+  target->controllers = controllers;
+  target->components = components;
+  target->setEntityType( type );
+  
+  return target;
+}
+
 Entity* Entity::clone()
 {
-  return new Entity( type, components );
+  Entity* clone = new Entity( type, components );
+  clone->expired = expired;
+  clone->enabled = enabled;
+  clone->visible = visible;
+  clone->controllers = controllers;
+  return clone;
 }
 
 bool Entity::equals(const Entity &other) const

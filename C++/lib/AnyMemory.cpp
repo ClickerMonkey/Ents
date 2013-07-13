@@ -5,8 +5,7 @@ using namespace std;
 
 AnyMemory::AnyMemory(const AnyMemory &copy)
 {
-  setSize(copy.size);
-  memcpy(data, copy.data, copy.size);
+  set(copy);
 }
 
 AnyMemory::AnyMemory()
@@ -19,6 +18,12 @@ AnyMemory::~AnyMemory()
     free(data);
     data = nullptr;
   }
+}
+
+void AnyMemory::set(const AnyMemory &copy)
+{
+  setSize(copy.size);
+  memcpy(data, copy.data, copy.size); 
 }
 
 AnyMemory AnyMemory::sub(const size_t offset, const size_t bytes)

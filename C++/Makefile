@@ -1,7 +1,7 @@
 PROGRAM_NAME = EntityCore
 CXX = g++
 LIBS = 
-FLAGS_CXX = -O -Wall -Wextra -g -std=c++11 -fPIC -O0
+FLAGS_CXX = -O -Wall -g -std=c++11 -fPIC -O0
 FLAGS_LD = $(FLAGS_CXX) 
 FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp
@@ -104,6 +104,12 @@ TestIdMap.o-fast: tests/TestIdMap.cpp
 	$(CXX) $(FLAGS_LD) -o TestIdMap $(OBJECTS) TestIdMap.o -I$(INCLUDE)
 	./TestIdMap
 TestIdMap.o: $(DEPENDENCIES) TestIdMap.o-fast
+
+TestEntityType.o-fast: tests/TestEntityType.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestEntityType.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestEntityType $(OBJECTS) TestEntityType.o -I$(INCLUDE)
+	./TestEntityType
+TestEntityType.o: $(DEPENDENCIES) TestEntityType.o-fast
 
 TestAll-fast: TestIdMap.o-fast TestView.o-fast TestController.o-fast TestComponentType.o-fast \
 			  TestDynamicComponent.o-fast TestAnyMemory.o-fast TestBitSet.o-fast TestEntity.o-fast
