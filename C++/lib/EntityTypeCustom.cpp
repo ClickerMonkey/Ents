@@ -1,10 +1,16 @@
- #include <EntityTypeCustom.h>
+#include <EntityTypeCustom.h>
+#include <View.h>
 
 using namespace std;
 
-EntityTypeCustom::EntityTypeCustom(const size_t id, const EntityType *parent, const IdMap &components, const IdMap &controllers, const size_t viewId, const AnyMemory &defaultComponents, const vector<size_t> &offsets) 
-   : EntityType(id, parent, components, controllers, viewId, defaultComponents, offsets) 
+EntityTypeCustom::EntityTypeCustom(const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents)
+   : EntityType(m_id, m_parent, m_components, m_controllers, m_viewId, m_defaultComponents) 
 { 
+}
+
+EntityTypeCustom::EntityTypeCustom()
+   :EntityType(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, {})
+{
 }
 
 bool EntityTypeCustom::isCustom() 

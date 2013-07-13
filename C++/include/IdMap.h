@@ -12,16 +12,20 @@ public:
    {
    }
 
-   IdMap(const std::vector<size_t> &ids) : ids(ids) 
+   IdMap(const std::vector<size_t> &ids)
    {
-      map = buildMap(ids);
-      bitset.setFromIndices(ids);
+      for (size_t i = 0; i < ids.size(); i++) 
+      {
+         add(ids[i], i);
+      }
    }
 
-   IdMap(std::initializer_list<size_t> indices) 
+   IdMap(std::initializer_list<size_t> ids) 
    {
-      for (const auto &i : indices) {
-         add(i);
+      int index = 0;
+      for (auto const &x : ids)
+      {
+         add(x, index++);
       }
    }
 
@@ -32,17 +36,14 @@ public:
 
    inline void alias(const size_t id, const size_t aliasId) 
    {
-      if (has(id)) 
-      {
+      if (has(id)) {
          mapIndex(aliasId, map[id]);
       }
    }
 
-   inline void add(const size_t id) 
+   inline void add(const size_t id, const int index) 
    {
-      if (!has(id)) 
-      {
-         const size_t index = ids.size();
+      if (!has(id)) {
          ids.push_back(id);
          mapIndex(id, index);
       }
@@ -51,6 +52,11 @@ public:
    inline int getIndex(const size_t id) const 
    {
       return map[id];
+   }
+
+   inline void setIndex(const size_t id, const int index)
+   {
+      mapIndex(id, index);
    }
 
    inline size_t getId(const size_t index) const 
@@ -76,22 +82,6 @@ public:
    inline BitSet& getBitSet()
    {
       return bitset;
-   }
-
-   static std::vector<int> buildMap(const std::vector<size_t> &ids) 
-   {
-      size_t n = 0;
-      for (size_t i = 0; i < ids.size(); i++) {
-         n = std::max( n, ids[i] );
-      }
-      std::vector<int> map(n + 1);
-      for (size_t i = 0; i <= n; i++) {
-         map[i] = -1;
-      }
-      for (size_t i = 0; i < ids.size(); i++) {
-         map[ids[i]] = i;
-      }
-      return map;
    }
 
 private:

@@ -2,6 +2,7 @@
 #define DYNAMICCOMPONENT_H
 
 #include <ComponentType.h>
+#include <BitSet.h>
 
 class Entity;
 
@@ -9,6 +10,12 @@ template<typename T>
 class DynamicComponent 
 {
 public:
+
+   const BitSet required;
+
+   DynamicComponent(const BitSet &m_required) : required(m_required)
+   {
+   }
 
    virtual T& compute(Entity *e, T &out) = 0;
 
@@ -25,8 +32,8 @@ private:
 
 public:
 
-   DynamicComponentFunction(DynamicComponentFunctionPointer function)  
-      : function(function)
+   DynamicComponentFunction(const BitSet &m_required, DynamicComponentFunctionPointer m_function)  
+      : DynamicComponent(m_required), function(m_function)
    {
    }
 
@@ -43,8 +50,8 @@ struct DynamicComponentType : public ComponentType
 
    DynamicComponent<T> *dynamicComponent;
 
-   DynamicComponentType(const size_t id, const std::string name, DynamicComponent<T> *dynamicComponent) 
-    : ComponentType(id, name, AnyMemory()), dynamicComponent(dynamicComponent)
+   DynamicComponentType(const size_t m_id, const std::string m_name, DynamicComponent<T> *m_dynamicComponent, BitSet &m_required) 
+    : ComponentType(m_id, m_name, AnyMemory()), dynamicComponent(m_dynamicComponent)
    {
    }
 

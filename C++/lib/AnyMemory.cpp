@@ -3,13 +3,13 @@
 
 using namespace std;
 
-AnyMemory::AnyMemory(const AnyMemory &copy) : size(0), data(nullptr) 
+AnyMemory::AnyMemory(const AnyMemory &copy)
 {
   setSize(copy.size);
   memcpy(data, copy.data, copy.size);
 }
 
-AnyMemory::AnyMemory() : size(0), data(nullptr) 
+AnyMemory::AnyMemory()
 {
 }
 
@@ -57,7 +57,7 @@ int AnyMemory::compareTo(const AnyMemory &other) const
 
 ostream& operator<<(ostream &out, AnyMemory const &a)
 {
-  #define HEX(d,x) setw(d) << setfill('0') << hex << uppercase << int(x)
+  #define HEX(d,x) setw(d) << setfill('0') << hex << uppercase << (long long)(x)
 
   out << "{size:" << a.size << ", ptr:0x" << HEX(sizeof(void*), a.data) << ", data:0x";
 

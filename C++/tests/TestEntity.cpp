@@ -1,48 +1,100 @@
-#include <EntityCore.h>
+#include <assert.h>
 #include <Entity.h>
 
 using namespace std;
 
-struct Vector 
+// Component Creation
+size_t LEFT 	= EntityCore::newComponent<float>("left", 0.0f);
+size_t RIGHT 	= EntityCore::newComponent<float>("right", 0.0f);
+size_t SPEED 	= EntityCore::newComponent<float>("speed", 0.0f);
+
+// Controller, View, & Dynamic Component Definitions
+ControllerFunction MotionController({LEFT, RIGHT, SPEED}, 
+	[](Entity *e, void *updateState) {
+		float dt = *((float*)updateState);
+		float *l = e->ptr<float>(LEFT);
+		float *r = e->ptr<float>(RIGHT);
+		float s = e->get<float>(SPEED);
+		*l += s * dt;
+		*r += s * dt;
+	}
+);
+DynamicComponentFunction<float> CenterDynamicComponent({LEFT, RIGHT}, 
+	[](Entity *e, float &out) -> float& {
+	    float l = e->get<float>(LEFT);
+	    float r = e->get<float>(RIGHT);
+	    return ( out = (l + r) * 0.5f );
+	}
+);
+ViewFunction ExtentView({LEFT,RIGHT}, 
+	[](Entity *e, void *drawState) {
+		string graphics = *((string*)drawState);
+		float l = e->get<float>(LEFT);
+		float r = e->get<float>(RIGHT);
+		cout << "Drawing extent at {" << l << "->" << r << "} with " << graphics << "." << endl;
+	}
+);
+
+// Controller, View, Dynamic Component, & EntityType Creation
+size_t CENTER 		= EntityCore::newDynamicComponent<float>("center", &CenterDynamicComponent);
+size_t MOTION 		= EntityCore::addController(&MotionController);
+size_t EXTENT_VIEW 	= EntityCore::addView(&ExtentView);
+size_t EXTENT 		= EntityCore::newEntityType({LEFT, RIGHT}, {MOTION}, EXTENT_VIEW);
+
+void testConstructorId()
 {
-   float x, y;
-   Vector() : x(0.0f), y(0.0f) { }
-   Vector(float x) : x(x), y(x) { }
-   Vector(float x, float y) : x(x), y(y) { }
-};
+   cout << __func__ << endl;
+
+   Entity e(EXTENT);
+
+   assert( e.has(LEFT) );
+   assert( e.has(RIGHT) );
+   assert( e.hasController(MOTION) );
+}
+
+void testConstructorReference()
+{
+  	cout << __func__ << endl;	
+
+	EntityType *type = EntityCore::getEntityType(EXTENT);
+
+	Entity e(type);
+
+   	assert( e.has(LEFT) );
+   	assert( e.has(RIGHT) );
+   	assert( e.hasController(MOTION) );
+   	assert( e.getEntityType() == type );
+}
+
+void testDynamicEntity()
+{
+	cout << __func__ << endl;
+
+	Entity e;
+
+	assert( e.isCustom() );
+
+	int* x = e.ptrs<int>(325);
+
+	assert( x == nullptr );
+	assert(!e.has(LEFT) );
+
+	e.add(LEFT);
+
+	assert( e.has(LEFT) );
+
+	e.set(LEFT, 3.0f);
+
+	assert( e.get<float>(LEFT) == 3.0f );
+}
 
 int main()
 {
-  size_t POSITION = EntityCore::newComponent<Vector>("position", Vector(1.0f, 0.0f));
-  size_t VELOCITY = EntityCore::newComponent<Vector>("velocity", Vector(0.0f, 0.0f));
-  size_t ROTATION = EntityCore::newComponent<float>("rotation", 0.0f);
-  size_t SCALE = EntityCore::newComponent<float>("scale", 1.0f);
-  size_t SPRITE_VIEW = EntityCore::newView();
-  size_t SPRITE = EntityCore::newEntityType({POSITION, VELOCITY, ROTATION}, {}, SPRITE_VIEW);
-  
-  Entity e(SPRITE);
+	testConstructorId();
+	testConstructorReference();
+	testDynamicEntity();
 
-  Vector *pos = e.ptr<Vector>(POSITION);
-  Vector *vel = e.ptr<Vector>(VELOCITY);
+   	cout << "ALL TESTS PASS" << endl;
 
-  cout << "pos:" << pos->x << "," << pos->y << endl;
-  cout << "vel:" << vel->x << "," << vel->y << endl;
-  cout << "rot:" << e.get<float>(ROTATION) << endl;
-
-  e.set<Vector>(POSITION, Vector(5.0f, 4.2f));
-  e.set<float>(ROTATION, 45.0f);
-
-  cout << "has scale:" << e.has(SCALE) << endl;
-
-  vel->x = -4.0f;
-  vel->y = 7.6f;
-  e.add(SCALE);
-
-  cout << "pos:" << pos->x << "," << pos->y << endl;
-  cout << "vel:" << vel->x << "," << vel->y << endl;
-  cout << "rot:" << e.get<float>(ROTATION) << endl;
-  cout << "has scale:" << e.has(SCALE) << endl;
-  cout << "scl:" << e.get<float>(SCALE) << endl;
-
-  return 0;
+	return 0;
 }

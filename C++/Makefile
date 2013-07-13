@@ -1,13 +1,13 @@
 PROGRAM_NAME = EntityCore
 CXX = g++
 LIBS = 
-FLAGS_CXX = -O -Wall -Wextra -g -std=c++0x -fPIC -O0
+FLAGS_CXX = -O -Wall -Wextra -g -std=c++11 -fPIC -O0
 FLAGS_LD = $(FLAGS_CXX) 
 FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp
 INCLUDE = include/
-OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o BitSet.o 
-DEPENDENCIES = $(OBJECTS) IdMap.o ComponentType.o VectorIterator.o DynamicComponentType.o View.o Controller.o
+OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o BitSet.o ComponentType.o 
+DEPENDENCIES = $(OBJECTS) IdMap.o VectorIterator.o DynamicComponentType.o View.o Controller.o
 
 
 # Compile and run Testing
@@ -37,8 +37,8 @@ BitSet.o: lib/BitSet.cpp
 AnyMemory.o: lib/AnyMemory.cpp
 	$(CXX) $(FLAGS_CXX) -c lib/AnyMemory.cpp -I$(INCLUDE)
 
-ComponentType.o: lib/ComponentType.h
-	$(CXX) $(FLAGS_CXX) -c lib/ComponentType.h -I$(INCLUDE)
+ComponentType.o: lib/ComponentType.cpp
+	$(CXX) $(FLAGS_CXX) -c lib/ComponentType.cpp -I$(INCLUDE)
 
 EntityCore.o: lib/EntityCore.cpp
 	$(CXX) $(FLAGS_CXX) -c lib/EntityCore.cpp -I$(INCLUDE)
@@ -69,17 +69,11 @@ TestBitSet.o-fast: tests/TestBitSet.cpp
 	./TestBitSet
 TestBitSet.o: $(DEPENDENCIES) TestBitSet.o-fast
 
-TestAnyMemory.o-fast:
+TestAnyMemory.o-fast: tests/TestAnyMemory.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestAnyMemory.cpp -I$(INCLUDE)
 	$(CXX) $(FLAGS_LD) -o TestAnyMemory $(OBJECTS) TestAnyMemory.o -I$(INCLUDE)
 	./TestAnyMemory
 TestAnyMemory.o: $(DEPENDENCIES) TestAnyMemory.o-fast
-	
-TestVectorIterator.o-fast: tests/TestVectorIterator.cpp
-	$(CXX) $(FLAGS_CXX) -c tests/TestVectorIterator.cpp -I$(INCLUDE)
-	$(CXX) $(FLAGS_LD) -o TestVectorIterator $(OBJECTS) TestVectorIterator.o -I$(INCLUDE)
-	./TestVectorIterator
-TestVectorIterator.o: $(DEPENDENCIES) TestVectorIterator.o-fast
 
 TestDynamicComponent.o-fast: tests/TestDynamicComponent.cpp
 	$(CXX) $(FLAGS_CXX) -c tests/TestDynamicComponent.cpp -I$(INCLUDE)
@@ -111,15 +105,9 @@ TestIdMap.o-fast: tests/TestIdMap.cpp
 	./TestIdMap
 TestIdMap.o: $(DEPENDENCIES) TestIdMap.o-fast
 
-TestEntity2.o-fast: tests/TestEntity2.cpp
-	$(CXX) $(FLAGS_CXX) -c tests/TestEntity2.cpp -I$(INCLUDE)
-	$(CXX) $(FLAGS_LD) -o TestEntity2 $(OBJECTS) TestEntity2.o -I$(INCLUDE)
-	./TestEntity2
-TestEntity2.o: $(DEPENDENCIES) TestEntity2.o-fast
-
 # Running
 run:
 	./$(PROGRAM_NAME)
 
 clean:
-	rm -f lib$(PROGRAM_NAME).so *.o TestEntity TestBitSet TestAnyMemory TestVectorIterator
+	rm -f lib$(PROGRAM_NAME).so *.o include/*.gch Test*

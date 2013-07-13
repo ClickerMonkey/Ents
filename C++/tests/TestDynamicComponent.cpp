@@ -9,12 +9,13 @@ size_t LEFT = EntityCore::newComponent<float>("left", 0.0f);
 size_t XAXIS = EntityCore::newEntityType({RIGHT, LEFT}, {}, View::NONE);
 
 // Dynamic Component Function 
-DynamicComponentFunction<float> CenterDynamicComponent([](Entity *e, float &out) -> float& 
-{
+DynamicComponentFunction<float> CenterDynamicComponent({LEFT,RIGHT},
+  [](Entity *e, float &out) -> float& {
     float l = e->get<float>(LEFT);
     float r = e->get<float>(RIGHT);
     return ( out = (l + r) * 0.5f );
-});
+  }
+);
 
 // Add to EntityCore
 size_t CENTER = EntityCore::newDynamicComponent<float>("center", &CenterDynamicComponent);

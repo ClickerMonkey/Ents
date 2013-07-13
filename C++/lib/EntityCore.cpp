@@ -31,15 +31,15 @@ size_t EntityCore::newEntityType(IdMap components, IdMap controllers, size_t vie
   size_t id = getEntityTypes().size();
 
   AnyMemory defaultComponents;
-  vector<size_t> offsets;
 
   for (size_t i = 0; i < components.size(); i++) 
   {
-    ComponentType *type = getComponent(components.getId(i));
-    offsets.push_back( defaultComponents.append( type->defaultValue ) );
+    size_t componentId = components.getId(i);
+    ComponentType *componentType = getComponent(componentId);
+    components.setIndex( componentId, defaultComponents.append( componentType->defaultValue ) );
   }
 
-  getEntityTypes().push_back(new EntityType(id, nullptr, components, controllers, viewId, defaultComponents, offsets));
+  getEntityTypes().push_back(new EntityType(id, nullptr, components, controllers, viewId, defaultComponents));
 
   return id;
 }

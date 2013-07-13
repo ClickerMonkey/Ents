@@ -11,25 +11,25 @@ class Entity
 {
 private:
   
-  EntityType *type;
+  EntityType *type = nullptr;
 
   AnyMemory components;
 
   BitSet controllers;
 
-  bool expired;
+  bool expired = false;
 
-  bool visible;
+  bool visible = true;
   
-  bool enabled;
+  bool enabled = true;
 
 public:
 
   Entity();
 
-  Entity(const size_t entityTypeId);
+  Entity(const size_t m_entityTypeId);
 
-  Entity(EntityType *entityType);
+  Entity(EntityType *m_entityType);
 
   virtual ~Entity();
 
@@ -37,6 +37,13 @@ public:
   inline T* ptr(const size_t componentId) 
   {
     return components.getPointer<T>( type->getComponentOffset(componentId) );
+  }
+
+  template<typename T>
+  inline T* ptrs(const size_t componentId) 
+  {
+    const int offset = type->getComponentOffsetSafe(componentId);
+    return (offset == -1 ? nullptr : components.getSafe<T>( offset ));
   }
 
   template<typename T>
@@ -50,8 +57,7 @@ public:
   {
     DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent<T>(componentId);
 
-    if (dynamic != nullptr)
-    {
+    if (dynamic != nullptr && has(dynamic->required)) {
       out = dynamic->compute( this, out );
     }
 
@@ -59,31 +65,20 @@ public:
   }
 
   template<typename T>
-  inline T& getTry(const size_t componentId, T &defaultIfMissing)
+  inline T& gets(const size_t componentId, T &defaultIfMissing)
   {
     return has(componentId) ? get<T>(componentId) : defaultIfMissing;
   }
 
   template<typename T>
-  inline bool getAndSet(const size_t componentId, T *target)
+  inline bool grab(const size_t componentId, T *target)
   {
-    T* ptr = getSafe<T>(componentId);
-
-    bool set = (ptr != nullptr);
-
-    if (set)
-    {
+    T* ptr = ptrs<T>(componentId);
+    bool found = (ptr != nullptr);
+    if (found) {
       *target = *ptr;
     }
-
-    return set;
-  }
-
-  template<typename T>
-  inline T* getSafe(const size_t componentId) 
-  {
-    const int offset = type->getComponentOffsetSafe(componentId);
-    return (offset == -1 ? nullptr : components.getSafe<T>( offset ));
+    return found;
   }
 
   template<typename T>
@@ -92,12 +87,48 @@ public:
     components.set<T>( type->getComponentOffset(componentId), value );
   }
 
+  template<typename T>
+  inline bool sets(const size_t componentId, const T &value)
+  {
+    const int offset = type->getComponentOffsetSafe(componentId);
+    bool found = (offset != -1);
+    if (found) {
+      set<T>(componentId, value);
+    }
+    return found;
+  }
+
   inline bool has(const size_t componentId) 
   {
     return type->hasComponent(componentId);
   }
 
+  inline bool has(const BitSet& components)
+  {
+    return type->getComponents().getBitSet().contains( components );
+  }
+
+  inline bool hasController(const size_t controllerId)
+  {
+    return type->hasController(controllerId);
+  }
+
+  inline bool isCustom()
+  {
+    return type->isCustom();
+  }
+
   bool add(const size_t componentId);
+
+  template<typename T>
+  inline bool add(const size_t componentId, const T &value)
+  {
+    bool added = add(componentId);
+    if (added) {
+      set<T>(componentId, value);
+    }
+    return added;
+  }
 
   inline bool isExpired()
   {
@@ -165,8 +196,7 @@ public:
 
   inline void setControllerEnabledAll( bool enabled )
   {
-    for (size_t i = 0; i < type->getControllerCount(); i++)
-    {
+    for (size_t i = 0; i < type->getControllerCount(); i++) {
       controllers.set( i, enabled );
     }
   }
@@ -213,35 +243,12 @@ public:
 
   int compareTo(const Entity &other) const;
 
-  inline bool operator==(const Entity &b) const
-  {
-    return equals( b );
-  }
-
-  inline bool operator!=(const Entity &b) const
-  {
-    return !equals( b );
-  }
-
-  inline bool operator<(const Entity &b) const
-  {
-    return compareTo( b ) < 0;
-  }
-
-  inline bool operator>(const Entity &b) const
-  {
-    return compareTo( b ) > 0;
-  }
-
-  inline bool operator<=(const Entity &b) const
-  {
-    return compareTo( b ) <= 0;
-  }
-
-  inline bool operator>=(const Entity &b) const
-  {
-    return compareTo( b ) >= 0;
-  }
+  inline bool operator==(const Entity &b) const   { return equals( b ); }
+  inline bool operator!=(const Entity &b) const   { return !equals( b ); }
+  inline bool operator< (const Entity &b) const   { return compareTo( b ) < 0; }
+  inline bool operator> (const Entity &b) const   { return compareTo( b ) > 0; }
+  inline bool operator<=(const Entity &b) const   { return compareTo( b ) <= 0; }
+  inline bool operator>=(const Entity &b) const   { return compareTo( b ) >= 0; }
   
 private:
 

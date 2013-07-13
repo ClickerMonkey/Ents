@@ -112,6 +112,20 @@ void testIntersects()
   assert( b.intersects(c) );
 }
 
+void testContains()
+{
+  cout << __func__ << endl;
+  
+  BitSet a = {1, 2, 3, 4, 6, 7};
+  BitSet b = {2, 3};
+  BitSet c = {1, 2, 5};
+
+  assert( a.contains(b) );
+  assert(!a.contains(c) );
+  assert(!b.contains(a) );
+  assert(!c.contains(a) );
+}
+
 void testToString()
 {
   cout << __func__ << endl;
@@ -142,6 +156,7 @@ int main()
   testFromIndices();
   testSet();
   testIntersects();
+  testContains();
   testToString();
   testEquals();
 

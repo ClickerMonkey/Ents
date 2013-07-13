@@ -7,13 +7,13 @@ EntityList::EntityList()
 {
 }
 
-EntityList::EntityList( const size_t entityTypeId )
-	: Entity( entityTypeId )
+EntityList::EntityList( const size_t m_entityTypeId )
+	: Entity( m_entityTypeId )
 {
 }
 
-EntityList::EntityList( EntityType *type )
-	: Entity( type )
+EntityList::EntityList( EntityType *m_type )
+	: Entity( m_type )
 {
 }
 

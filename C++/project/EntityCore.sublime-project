@@ -1,0 +1,25 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.gch",
+				"TestAnyMemory",
+				"TestBitSet",
+				"TestEntity",
+				"TestVectorIterator",
+				"TestComponentType",
+				"TestController",
+				"TestDynamicComponent",
+				"TestEntity2",
+				"TestView",
+				"TestIdMap",
+				"*.o",
+				"project/"
+			],
+			"follow_symlinks": true,
+			"path": "/home/pdiffenderfer/git/EntityCore/C++"
+		}
+	]
+}

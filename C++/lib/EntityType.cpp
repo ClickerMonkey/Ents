@@ -4,8 +4,8 @@
 
 using namespace std;
 
-EntityType::EntityType(const size_t id, const EntityType *parent, const IdMap &components, const IdMap &controllers, const size_t viewId, const AnyMemory &defaultComponents, const vector<size_t> &offsets)
-  : id(id), parent(parent), components(components), controllers(controllers), viewId(viewId), defaultComponents(defaultComponents), offsets(offsets)
+EntityType::EntityType(const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents)
+  : id(m_id), parent(m_parent), components(m_components), controllers(m_controllers), viewId(m_viewId), defaultComponents(m_defaultComponents)
 {
 }
 
@@ -15,7 +15,7 @@ EntityType::~EntityType()
 
 EntityType* EntityType::extend(const size_t entityTypeId) 
 {
-  return new EntityType( entityTypeId, this, components, controllers, viewId, defaultComponents, offsets );
+  return new EntityType( entityTypeId, this, components, controllers, viewId, defaultComponents );
 }
 
 void EntityType::setComponentAlias(const size_t componentId, const size_t aliasId) 
@@ -39,8 +39,9 @@ bool EntityType::add(const size_t componentId)
 
   if (missing)
   {
-    components.add(componentId);
-    offsets.push_back(defaultComponents.append(EntityCore::getComponent(componentId)->defaultValue));
+    ComponentType* componentType = EntityCore::getComponent(componentId);
+    size_t offset = defaultComponents.append(componentType->defaultValue);
+    components.add(componentId, offset);
   }
 
   return missing;
@@ -52,34 +53,34 @@ bool EntityType::addController(const size_t controllerId)
 
   if (missing)
   {
-    controllers.add(controllerId);  
+    controllers.add(controllerId, controllers.size());  
   }
 
   return missing;
 }
 
-void EntityType::setDefaultComponents(AnyMemory& components) 
+void EntityType::setEntityDefaultComponents(AnyMemory& components) 
 {
   components.append(defaultComponents);
 }
 
 EntityType* EntityType::addCustomComponent(const size_t componentId)
 {
-  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents);
   custom->add(componentId);
   return custom;
 }
 
 EntityType* EntityType::addCustomController(const size_t controllerId)
 {
-  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents);
   custom->addController(controllerId);
   return custom;
 }
 
 EntityType* EntityType::setCustomView(const size_t viewId)
 {
-  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents, offsets);
+  EntityType *custom = new EntityTypeCustom( CUSTOM, this, components, controllers, viewId, defaultComponents);
   custom->setView(viewId);
   return custom;
 }

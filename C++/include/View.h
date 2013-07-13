@@ -1,7 +1,8 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include "Common.h"
+#include <Common.h>
+#include <BitSet.h>
 
 class Entity;
 
@@ -11,6 +12,12 @@ public:
 
    static const size_t NONE = 0xFFFFFFFF;
 
+   const BitSet required;
+
+   View(const BitSet &m_required) : required(m_required)
+   {
+   }
+
    virtual void draw(Entity *e, void *drawState) = 0;
 
 };
@@ -19,13 +26,12 @@ typedef void (*ViewFunctionPointer)(Entity *e, void *drawState);
 
 class ViewFunction : public View
 {
-private:
-   const ViewFunctionPointer function;
-
 public:
 
-   ViewFunction(ViewFunctionPointer function) 
-      : function(function)
+   const ViewFunctionPointer function;
+
+   ViewFunction(const BitSet &m_required, ViewFunctionPointer m_function) 
+      : View(m_required), function(m_function)
    {
    }
 

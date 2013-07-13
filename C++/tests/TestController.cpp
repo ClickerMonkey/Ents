@@ -8,14 +8,15 @@ struct Vector { float x, y; };
 size_t POSITION = EntityCore::newComponent<Vector>("position", {0.0f, 0.0f});
 size_t VELOCITY = EntityCore::newComponent<Vector>("velocity", {0.0f, 0.0f});
 
-ControllerFunction PhysicsController([](Entity *e, void *updateState) 
-{
-	Vector *p = e->ptr<Vector>(POSITION);
-	Vector *v = e->ptr<Vector>(VELOCITY);
-	float dt = *((float*)updateState);
-	p->x += v->x * dt;
-	p->y += v->y * dt;
-});
+ControllerFunction PhysicsController({POSITION, VELOCITY}, 
+	[](Entity *e, void *updateState) {
+		Vector *p = e->ptr<Vector>(POSITION);
+		Vector *v = e->ptr<Vector>(VELOCITY);
+		float dt = *((float*)updateState);
+		p->x += v->x * dt;
+		p->y += v->y * dt;
+	}
+);
 
 size_t PHYSICS = EntityCore::addController(&PhysicsController);
 size_t SPRITE  = EntityCore::newEntityType({POSITION, VELOCITY}, {PHYSICS}, View::NONE);

@@ -7,22 +7,22 @@ struct AnyMemory
 {
 private:
 
-  size_t size;
+  size_t size = 0;
 
-  char *data;
+  char *data = nullptr;
 
 public:
 
   AnyMemory();
 
   template<typename T>
-  AnyMemory(const T &x) : size(0), data(nullptr) 
+  AnyMemory(const T &x)
   {
     add<T>(x);
   }
 
   template<typename T>
-  AnyMemory(std::initializer_list<T> list) : size(0), data(nullptr) 
+  AnyMemory(std::initializer_list<T> list)
   {
     for (const auto &x : list) {
       add<T>(x);
@@ -166,9 +166,9 @@ public:
   }
 
   inline bool operator==(const AnyMemory &b) const  { return equals( b ); }
-  inline bool operator!=(const AnyMemory &b) const  { return !equals( b );  }
-  inline bool operator<(const AnyMemory &b) const   { return compareTo( b ) < 0; }
-  inline bool operator>(const AnyMemory &b) const   { return compareTo( b ) > 0; }
+  inline bool operator!=(const AnyMemory &b) const  { return !equals( b ); }
+  inline bool operator< (const AnyMemory &b) const  { return compareTo( b ) < 0; }
+  inline bool operator> (const AnyMemory &b) const  { return compareTo( b ) > 0; }
   inline bool operator<=(const AnyMemory &b) const  { return compareTo( b ) <= 0; }
   inline bool operator>=(const AnyMemory &b) const  { return compareTo( b ) >= 0; }
 

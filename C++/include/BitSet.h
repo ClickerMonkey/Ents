@@ -45,6 +45,8 @@ public:
 
   bool intersects(const BitSet &other) const;
 
+  bool contains(const BitSet &other) const;
+
   inline size_t size() const
   {
     return bits.size() << 5;
@@ -66,6 +68,8 @@ private:
   {
     return (1 << (bitIndex & 31));
   }
+
+  int getMax() const;
 
 };
 

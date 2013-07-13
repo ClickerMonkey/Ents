@@ -78,7 +78,7 @@ public:
 
     DynamicComponentType<T> *dynamicComponentType = dynamic_cast<DynamicComponentType<T>*>( componentType );
 
-    if ( dynamicComponentType == nullptr )
+    if ( dynamicComponentType == nullptr)
     {
       return nullptr;
     }

@@ -11,9 +11,9 @@ private:
 
   const size_t id;
 
-  const EntityType* parent;
+  const EntityType* parent = nullptr;
 
-  int instances;
+  int instances = 0;
 
   IdMap components;
 
@@ -23,13 +23,11 @@ private:
 
   AnyMemory defaultComponents;
 
-  std::vector<size_t> offsets;
-
 public:
 
   static const size_t CUSTOM = 0xFFFFFFFF;
 
-  EntityType(const size_t id, const EntityType *parent, const IdMap &components, const IdMap &controllers, const size_t viewId, const AnyMemory &defaultComponents, const std::vector<size_t> &offsets);
+  EntityType(const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents);
 
   virtual ~EntityType();
 
@@ -42,13 +40,12 @@ public:
 
   inline size_t getComponentOffset(const size_t componentId) const 
   {
-    return offsets[components.getIndex(componentId)];
+    return components.getIndex(componentId);
   }
 
   inline size_t getComponentOffsetSafe(const size_t componentId) const 
   {
-    int index = components.getIndexSafe(componentId);
-    return (index == -1 ? -1 : offsets[index]);
+    return components.getIndexSafe(componentId);
   }
 
   inline size_t getComponentCount() 
@@ -112,7 +109,7 @@ public:
 
   bool addController(const size_t controllerId);
 
-  void setDefaultComponents(AnyMemory& components);
+  void setEntityDefaultComponents(AnyMemory& components);
 
   virtual EntityType* addCustomComponent(const size_t componentId);
 

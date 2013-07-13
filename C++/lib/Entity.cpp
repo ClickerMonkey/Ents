@@ -5,26 +5,26 @@
 using namespace std;
 
 Entity::Entity()
-  : type(nullptr), expired(false), visible(true), enabled(true) 
 {
-  AnyMemory defaultComponents;
-  setEntityType(new EntityTypeCustom(EntityType::CUSTOM, nullptr, {}, {}, View::NONE, defaultComponents, {}));
+  setEntityType( new EntityTypeCustom() );
 }
 
-Entity::Entity(const size_t entityTypeId) 
-  : expired(false), visible(true), enabled(true)
+Entity::Entity(const size_t m_entityTypeId)
 {
-  type = EntityCore::getEntityType( entityTypeId );
-  type->setDefaultComponents(components);
-  type->addInstance();
+  setEntityType( EntityCore::getEntityType( m_entityTypeId ) );
+  type->setEntityDefaultComponents(components);
 }
 
-Entity::Entity(EntityType *entityType) 
-  : expired(false), visible(true), enabled(true)
+Entity::Entity(EntityType *m_entityType)
 {
-  type = entityType;
-  type->setDefaultComponents(components);
-  type->addInstance();
+  setEntityType( m_entityType );
+  type->setEntityDefaultComponents(components);
+}
+
+Entity::Entity(EntityType *m_entityType, AnyMemory m_defaultComponents)
+{
+  setEntityType( m_entityType );
+  components = m_defaultComponents;
 }
 
 Entity::~Entity() 
@@ -45,22 +45,15 @@ bool Entity::add(const size_t componentId)
   return addable;
 }
 
-Entity::Entity(EntityType *entityType, AnyMemory defaultComponents) 
-  : expired(false), visible(true), enabled(true)
-{
-  type = entityType;
-  type->addInstance();
-  components = defaultComponents;
-}
-
 void Entity::setEntityType(EntityType* newType)
 {
   if (type != newType)
   {
-    if (type != nullptr)
+    if (type != nullptr) 
     {
       type->removeInstance();
     }
+
     newType->addInstance();
   }
 

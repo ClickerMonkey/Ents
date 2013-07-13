@@ -9,14 +9,15 @@ size_t POSITION 	= EntityCore::newComponent<Vector>("position", {0.0f, 0.0f});
 size_t SPRITE_VIEW 	= EntityCore::newView();
 size_t SPRITE  		= EntityCore::newEntityType({POSITION}, {}, SPRITE_VIEW);
 
-ViewFunction SpriteView([](Entity *e, void *drawState) 
-{
-	string graphics = *((string*)drawState);
+ViewFunction SpriteView({POSITION}, 
+	[](Entity *e, void *drawState) {
+		string graphics = *((string*)drawState);
 
-	Vector *p = e->ptr<Vector>(POSITION);
-
-	cout << "Drawing sprite at {" << p->x << ", " << p->y << "} with " << graphics << "." << endl;
-});
+		Vector *p = e->ptr<Vector>(POSITION);
+		
+		cout << "Drawing sprite at {" << p->x << ", " << p->y << "} with " << graphics << "." << endl;
+	}
+);
 
 void testDraw()
 {

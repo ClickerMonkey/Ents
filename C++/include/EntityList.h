@@ -22,9 +22,9 @@ public:
 
 	EntityList();
 	
-	EntityList( const size_t entityTypeId );
+	EntityList( const size_t m_entityTypeId );
 
-	EntityList( EntityType *type );
+	EntityList( EntityType *m_type );
 
 	EntityList( std::initializer_list<Entity*> e );
 
