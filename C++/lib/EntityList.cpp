@@ -20,19 +20,14 @@ EntityList::EntityList( EntityType *m_type )
 EntityList::EntityList( initializer_list<Entity*> e )
 	: Entity()
 {
-	add( e );
+	for (const auto &x : e) {
+		internalAdd(x);
+	}
 }
 
 void EntityList::add( Entity *e )
 {
 	internalAdd( e );
-}
-
-void EntityList::add( initializer_list<Entity*> e )
-{
-	for (const auto &x : e) {
-		internalAdd(x);
-	}
 }
 
 void EntityList::add( const vector<Entity*> &e )
@@ -48,7 +43,7 @@ void EntityList::clean()
 
 	for (size_t i = 0; i < entities.size(); i++) {
 		Entity *e = entities.at(i);
-
+		
 		if (e->isExpired()) {
 			onEntityRemove( e, i );
 		} else {
@@ -56,8 +51,10 @@ void EntityList::clean()
 		}
 	}
 
-	if (alive != entities.size()) {
-		entities.erase( entities.begin() + alive, entities.end() + entities.size() );
+	if (alive == 0) {
+		entities.clear();
+	} else if (alive < entities.size()) {
+		entities.erase( entities.begin() + alive, entities.end() );
 	}
 }
 
@@ -83,7 +80,7 @@ void EntityList::update( void *updateState )
 		onEntityUpdated( e, updateState );
 	}
 
-	clean();
+	clean();	
 }
 
 void EntityList::internalAdd( Entity *e )
@@ -109,120 +106,32 @@ VectorIteratorPointer<Entity*, EntityFilter> EntityList::end()
  	return VectorIteratorPointer<Entity*, EntityFilter>(&entities, FilterNone, entities.size() - 1, -1, -1);
 }
 
-struct EntityComponentFilter
-{
-	BitSet components;
-
-	EntityComponentFilter(BitSet components)
-		: components(components)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return components.intersects( e->getEntityType()->getComponents().getBitSet() );
-	}
-};
-
 VectorIterator<Entity*, EntityComponentFilter> EntityList::filterByComponents(initializer_list<size_t> componentIds)
 {
 	return filter( EntityComponentFilter(BitSet(componentIds)) );
 }
-
-struct EntityControllerFilter
-{
-	BitSet controllers;
-
-	EntityControllerFilter(BitSet controllers)
-		: controllers(controllers)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return controllers.intersects( e->getEntityType()->getControllers().getBitSet() );
-	}
-};
 
 VectorIterator<Entity*, EntityControllerFilter> EntityList::filterByControllers(initializer_list<size_t> controllerIds)
 {
 	return filter( EntityControllerFilter(BitSet(controllerIds)) );
 }
 
-
-struct EntityValueFilter
-{
-	const size_t componentId;
-	AnyMemory value;
-
-	EntityValueFilter( const size_t componentId, AnyMemory &value )
-		: componentId(componentId), value(value)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		if (e->has(componentId)) {
-
-			size_t offset = e->getEntityType()->getComponentOffset(componentId);
-			AnyMemory components = e->getComponents();
-
-			if (offset + value.getSize() <= components.getSize()) {
-
-				void *componentPointer = (void*)(components.getData() + offset);
-				void *valuePointer = (void*)value.getData();
-
-				return ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
-			}
-		}
-
-		return false;
-	}
-};
-
-VectorIterator<Entity*, EntityValueFilter> EntityList::filterByValue(const size_t componentId, AnyMemory &value)
+VectorIterator<Entity*, EntityValueFilter> EntityList::filterByValue(const size_t componentId, const AnyMemory &value)
 {
 	return filter( EntityValueFilter(componentId, value) );
 }
-
-
-struct EntityVisibleFilter
-{
-	bool visible;
-
-	EntityVisibleFilter(bool visible)
-		: visible(visible)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return e->isVisible() == visible;
-	}
-};
 
 VectorIterator<Entity*, EntityVisibleFilter> EntityList::filterByVisible(bool visible)
 {
 	return filter( EntityVisibleFilter(visible) );
 }
 
-
-struct EntityEnabledFilter
-{
-	bool enabled;
-
-	EntityEnabledFilter(bool enabled)
-		: enabled(enabled)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return e->isEnabled() == enabled;
-	}
-};
-
 VectorIterator<Entity*, EntityEnabledFilter> EntityList::filterByEnabled(bool enabled)
 {
 	return filter( EntityEnabledFilter(enabled) );
+}
+
+VectorIterator<Entity*, EntityExpiredFilter> EntityList::filterByExpired(bool expired)
+{
+	return filter( EntityExpiredFilter(expired) );
 }

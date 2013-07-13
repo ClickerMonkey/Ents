@@ -111,8 +111,15 @@ TestEntityType.o-fast: tests/TestEntityType.cpp
 	./TestEntityType
 TestEntityType.o: $(DEPENDENCIES) TestEntityType.o-fast
 
+TestEntityList.o-fast: tests/TestEntityList.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestEntityList.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestEntityList $(OBJECTS) TestEntityList.o -I$(INCLUDE)
+	./TestEntityList
+TestEntityList.o: $(DEPENDENCIES) TestEntityList.o-fast
+
 TestAll-fast: TestIdMap.o-fast TestView.o-fast TestController.o-fast TestComponentType.o-fast \
-			  TestDynamicComponent.o-fast TestAnyMemory.o-fast TestBitSet.o-fast TestEntity.o-fast
+			  TestDynamicComponent.o-fast TestAnyMemory.o-fast TestBitSet.o-fast TestEntity.o-fast \
+			  TestEntityType.o-fast TestEntityList.o-fast
 TestAll: $(DEPENDENCIES) TestAll-fast
 
 

@@ -113,7 +113,7 @@ public:
 
   static size_t addView(View *view);
 
-  static size_t newView() 
+  inline static size_t newView() 
   {
     return addView(nullptr);
   }
@@ -139,7 +139,17 @@ public:
   }
 
   static size_t addController(Controller *controller);
- 
+  
+  inline static size_t newController()
+  {
+    return addController(nullptr);
+  }
+
+  static void setController(const size_t controllerId, Controller* controller)
+  {
+    getControllers()[controllerId] = controller;
+  }
+
 };
 
 #endif
