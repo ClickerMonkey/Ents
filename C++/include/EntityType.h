@@ -21,9 +21,13 @@ protected:
 
   IdMap controllers;
 
+  IdMap methods;
+
   size_t viewId;
 
   AnyMemory defaultComponents;
+
+  vector<void*> methodMap;
 
 public:
 
@@ -50,7 +54,7 @@ public:
     return components.getIndexSafe(componentId);
   }
 
-  inline size_t getComponentCount() 
+  inline size_t getComponentCount() const
   {
     return components.size();
   }
@@ -73,6 +77,58 @@ public:
   }
 
   void setControllerAlias(const size_t controllerId, const size_t aliasId);
+
+  inline size_t getMethodCount() const
+  {
+    return methods.size();
+  }
+
+  inline bool hasMethod(const size_t methodId) const
+  {
+    return methods.has(methodId);
+  }
+
+  inline int getMethodIndex(const size_t methodId) const
+  {
+    return methods.getIndex( methodId );
+  }
+
+  inline int getMethodIndexSafe(const size_t methodId) const
+  {
+    return methods.getIndexSafe( methodId );
+  }
+
+  template<class R, class... A>
+  bool addMethod(const Method<R(A...)> &method)
+  {
+    bool missing = !hasMethod(method.id);
+    if (missing) {
+        methodMap.push_back(&method.function);
+        methods.add(method.id);
+    }
+    return missing;
+  }
+
+  template<class R, class... A>
+  bool setMethod(const Method<R(A...)> &method, const function<R(Entity&,A...)> &methodImplementation)
+  {
+    int index = methods.getIndexSafe(method.id);
+    bool exists = (index != -1);
+    if (exists) {
+      methodMap[index] = &methodImplementation;
+    }
+    return exists;
+  }
+
+  template<class R, class... A>
+  function<R(Entity&,A...)>* getMethod(const size_t methodId) const
+  {
+    if (!hasMethod(methodId)) {
+      return nullptr;
+    }
+
+    return dynamic_cast<function<R(Entity&,A...)>*>(methodMap[methodId]);
+  }
 
   void setView(const size_t view);
 
@@ -128,6 +184,34 @@ public:
     }
 
     target->add(component);
+
+    return target;
+  }
+
+  template<class R, class... A>
+  EntityType* addCustomMethod(const Method<R(A...)> &method)
+  {
+    EntityType* target = this;
+
+    if (!isCustom()) {
+      target = getCustom();
+    }
+
+    target->addMethod(method);
+
+    return target;
+  }
+
+  template<class R, class... A>
+  EntityType* setCustomMethod(const Method<R(A...)> &method, const function<R(Entity&,A...)> &methodImplementation)
+  {
+     EntityType* target = this;
+
+    if (!isCustom()) {
+      target = getCustom();
+    }
+
+    target->setMethod(method, methodImplementation);
 
     return target;
   }

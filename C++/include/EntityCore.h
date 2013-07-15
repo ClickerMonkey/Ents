@@ -5,6 +5,7 @@
 #include <View.h>
 #include <Controller.h>
 #include <Component.h>
+#include <Method.h>
 #include <IdMap.h>
 
 class EntityCore 
@@ -15,6 +16,7 @@ protected:
   std::vector<View*> views;
   std::vector<Controller*> controllers;
   std::vector<ComponentBase*> components;
+  std::vector<Method*> methods;
 
 public:
 
@@ -46,6 +48,8 @@ public:
   }
 
   EntityType* newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers, const size_t viewId);
+
+
 
   inline ComponentBase* getComponent(const size_t componentId) const
   {
@@ -91,6 +95,39 @@ public:
     components.push_back(c);
     return *c;
   }
+
+
+
+  inline MethodBase* getMethod(const size_t methodId)
+  {
+    return methods[methodId];
+  }
+
+  template<class R, class... A>
+  inline Method<R(A...)>* getMethodCast(const size_t methodId) const
+  {
+    return dynamic_cast<Method<R(A...)>*>(methods[methodId]);
+  }
+
+  inline bool hasMethod(const size_t methodId) const
+  {
+    return (methodId < methods.size());
+  }
+
+  inline MethodBase* getMethodSafe(const size_t methodId) const
+  {
+    return hasMethod(methodId) ? getMethod(methodId) : nullptr;
+  }
+
+  template<class R, class... A>
+  Method<R(A...)>& newMethod(const std::string &name, const std::function<R(Entity&,A...)> &defaultFunction)
+  {
+    Method<R(A...)> *m = new Method<R(A...)>(this, methods.size(), name, defaultFunction);
+    methods.push_back(m);
+    return *m;
+  }
+
+
 
   inline View* getView(const size_t viewId) const
   {
@@ -138,6 +175,8 @@ public:
     return true;
   }
 
+
+
   inline Controller* getController(const size_t controllerId) const
   {
     return controllers[controllerId];
@@ -183,6 +222,8 @@ public:
 
     return true;
   }
+
+
 
 };
 

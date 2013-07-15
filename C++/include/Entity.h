@@ -173,6 +173,16 @@ public:
     return sets<T>(component, value);
   }
 
+  template<class R, class... A>
+  R execute(const Method<R(A...)> &method, A... arguments ) 
+  {
+    Method<R(A...)> *method = type->getMethod<R,A...>(method.id);
+    if (method != nullptr) {
+      return method(*this, argments);
+    }
+    return R();
+  }
+
   inline bool hasController(const size_t controllerId)
   {
     return type->hasController(controllerId);
