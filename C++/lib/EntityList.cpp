@@ -102,7 +102,7 @@ VectorIteratorPointer<Entity*> EntityList::end()
 
 VectorIterator<Entity*> EntityList::filterByComponents(const BitSet &componentIds)
 {
-	return filter( [&] (Entity *e) -> bool 
+	return filter( [=] (Entity *e) -> bool 
 	{
 		return componentIds.intersects( e->getEntityType()->getComponents().getBitSet() );
 	});
@@ -110,37 +110,15 @@ VectorIterator<Entity*> EntityList::filterByComponents(const BitSet &componentId
 
 VectorIterator<Entity*> EntityList::filterByControllers(const BitSet &controllerIds)
 {
-	return filter( [&] (Entity *e) -> bool 
+	return filter( [=] (Entity *e) -> bool 
 	{
 		return controllerIds.intersects( e->getEntityType()->getControllers().getBitSet() );
 	});
 }
 
-VectorIterator<Entity*> EntityList::filterByValue(const size_t componentId, const AnyMemory &value)
-{
-	return filter( [&] (Entity *e) -> bool 
-	{
-		if (e->has(componentId)) {
-
-			size_t offset = e->getEntityType()->getComponentOffset(componentId);
-			AnyMemory components = e->getComponents();
-
-			if (offset + value.getSize() <= components.getSize()) {
-
-				void *componentPointer = (void*)(components.getData() + offset);
-				void *valuePointer = (void*)value.getData();
-
-				return ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
-			}
-		}
-
-		return false;
-	});
-}
-
 VectorIterator<Entity*> EntityList::filterByVisible(bool visible)
 {
-	return filter( [&] (Entity *e) -> bool 
+	return filter( [=] (Entity *e) -> bool 
 	{
 		return ( e->isVisible() == visible );
 	});
@@ -148,7 +126,7 @@ VectorIterator<Entity*> EntityList::filterByVisible(bool visible)
 
 VectorIterator<Entity*> EntityList::filterByEnabled(bool enabled)
 {
-	return filter( [&] (Entity *e) -> bool
+	return filter( [=] (Entity *e) -> bool
 	{
 		return ( e->isEnabled() == enabled );
 	});
@@ -156,8 +134,16 @@ VectorIterator<Entity*> EntityList::filterByEnabled(bool enabled)
 
 VectorIterator<Entity*> EntityList::filterByExpired(bool expired)
 {
-	return filter( [&] (Entity *e) -> bool
+	return filter( [=] (Entity *e) -> bool
 	{
 		return ( e->isExpired() == expired );
+	});
+}
+
+VectorIterator<Entity*> EntityList::filterByEntityType(const EntityType* entityType)
+{
+	return filter( [=] (Entity *e) -> bool
+	{
+		return ( e->getEntityType() == entityType );
 	});
 }

@@ -1,7 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <Common.h>
 #include <map>
 
 #include <EntityType.h>

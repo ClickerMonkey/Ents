@@ -3,29 +3,31 @@
 
 using namespace std;
 
-size_t C1 = EntityCore::newComponent<int>("C1", 1);
-size_t C2 = EntityCore::newComponent<int>("C2", 2);
-size_t C3 = EntityCore::newComponent<int>("C3", 3);
-size_t C4 = EntityCore::newComponent<int>("C4", 4);
+EntityCore Core;
 
-size_t U1 = EntityCore::addController(nullptr);
-size_t U2 = EntityCore::addController(nullptr);
-size_t U3 = EntityCore::addController(nullptr);
+Component<int> C1 = Core.newComponent("C1", 1);
+Component<int> C2 = Core.newComponent("C2", 2);
+Component<int> C3 = Core.newComponent("C3", 3);
+Component<int> C4 = Core.newComponent("C4", 4);
 
-size_t V1 = EntityCore::newView();
-size_t V2 = EntityCore::newView();
+size_t U1 = Core.newController();
+size_t U2 = Core.newController();
+size_t U3 = Core.newController();
+
+size_t V1 = Core.newView();
+size_t V2 = Core.newView();
 
 void testConstructor()
 {	
   	cout << "Running " << __func__ << "() ... ";
   
-  	EntityType et(0, nullptr, {C1, C2, C3}, {U1, U2}, View::NONE, {1, 2, 3});
+  	EntityType et(&Core, 0, nullptr, {C1.id, C2.id, C3.id}, {U1, U2}, View::NONE, {1, 2, 3});
 
   	assert( et.getComponentCount() == 3 );
-  	assert( et.hasComponent(C1) );
-  	assert( et.hasComponent(C2) );
-  	assert( et.hasComponent(C3) );
-  	assert(!et.hasComponent(C4) );
+  	assert( et.hasComponent(C1.id) );
+  	assert( et.hasComponent(C2.id) );
+  	assert( et.hasComponent(C3.id) );
+  	assert(!et.hasComponent(C4.id) );
 
   	assert( et.getControllerCount() == 2 );
   	assert( et.hasController(U1) );
@@ -39,20 +41,20 @@ void testAdd()
 {	
   	cout << "Running " << __func__ << "() ... ";
   
-	EntityType et(0, nullptr, {}, {}, View::NONE, AnyMemory());
+	EntityType et(&Core, 0, nullptr, {}, {}, View::NONE, AnyMemory());
 
   	assert( et.getComponentCount() == 0 );
 
   	assert( et.add(C1) );
 
   	assert( et.getComponentCount() == 1 );
-  	assert( et.hasComponent(C1) );
+  	assert( et.hasComponent(C1.id) );
   	assert( et.getDefaultComponents().get<int>(0) == 1 );
-  	assert(!et.hasComponent(C2) );
+  	assert(!et.hasComponent(C2.id) );
 
   	assert( et.add(C2, 22) );
 
-	assert( et.hasComponent(C2) );
+	assert( et.hasComponent(C2.id) );
   	assert( et.getComponentCount() == 2 );
   	assert( et.getDefaultComponents().get<int>(4) == 22 );
 
@@ -65,7 +67,7 @@ void testAddController()
 {
 	cout << "Running " << __func__ << "() ... ";
   
-	EntityType et(0, nullptr, {}, {}, View::NONE, AnyMemory());
+	EntityType et(&Core, 0, nullptr, {}, {}, View::NONE, AnyMemory());
 
   	assert( et.getControllerCount() == 0 );
   	assert(!et.hasController(U1) );
@@ -89,28 +91,28 @@ void testAlias()
 {
 	cout << "Running " << __func__ << "() ... ";
   
-	EntityType et(0, nullptr, {C1, C2}, {}, View::NONE, {1, 2});
+	EntityType et(&Core, 0, nullptr, {C1.id, C2.id}, {}, View::NONE, {1, 2});
 
-	assert( et.hasComponent(C1) );
-	assert( et.hasComponent(C2) );
-	assert(!et.hasComponent(C3) );
-	assert(!et.hasComponent(C4) );
+	assert( et.hasComponent(C1.id) );
+	assert( et.hasComponent(C2.id) );
+	assert(!et.hasComponent(C3.id) );
+	assert(!et.hasComponent(C4.id) );
 
-	assert( et.getComponentOffsetSafe(C1) == 0 );
-	assert( et.getComponentOffsetSafe(C2) == 1 );
-	assert( et.getComponentOffsetSafe(C3) ==-1 );
-	assert( et.getComponentOffsetSafe(C4) ==-1 );
+	assert( et.getComponentOffsetSafe(C1.id) == 0 );
+	assert( et.getComponentOffsetSafe(C2.id) == 1 );
+	assert( et.getComponentOffsetSafe(C3.id) ==-1 );
+	assert( et.getComponentOffsetSafe(C4.id) ==-1 );
 
-	et.setComponentAlias(C1, C3);
-	et.setComponentAlias(C2, C4);
+	et.setComponentAlias(C1.id, C3.id);
+	et.setComponentAlias(C2.id, C4.id);
 
-	assert( et.hasComponent(C3) );
-	assert( et.hasComponent(C4) );
+	assert( et.hasComponent(C3.id) );
+	assert( et.hasComponent(C4.id) );
 
-	assert( et.getComponentOffsetSafe(C1) == 0 );
-	assert( et.getComponentOffsetSafe(C2) == 1 );
-	assert( et.getComponentOffsetSafe(C3) == 0 );
-	assert( et.getComponentOffsetSafe(C4) == 1 );
+	assert( et.getComponentOffsetSafe(C1.id) == 0 );
+	assert( et.getComponentOffsetSafe(C2.id) == 1 );
+	assert( et.getComponentOffsetSafe(C3.id) == 0 );
+	assert( et.getComponentOffsetSafe(C4.id) == 1 );
 
   	cout << "Pass" << endl;
 }
@@ -119,7 +121,7 @@ void testSetDefaultValue()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	EntityType et(0, nullptr, {C1, C2}, {}, View::NONE, {1, 2});
+	EntityType et(&Core, 0, nullptr, {C1.id, C2.id}, {}, View::NONE, {1, 2});
 
 	assert( et.getDefaultComponents().get<int>(0) == 1 );
 
@@ -135,7 +137,7 @@ void testExtend()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	EntityType *e1 = new EntityType(0, nullptr, {C1, C2}, {}, View::NONE, {1, 2});
+	EntityType *e1 = new EntityType(&Core, 0, nullptr, {C1.id, C2.id}, {}, View::NONE, {1, 2});
 	EntityType *e2 = e1->extend(1);
 
 	assert( e1 != e2 );

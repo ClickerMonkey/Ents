@@ -52,8 +52,6 @@ public:
 
 	VectorIterator<Entity*> filterByControllers(const BitSet &controllerIds);
 
-	VectorIterator<Entity*> filterByValue(const size_t componentId, const AnyMemory &value);
-
 	template<typename T>
 	VectorIterator<Entity*> filterByValue(const Component<T> &component, const T &value)
 	{
@@ -71,6 +69,8 @@ public:
 	VectorIterator<Entity*> filterByEnabled(const bool enabled);
 
 	VectorIterator<Entity*> filterByExpired(const bool expired);
+
+	VectorIterator<Entity*> filterByEntityType(const EntityType* entityType);	
 
 	std::vector<Entity*>& getEntities()
 	{

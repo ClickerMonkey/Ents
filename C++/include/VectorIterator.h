@@ -2,8 +2,7 @@
 #define VECTORITERATOR_H
 
 #include <functional>
-
-#include <Common.h>
+#include <vector>
 
 template<typename T>
 struct VectorIteratorPointer 

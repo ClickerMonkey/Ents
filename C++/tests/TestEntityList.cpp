@@ -65,7 +65,7 @@ void testEmptyConstructor()
    }
    assert( t == 0 );
 
-   for (auto const &e : el.filterByValue(C1.id, {3.5f})) {
+   for (auto const &e : el.filterByValue(C1, 3)) {
    		USE(e);
    		t++;
    }
@@ -319,44 +319,6 @@ void testFilterByValue()
    EntityList el = {&a, &b, &c, &d, &e};
 
    int index = 0;
-   for (auto entity : el.filterByValue(C1.id, {11})) {
-   		if (index == 0) {
-   			assert( &a == entity );
-   		} else if (index == 1) {
-   			assert( &d == entity );
-   		} else if (index == 2) {
-   			assert( &e == entity );
-   		}
-   		index++;
-   }
-
-   assert( index == 3 );
-
-   index = 0;
-
-   for (auto entity : el.filterByValue(C2.id, {22})) {
-   		USE(entity);
-   		index++;
-   }
-
-   assert( index == 0 );
-
-   cout << "Pass" << endl;
-}
-
-void testFilterByValueStrict()
-{
-   cout << "Running " << __func__ << "() ... ";
-
-   Entity a(E1,{{C1.id, 11}});
-   Entity b(E1,{{C1.id, 7}});
-   Entity c(E2,{{C1.id, 8}});
-   Entity d(E1,{{C1.id, 11}});
-   Entity e(E2,{{C1.id, 11}});
-
-   EntityList el = {&a, &b, &c, &d, &e};
-
-   int index = 0;
    for (auto entity : el.filterByValue(C1, 11)) {
          if (index == 0) {
             assert( &a == entity );
@@ -519,6 +481,58 @@ void testFilterByExpired()
    cout << "Pass" << endl;
 }
 
+void testFilterByEntityType()
+{
+   cout << "Running " << __func__ << "() ... ";
+
+   Entity a(E1), b(E1), c(E2), d(E1), e(E2);
+   EntityList el = {&a, &b, &c, &d, &e};
+
+   int index = 0;
+   for (Entity *entity : el.filterByEntityType(E1)) {
+         if (index == 0) {
+            assert( &a == entity );
+         } else if (index == 1) {
+            assert( &b == entity );
+         } else if (index == 2) {
+            assert( &d == entity );
+         }
+         index++;
+   }
+
+   assert( index == 3 );
+
+   cout << "Pass" << endl;
+}
+
+bool CustomFilter(Entity *e) {
+   return (e->getEntityType() == E1);
+}
+
+void testFilter()
+{
+   cout << "Running " << __func__ << "() ... ";
+
+   Entity a(E1), b(E1), c(E2), d(E1), e(E2);
+   EntityList el = {&a, &b, &c, &d, &e};
+
+   int index = 0;
+   for (Entity *entity : el.filter(&CustomFilter)) {
+         if (index == 0) {
+            assert( &a == entity );
+         } else if (index == 1) {
+            assert( &b == entity );
+         } else if (index == 2) {
+            assert( &d == entity );
+         }
+         index++;
+   }
+
+   assert( index == 3 );
+
+   cout << "Pass" << endl;
+}
+
 void testAdditionOperator()
 {
    cout << "Running " << __func__ << "() ... ";
@@ -576,10 +590,11 @@ int main()
 	testFilterByComponents();
 	testFilterByControllers();
 	testFilterByValue();
-   testFilterByValueStrict();
 	testFilterByVisible();
 	testFilterByEnabled();
 	testFilterByExpired();
+   testFilterByEntityType();
+   testFilter();
 	testAdditionOperator();
 	testInputOperator();
 
