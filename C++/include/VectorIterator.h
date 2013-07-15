@@ -1,29 +1,31 @@
 #ifndef VECTORITERATOR_H
 #define VECTORITERATOR_H
 
+#include <functional>
+
 #include <Common.h>
 
-template<typename T, typename F>
+template<typename T>
 struct VectorIteratorPointer 
 {
    std::vector<T> *v;
-   F filter;
+   const std::function<bool(T)> filter;
    const int dir, stop;
    int index, last;
 
-   VectorIteratorPointer(std::vector<T> *v, F filter, int start, int dir, int stop) 
-      : v(v), filter(filter), dir(dir), stop(stop) 
+   VectorIteratorPointer(std::vector<T> *m_v, const std::function<bool(T)> &m_filter, int m_start, int m_dir, int m_stop) 
+      : v(m_v), filter(m_filter), dir(m_dir), stop(m_stop) 
    {
       last = -1;
-      index = findNext(start);
+      index = findNext(m_start);
    }
 
-   bool operator!=(const VectorIteratorPointer<T, F> &other) const 
+   bool operator!=(const VectorIteratorPointer<T> &other) const 
    {
       return (last != other.index);
    }
 
-   VectorIteratorPointer<T, F>& operator++() 
+   VectorIteratorPointer<T>& operator++() 
    {
       last = index;
       index = findNext(index + dir);
@@ -48,25 +50,25 @@ struct VectorIteratorPointer
    }
 };
 
-template<typename T, typename F>
+template<typename T>
 struct VectorIterator 
 {
    std::vector<T> *v;
-   F filter;
+   const std::function<bool(T)> filter;
 
-   VectorIterator(std::vector<T> *v, F filter) 
-      : v(v), filter(filter) 
+   VectorIterator(std::vector<T> *m_v, const std::function<bool(T)> &m_filter)
+      : v(m_v), filter(m_filter)
    {
    }
 
-   VectorIteratorPointer<T, F> begin() 
+   VectorIteratorPointer<T> begin() 
    {
-      return VectorIteratorPointer<T, F>(v, filter, 0, 1, v->size());
+      return VectorIteratorPointer<T>(v, filter, 0, 1, v->size());
    }
 
-   VectorIteratorPointer<T, F> end() 
+   VectorIteratorPointer<T> end() 
    {
-      return VectorIteratorPointer<T, F>(v, filter, v->size() - 1, -1, -1);
+      return VectorIteratorPointer<T>(v, filter, v->size() - 1, -1, -1);
    }
 };
 

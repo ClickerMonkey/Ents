@@ -1,153 +1,187 @@
 #ifndef ENTITYCORE_H
 #define ENTITYCORE_H
 
-#include <Common.h>
 #include <EntityType.h>
 #include <View.h>
 #include <Controller.h>
-#include <ComponentType.h>
-#include <DynamicComponentType.h>
+#include <Component.h>
 #include <IdMap.h>
-
-std::vector<EntityType*>&    getEntityTypes();
-std::vector<View*>&          getViews();
-std::vector<Controller*>&    getControllers();
-std::vector<ComponentType*>& getComponents();
 
 class EntityCore 
 {
+protected:
+
+  std::vector<EntityType*> entityTypes;
+  std::vector<View*> views;
+  std::vector<Controller*> controllers;
+  std::vector<ComponentBase*> components;
+
 public:
-  
-  inline static EntityType* getEntityType(const size_t entityTypeId) 
+
+  inline EntityType* getEntityType(const size_t entityTypeId) const
   {
-    return getEntityTypes().at(entityTypeId);
+    return entityTypes[entityTypeId];
   }
 
-  inline static bool hasEntityType(const size_t entityTypeId) 
+  inline bool hasEntityType(const size_t entityTypeId) const
   {
-    return (entityTypeId < getEntityTypes().size());
+    return (entityTypeId < entityTypes.size());
   }
 
-  inline static EntityType* getEntityTypeSafe(const size_t entityTypeId) 
+  inline EntityType* getEntityTypeSafe(const size_t entityTypeId) const
   {
     return hasEntityType(entityTypeId) ? getEntityType(entityTypeId) : nullptr;
   }
 
-  static size_t newEntityType(IdMap components, IdMap controllers, const size_t viewId);
+  EntityType* newEntityType(IdMap components, IdMap controllers, const size_t viewId);
   
-  inline static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers)
+  inline EntityType* newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers)
   {
     return newEntityTypeExtension(entityTypeId, components, controllers, View::NONE);
   }
 
-  inline static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components)
+  inline EntityType* newEntityTypeExtension(const size_t entityTypeId, IdMap components)
   {
     return newEntityTypeExtension(entityTypeId, components, {}, View::NONE);
   }
 
-  static size_t newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers, const size_t viewId);
+  EntityType* newEntityTypeExtension(const size_t entityTypeId, IdMap components, IdMap controllers, const size_t viewId);
 
-  inline static ComponentType* getComponent(const size_t componentId) 
+  inline ComponentBase* getComponent(const size_t componentId) const
   {
-    return getComponents().at(componentId);
+    return components[componentId];
   }
 
-  inline static bool hasComponent(const size_t componentId) 
+  template<typename T>
+  inline T* getComponentCast(const size_t componentId) const
   {
-    return (componentId < getComponents().size());
+    return dynamic_cast<T*>(components[componentId]);
   }
 
-  inline static ComponentType* getComponentSafe(const size_t componentId) 
+  inline bool hasComponent(const size_t componentId) const
+  {
+    return (componentId < components.size());
+  }
+
+  inline ComponentBase* getComponentSafe(const size_t componentId) const
   {
     return hasComponent(componentId) ? getComponent(componentId) : nullptr;
   }
 
   template<typename T>
-  static size_t newComponent(const std::string name, T defaultValue) 
+  Component<T>& newComponent(const std::string &name, const T &defaultValue) 
   {
-    size_t id = getComponents().size();
-    getComponents().push_back(new ComponentType(id, name, AnyMemory(defaultValue)));
-    return id;
+    Component<T> *c = new Component<T>(this, components.size(), name, defaultValue);
+    components.push_back(c);
+    return *c;
   }
 
   template<typename T>
-  static size_t newDynamicComponent(const std::string name, DynamicComponent<T> *dynamicComponent)
+  ComponentSet<T>& newComponentSet(const std::string &name, const BitSet &required, const std::function<T&(Entity&, T&)> &set) 
   {
-    size_t id = getComponents().size();
-    getComponents().push_back(new DynamicComponentType<T>(id, name, dynamicComponent));
-    return id;
+    ComponentSet<T> *c = new ComponentSet<T>(this, components.size(), name, required, set);
+    components.push_back(c);
+    return *c;
   }
 
   template<typename T>
-  static DynamicComponent<T>* getDynamicComponent(const size_t componentId)
+  ComponentGet<T>& newComponentGet(const std::string &name, const BitSet &required, const std::function<T(Entity&)> &get) 
   {
-    if (!hasComponent(componentId)) {
-      return nullptr;
-    }
-
-    ComponentType *componentType = getComponent(componentId);
-
-    DynamicComponentType<T> *dynamicComponentType = dynamic_cast<DynamicComponentType<T>*>( componentType );
-
-    if (dynamicComponentType == nullptr) {
-      return nullptr;
-    }
-
-    return dynamicComponentType->dynamicComponent;
+    ComponentGet<T> *c = new ComponentGet<T>(this, components.size(), name, required, get);
+    components.push_back(c);
+    return *c;
   }
 
-  inline static View* getView(const size_t viewId) 
+  inline View* getView(const size_t viewId) const
   {
-    return getViews().at(viewId);
+    return views[viewId];
   }
 
-  inline static bool hasView(const size_t viewId) 
+  inline bool hasView(const size_t viewId) const
   {
-    return (viewId < getViews().size() && getViews().at(viewId) != nullptr);
+    return (viewId < views.size() && views[viewId] != nullptr);
   }
 
-  inline static View* getViewSafe(const size_t viewId) 
+  inline View* getViewSafe(const size_t viewId) const
   {
     return hasView(viewId) ? getView(viewId) : nullptr;
   }
 
-  static size_t addView(View *view);
-
-  inline static size_t newView() 
+  size_t addView(const BitSet &required, const std::function<void(Entity&,void*)> &draw)
   {
-    return addView(nullptr);
+    size_t id = views.size();
+    views.push_back(new View(this, id, required, draw));
+    return id;
   }
 
-  static void setView(const size_t viewId, View* view) 
+  inline size_t newView() 
   {
-    getViews()[viewId] = view;
+    size_t id = views.size();
+    views.push_back(nullptr);
+    return id;
   }
 
-  inline static Controller* getController(const size_t controllerId) 
+  bool setView(const size_t viewId, const BitSet &required, const std::function<void(Entity&,void*)> &draw)
   {
-    return getControllers().at(controllerId);
+    if (viewId >= views.size()) {
+      return false;
+    }
+
+    View *v = views[viewId];
+
+    if (v != nullptr) {
+      delete v;
+    }
+
+    views[viewId] = new View(this, viewId, required, draw);
+
+    return true;
   }
 
-  inline static bool hasController(const size_t controllerId) 
+  inline Controller* getController(const size_t controllerId) const
   {
-    return (controllerId < getControllers().size());
+    return controllers[controllerId];
   }
 
-  inline static Controller* getControllerSafe(const size_t controllerId) 
+  inline bool hasController(const size_t controllerId) const
+  {
+    return (controllerId < controllers.size());
+  }
+
+  inline Controller* getControllerSafe(const size_t controllerId) const
   {
     return hasController(controllerId) ? getController(controllerId) : nullptr;
   }
 
-  static size_t addController(Controller *controller);
-  
-  inline static size_t newController()
+  size_t addController(const BitSet &required, const std::function<void(Entity&,void*)> &control)
   {
-    return addController(nullptr);
+    size_t id = controllers.size();
+    controllers.push_back(new Controller(this, id, required, control));
+    return id;
+  }
+  
+  size_t newController()
+  {
+    size_t id = controllers.size();
+    controllers.push_back(nullptr);
+    return id;
   }
 
-  static void setController(const size_t controllerId, Controller* controller)
-  {
-    getControllers()[controllerId] = controller;
+  bool setController(const size_t controllerId, const BitSet &required, const std::function<void(Entity&,void*)> &control)
+  { 
+    if (controllerId >= controllers.size()) {
+      return false;
+    }
+
+    Controller *c = controllers[controllerId];
+
+    if (c != nullptr) {
+      delete c;
+    }
+
+    controllers[controllerId] = new Controller(this, controllerId, required, control);
+
+    return true;
   }
 
 };

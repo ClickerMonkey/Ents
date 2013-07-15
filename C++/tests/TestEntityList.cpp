@@ -6,39 +6,37 @@ using namespace std;
 #define USE(x)	(void)(x)
 
 static int DRAW_COUNT = 0;
-ViewFunction CounterView({}, 
-	[](Entity *e, void *drawState) {
-		DRAW_COUNT++;
-	}
-);
+void CounterView(Entity &e, void *drawState) {
+   DRAW_COUNT++;
+}
 
 static int UPDATE_COUNT = 0;
-ControllerFunction CounterUpdate({}, 
-	[](Entity *e, void *updateState) {
-		UPDATE_COUNT++;
-	}
-);
+void CounterUpdate(Entity &e, void *updateState) {
+   UPDATE_COUNT++;
+}
 
-size_t C1 = EntityCore::newComponent<int>("C1", 1);
-size_t C2 = EntityCore::newComponent<int>("C2", 2);
-size_t C3 = EntityCore::newComponent<int>("C3", 3);
-size_t C4 = EntityCore::newComponent<int>("C4", 4);
+EntityCore Core;
 
-size_t U1 = EntityCore::addController(&CounterUpdate);
-size_t U2 = EntityCore::addController(&CounterUpdate);
-size_t U3 = EntityCore::addController(&CounterUpdate);
+Component<int> C1 = Core.newComponent("C1", 1);
+Component<int> C2 = Core.newComponent("C2", 2);
+Component<int> C3 = Core.newComponent("C3", 3);
+Component<int> C4 = Core.newComponent("C4", 4);
 
-size_t V1 = EntityCore::addView(&CounterView);
-size_t V2 = EntityCore::addView(&CounterView);
+size_t U1 = Core.addController({}, &CounterUpdate);
+size_t U2 = Core.addController({}, &CounterUpdate);
+size_t U3 = Core.addController({}, &CounterUpdate);
 
-size_t E1 = EntityCore::newEntityType({C1, C2}, {U1}, V1);
-size_t E2 = EntityCore::newEntityType({C1, C2, C3, C4}, {U2}, V2);
+size_t V1 = Core.addView({}, &CounterView);
+size_t V2 = Core.addView({}, &CounterView);
+
+EntityType* E1 = Core.newEntityType({C1.id, C2.id}, {U1}, V1);
+EntityType* E2 = Core.newEntityType({C1.id, C2.id, C3.id, C4.id}, {U2}, V2);
 
 void testEmptyConstructor()
 {
    cout << "Running " << __func__ << "() ... ";
 
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
 
@@ -55,7 +53,7 @@ void testEmptyConstructor()
    }
    assert( t == 0 );
 
-   for (auto const &e : el.filterByComponents({C1})) {
+   for (auto const &e : el.filterByComponents({C1.id})) {
    		USE(e);
    		t++;
    }
@@ -67,7 +65,7 @@ void testEmptyConstructor()
    }
    assert( t == 0 );
 
-   for (auto const &e : el.filterByValue(C1, {3.5f})) {
+   for (auto const &e : el.filterByValue(C1.id, {3.5f})) {
    		USE(e);
    		t++;
    }
@@ -112,7 +110,7 @@ void testAdd()
 {
    cout << "Running " << __func__ << "() ... ";
 
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
 
@@ -131,7 +129,7 @@ void testAddVector()
 {
    cout << "Running " << __func__ << "() ... ";
 
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
 
@@ -148,7 +146,7 @@ void testClean()
 {
    cout << "Running " << __func__ << "() ... ";
 
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
    
@@ -272,7 +270,7 @@ void testFilterByComponents()
    EntityList el = {&a, &b, &c, &d};
 
    int index = 0;
-   for (auto e : el.filterByComponents({C3})) {
+   for (auto e : el.filterByComponents({C3.id})) {
    		if (index == 0) {
    			assert( &c == e );
    		} else if (index == 1) {
@@ -312,16 +310,16 @@ void testFilterByValue()
 {
    cout << "Running " << __func__ << "() ... ";
 
-   Entity a(E1,{{C1, 11}});
-   Entity b(E1,{{C1, 7}});
-   Entity c(E2,{{C1, 8}});
-   Entity d(E1,{{C1, 11}});
-   Entity e(E2,{{C1, 11}});
+   Entity a(E1,{{C1.id, 11}});
+   Entity b(E1,{{C1.id, 7}});
+   Entity c(E2,{{C1.id, 8}});
+   Entity d(E1,{{C1.id, 11}});
+   Entity e(E2,{{C1.id, 11}});
 
    EntityList el = {&a, &b, &c, &d, &e};
 
    int index = 0;
-   for (auto entity : el.filterByValue(C1, {11})) {
+   for (auto entity : el.filterByValue(C1.id, {11})) {
    		if (index == 0) {
    			assert( &a == entity );
    		} else if (index == 1) {
@@ -336,9 +334,47 @@ void testFilterByValue()
 
    index = 0;
 
-   for (auto entity : el.filterByValue(C2, {22})) {
+   for (auto entity : el.filterByValue(C2.id, {22})) {
    		USE(entity);
    		index++;
+   }
+
+   assert( index == 0 );
+
+   cout << "Pass" << endl;
+}
+
+void testFilterByValueStrict()
+{
+   cout << "Running " << __func__ << "() ... ";
+
+   Entity a(E1,{{C1.id, 11}});
+   Entity b(E1,{{C1.id, 7}});
+   Entity c(E2,{{C1.id, 8}});
+   Entity d(E1,{{C1.id, 11}});
+   Entity e(E2,{{C1.id, 11}});
+
+   EntityList el = {&a, &b, &c, &d, &e};
+
+   int index = 0;
+   for (auto entity : el.filterByValue(C1, 11)) {
+         if (index == 0) {
+            assert( &a == entity );
+         } else if (index == 1) {
+            assert( &d == entity );
+         } else if (index == 2) {
+            assert( &e == entity );
+         }
+         index++;
+   }
+
+   assert( index == 3 );
+
+   index = 0;
+
+   for (auto entity : el.filterByValue(C2, 22)) {
+         USE(entity);
+         index++;
    }
 
    assert( index == 0 );
@@ -488,7 +524,7 @@ void testAdditionOperator()
    cout << "Running " << __func__ << "() ... ";
 
    Entity a(E1), b(E1), c(E2), d(E2);
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
 
@@ -510,7 +546,7 @@ void testInputOperator()
    cout << "Running " << __func__ << "() ... ";
 
    Entity a(E1), b(E1), c(E2), d(E2);
-   EntityList el;
+   EntityList el(&Core);
 
    assert( el.getSize() == 0 );
 
@@ -540,6 +576,7 @@ int main()
 	testFilterByComponents();
 	testFilterByControllers();
 	testFilterByValue();
+   testFilterByValueStrict();
 	testFilterByVisible();
 	testFilterByEnabled();
 	testFilterByExpired();

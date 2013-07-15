@@ -1,17 +1,11 @@
 #ifndef ENTITYLIST_H
 #define ENTITYLIST_H
 
+#include <functional>
+
 #include <Entity.h>
 #include <VectorIterator.h>
-
-typedef bool (*EntityFilter)( Entity *e);
-
-struct EntityComponentFilter;
-struct EntityControllerFilter;
-struct EntityValueFilter;
-struct EntityVisibleFilter;
-struct EntityEnabledFilter;
-struct EntityExpiredFilter;
+#include <Component.h>
 
 class EntityList : public Entity
 {
@@ -21,9 +15,7 @@ private:
 	
 public:
 
-	EntityList();
-	
-	EntityList( const size_t m_entityTypeId );
+	EntityList( const EntityCore *m_core );
 
 	EntityList( EntityType *m_type );
 
@@ -47,27 +39,38 @@ public:
 
 	void update( void *updateState );
 
-    VectorIteratorPointer<Entity*, EntityFilter> begin();
+    VectorIteratorPointer<Entity*> begin();
 
-	VectorIteratorPointer<Entity*, EntityFilter> end();
+	VectorIteratorPointer<Entity*> end();
 
-	template<typename F>
-	inline VectorIterator<Entity*, F> filter(F filterFunction)
+	inline VectorIterator<Entity*> filter(const std::function<bool(Entity*)> &filterFunction)
 	{
-		return VectorIterator<Entity*, F>(&entities, filterFunction);
+		return VectorIterator<Entity*>(&entities, filterFunction);
 	}
 
- 	VectorIterator<Entity*, EntityComponentFilter> filterByComponents(std::initializer_list<size_t> componentIds);
+ 	VectorIterator<Entity*> filterByComponents(const BitSet &componentIds);
 
-	VectorIterator<Entity*, EntityControllerFilter> filterByControllers(std::initializer_list<size_t> controllerIds);
+	VectorIterator<Entity*> filterByControllers(const BitSet &controllerIds);
 
-	VectorIterator<Entity*, EntityValueFilter> filterByValue(const size_t componentId, const AnyMemory &value);
+	VectorIterator<Entity*> filterByValue(const size_t componentId, const AnyMemory &value);
 
-	VectorIterator<Entity*, EntityVisibleFilter> filterByVisible(bool visible);
+	template<typename T>
+	VectorIterator<Entity*> filterByValue(const Component<T> &component, const T &value)
+	{
+		return filter( [&] (Entity* e) -> bool {
+			T* p = e->ptrs(component);
+			if (p == nullptr) {
+				return false;
+			}
+			return (*p == value);
+		});
+	}
 
-	VectorIterator<Entity*, EntityEnabledFilter> filterByEnabled(bool enabled);
+	VectorIterator<Entity*> filterByVisible(const bool visible);
 
-	VectorIterator<Entity*, EntityExpiredFilter> filterByExpired(bool expired);
+	VectorIterator<Entity*> filterByEnabled(const bool enabled);
+
+	VectorIterator<Entity*> filterByExpired(const bool expired);
 
 	std::vector<Entity*>& getEntities()
 	{
@@ -114,111 +117,5 @@ private:
 	void internalAdd( Entity *e );
 
 };
-
-struct EntityComponentFilter
-{
-	BitSet components;
-
-	EntityComponentFilter(BitSet m_components)
-		: components(m_components)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return components.intersects( e->getEntityType()->getComponents().getBitSet() );
-	}
-};
-
-struct EntityControllerFilter
-{
-	BitSet controllers;
-
-	EntityControllerFilter(BitSet m_controllers)
-		: controllers(m_controllers)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return controllers.intersects( e->getEntityType()->getControllers().getBitSet() );
-	}
-};
-
-struct EntityValueFilter
-{
-	const size_t componentId;
-	const AnyMemory value;
-
-	EntityValueFilter( const size_t m_componentId, const AnyMemory &m_value )
-		: componentId(m_componentId), value(m_value)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		if (e->has(componentId)) {
-
-			size_t offset = e->getEntityType()->getComponentOffset(componentId);
-			AnyMemory components = e->getComponents();
-
-			if (offset + value.getSize() <= components.getSize()) {
-
-				void *componentPointer = (void*)(components.getData() + offset);
-				void *valuePointer = (void*)value.getData();
-
-				return ( memcmp( componentPointer, valuePointer, value.getSize() ) == 0 );	
-			}
-		}
-
-		return false;
-	}
-};
-
-struct EntityVisibleFilter
-{
-	bool visible;
-
-	EntityVisibleFilter(bool m_visible)
-		: visible(m_visible)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return e->isVisible() == visible;
-	}
-};
-
-struct EntityEnabledFilter
-{
-	bool enabled;
-
-	EntityEnabledFilter(bool m_enabled)
-		: enabled(m_enabled)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return e->isEnabled() == enabled;
-	}
-};
-
-struct EntityExpiredFilter
-{
-	bool expired;
-
-	EntityExpiredFilter(bool m_expired)
-		: expired(m_expired)
-	{
-	}
-
-	bool operator()( Entity *e )
-	{
-		return e->isExpired() == expired;
-	}
-};
-
 
 #endif

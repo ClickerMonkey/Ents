@@ -70,7 +70,7 @@ ostream& operator<<(ostream &out, AnyMemory const &a)
 {
   #define HEX(d,x) setw(d) << setfill('0') << hex << uppercase << (long long)(x)
 
-  out << "{size:" << a.size << ", ptr:0x" << HEX(sizeof(void*), a.data) << ", data:0x";
+  out << "[AnyMemory]{size:" << a.size << ", ptr:0x" << HEX(sizeof(void*), a.data) << ", data:0x";
 
   for (size_t i = 0; i < a.size; i++) {
     out << HEX(2, a.get<char>(i));

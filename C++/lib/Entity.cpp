@@ -4,9 +4,9 @@
 
 using namespace std;
 
-Entity::Entity()
+Entity::Entity(const EntityCore *m_core)
 {
-  setEntityType( new EntityTypeCustom() );
+  setEntityType( new EntityTypeCustom(m_core) );
 }
 
 Entity::Entity(EntityType *m_entityType)
@@ -21,24 +21,13 @@ Entity::Entity(EntityType *m_entityType, const map<size_t,AnyMemory> &m_values)
   set(m_values);
 }
 
-Entity::Entity(const size_t m_entityTypeId)
-  : Entity(EntityCore::getEntityType( m_entityTypeId ))
+Entity::Entity(const EntityCore *m_core, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
+  : Entity(new EntityTypeCustom(m_core, m_components, m_controllers, m_viewId))
 {
 }
 
-Entity::Entity(const size_t m_entityTypeId, const map<size_t,AnyMemory> &m_values)
-  : Entity(m_entityTypeId)
-{
-  set(m_values);
-}
-
-Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId)
-  : Entity(new EntityTypeCustom(m_components, m_controllers, m_viewId))
-{
-}
-
-Entity::Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const map<size_t,AnyMemory> &m_values)
-  : Entity(m_components, m_controllers, m_viewId)
+Entity::Entity(const EntityCore *m_core, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const map<size_t,AnyMemory> &m_values)
+  : Entity(m_core, m_components, m_controllers, m_viewId)
 {
   set(m_values);
 }
@@ -65,18 +54,6 @@ void Entity::set(const map<size_t,AnyMemory> &values)
   }
 }
 
-bool Entity::add(const size_t componentId) 
-{
-  bool missing = !type->hasComponent(componentId);
-
-  if (missing) {
-    setEntityType( type->addCustomComponent(componentId) );
-    components.append(EntityCore::getComponent(componentId)->defaultValue);
-  }
-
-  return missing;
-}
-
 void Entity::setEntityType(EntityType* newType)
 {
   if (type != newType) {
@@ -90,10 +67,10 @@ void Entity::setEntityType(EntityType* newType)
 void Entity::draw( void *drawState )
 {
   if (visible) {
-     View* view = EntityCore::getViewSafe( type->getView() );
+     View* view = type->getCore()->getViewSafe( type->getView() );
 
      if (view != nullptr && has(view->required)) {
-        view->draw( this, drawState );
+        view->draw( *this, drawState );
      }
   }
 }
@@ -104,10 +81,13 @@ void Entity::update( void *updateState )
     vector<size_t> ids = type->getControllers().getIds();
 
     for (size_t i = 0; i < ids.size(); i++) {
+
       if (controllers.get(i, true)) {
-         Controller* controller = EntityCore::getController(ids[i]);
+
+         Controller* controller = type->getCore()->getController(ids[i]);
+
          if (controller != nullptr && has(controller->required)) {
-            controller->control( this, updateState );
+            controller->control( *this, updateState );
          }
       }
     }
@@ -193,10 +173,10 @@ std::ostream& operator<<(std::ostream &out, Entity &e)
     size_t componentId = components.getId(i);
     size_t offset = components.getIndex(componentId);
 
-    ComponentType *componentType = EntityCore::getComponent(componentId);
-    AnyMemory value = e.components.sub(offset, componentType->defaultValue.getSize());
+    ComponentBase *componentBase = e.type->getCore()->getComponent(componentId);
+    AnyMemory value = e.components.sub(offset, componentBase->defaultValue.getSize());
 
-    out << componentType->name << ":" << value << ", ";
+    out << componentBase->name << ":" << value << ", ";
   }
 
   out << "controllers:{";

@@ -1,43 +1,26 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <Common.h>
+#include <functional>
+
 #include <BitSet.h>
 
 class Entity;
+class EntityCore;
 
-class View
+struct View
 {
-public:
 
    static const size_t NONE = 0xFFFFFFFF;
 
+   const EntityCore *core;
+   const size_t id;
    const BitSet required;
+   const std::function<void(Entity&,void*)> draw;
 
-   View(const BitSet &m_required) : required(m_required)
+   View(const EntityCore *m_core, const size_t m_id, const BitSet &m_required, const std::function<void(Entity&,void*)> &m_draw)
+      : core(m_core), id(m_id), required(m_required), draw(m_draw)
    {
-   }
-
-   virtual void draw(Entity *e, void *drawState) = 0;
-
-};
-
-typedef void (*ViewFunctionPointer)(Entity *e, void *drawState);
-
-class ViewFunction : public View
-{
-public:
-
-   const ViewFunctionPointer function;
-
-   ViewFunction(const BitSet &m_required, ViewFunctionPointer m_function) 
-      : View(m_required), function(m_function)
-   {
-   }
-
-   void draw(Entity *e, void *drawState)
-   {
-      function(e, drawState);
    }
 
 };

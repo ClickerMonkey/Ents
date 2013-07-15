@@ -3,38 +3,41 @@
 
 using namespace std;
 
-struct Vector { float x, y; };
+struct Vector { float x, y; 
+	Vector() {}
+	Vector(float m_x, float m_y) : x(m_x), y(m_y) {}
+	Vector& operator+=(const Vector& a) {
+		x += a.x;
+		y += a.y;
+		return *this;
+	}
+	Vector operator*(const float scalar) {
+		return {x * scalar, y * scalar};
+	}
+};
 
-size_t POSITION = EntityCore::newComponent<Vector>("position", {0.0f, 0.0f});
-size_t VELOCITY = EntityCore::newComponent<Vector>("velocity", {0.0f, 0.0f});
-size_t ACCELERATION = EntityCore::newComponent<Vector>("acceleration", {0.0f, 0.0f});
+EntityCore Core;
 
-ControllerFunction PhysicsSimpleController({POSITION, VELOCITY}, 
-	[](Entity *e, void *updateState) {
-		Vector *p = e->ptr<Vector>(POSITION);
-		Vector *v = e->ptr<Vector>(VELOCITY);
+Component<Vector> POSITION 		= Core.newComponent("position", Vector(0.0f, 0.0f));
+Component<Vector> VELOCITY 		= Core.newComponent("velocity", Vector(0.0f, 0.0f));
+Component<Vector> ACCELERATION 	= Core.newComponent("acceleration", Vector(0.0f, 0.0f));
+
+size_t PHYSICS_SIMPLE = Core.addController({POSITION.id, VELOCITY.id}, 
+	[](Entity &e, void *updateState) {
 		float dt = *((float*)updateState);
-		p->x += v->x * dt;
-		p->y += v->y * dt;
+		e(POSITION) += e(VELOCITY) * dt;
 	}
 );
 
-ControllerFunction PhysicsController({POSITION, VELOCITY, ACCELERATION}, 
-	[](Entity *e, void *updateState) {
-		Vector *p = e->ptr<Vector>(POSITION);
-		Vector *v = e->ptr<Vector>(VELOCITY);
-		Vector *a = e->ptr<Vector>(ACCELERATION);
+size_t PHYSICS = Core.addController({POSITION.id, VELOCITY.id, ACCELERATION.id},
+	[](Entity &e, void *updateState) {
 		float dt = *((float*)updateState);
-		p->x += v->x * dt;
-		p->y += v->y * dt;
-		v->x += a->x * dt;
-		v->y += a->y * dt;
+		e(POSITION) += e(VELOCITY) * dt;
+		e(VELOCITY) += e(ACCELERATION) * dt;
 	}
 );
 
-size_t PHYSICS_SIMPLE = EntityCore::addController(&PhysicsSimpleController);
-size_t PHYSICS = EntityCore::addController(&PhysicsController);
-size_t SPRITE  = EntityCore::newEntityType({POSITION, VELOCITY}, {PHYSICS_SIMPLE}, View::NONE);
+EntityType* SPRITE  = Core.newEntityType({POSITION.id, VELOCITY.id}, {PHYSICS_SIMPLE}, View::NONE);
 
 void testUpdate()
 {
@@ -43,8 +46,8 @@ void testUpdate()
 	Entity e(SPRITE);
 	e.enable(PHYSICS_SIMPLE);
 
-	Vector *p = e.ptr<Vector>(POSITION);
-	Vector *v = e.ptr<Vector>(VELOCITY);
+	Vector *p = e.ptr(POSITION);
+	Vector *v = e.ptr(VELOCITY);
 
 	p->x = 5.0f;
 	p->y = 2.0f;
@@ -73,24 +76,11 @@ void testUpdate()
   	cout << "Pass" << endl;
 }
 
-void testRequired()
-{
-	cout << "Running " << __func__ << "() ... ";
-	
-	Entity e(SPRITE);
-
-	assert( e.has(PhysicsSimpleController.required) );
-	assert( !e.has(PhysicsController.required) );
-
-  	cout << "Pass" << endl;
-}
-
 int main()
 {
    	cout << "Starting " << __FILE__ << "..." << endl;
 
 	testUpdate();
-	testRequired();
 
   	cout << __FILE__ << " has ran successfully." << endl;
 

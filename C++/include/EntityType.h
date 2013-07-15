@@ -1,17 +1,19 @@
 #ifndef ENTITYTYPE_H
 #define ENTITYTYPE_H
 
-#include <Common.h>
 #include <AnyMemory.h>
+#include <Component.h>
 #include <IdMap.h>
 
 class EntityType 
 {
 protected:
 
+  const EntityCore *core;
+
   const size_t id;
 
-  const EntityType* parent = nullptr;
+  const EntityType *parent = nullptr;
 
   int instances = 0;
 
@@ -27,7 +29,7 @@ public:
 
   static const size_t CUSTOM = 0xFFFFFFFF;
 
-  EntityType(const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents);
+  EntityType(const EntityCore *m_core, const size_t m_id, const EntityType *m_parent, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const AnyMemory &m_defaultComponents);
 
   virtual ~EntityType();
 
@@ -79,24 +81,35 @@ public:
     return viewId;
   }
 
+  template<typename T>
+  bool add(const Component<T> &component)
+  {
+    bool missing = !hasComponent(component.id);
+    if (missing) {
+      size_t offset = defaultComponents.add<T>(component.typedDefaultValue);
+      components.add(component.id, offset);
+    }
+    return missing;
+  }
+
   bool add(const size_t componentId);
 
   template<typename T>
-  inline bool add(const size_t componentId, const T &value )
+  inline bool add(const Component<T> &component, const T &value )
   {
-    bool added = add(componentId);
+    bool added = add(component);
     if (added) {
-      added = setDefaultValue( componentId, value );
+      added = setDefaultValue( component, value );
     }
     return added;
   }
 
   template<typename T>
-  inline bool setDefaultValue(const size_t componentId, const T &value)
+  inline bool setDefaultValue(const Component<T> &component, const T &value)
   {
-    bool exists = hasComponent(componentId);
+    bool exists = hasComponent(component.id);
     if (exists) {
-      defaultComponents.set( getComponentOffset(componentId), value );
+      defaultComponents.set( getComponentOffset(component.id), value );
     }
     return exists;
   }
@@ -105,13 +118,28 @@ public:
 
   void setEntityDefaultComponents(AnyMemory& components);
 
-  virtual EntityType* addCustomComponent(const size_t componentId);
+  template<typename T>
+  EntityType* addCustomComponent(const Component<T> &component) 
+  {
+    EntityType* target = this;
 
-  virtual EntityType* addCustomController(const size_t controllerId);
+    if (!isCustom()) {
+      target = getCustom();
+    }
 
-  virtual EntityType* setCustomView(const size_t viewId);
+    target->add(component);
 
-  virtual bool isCustom();
+    return target;
+  }
+
+  EntityType* addCustomController(const size_t controllerId);
+
+  EntityType* setCustomView(const size_t viewId);
+
+  inline bool isCustom() 
+  {
+    return ( id == CUSTOM );
+  }
 
   inline void addInstance() 
   { 
@@ -147,15 +175,24 @@ public:
     return defaultComponents;
   }
 
-  inline const EntityType* getParent()
+  inline const EntityType* getParent() const
   {
     return parent;
+  }
+
+  inline const EntityCore* getCore() const
+  {
+    return core;
   }
 
   inline size_t getId() const
   {
     return id;
   }
+
+protected:
+
+  EntityType* getCustom();
 
 };
 

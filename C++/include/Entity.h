@@ -28,63 +28,71 @@ private:
 
 public:
 
-  Entity();
-
-  Entity(const size_t m_entityTypeId);
-
-  Entity(const size_t m_entityTypeId, const std::map<size_t,AnyMemory> &m_values);
+  Entity(const EntityCore *m_core);
 
   Entity(EntityType *m_entityType);
 
   Entity(EntityType *m_entityType, const std::map<size_t,AnyMemory> &m_values);  
 
-  Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId);
+  Entity(const EntityCore *m_core, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId);
 
-  Entity(const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const std::map<size_t,AnyMemory> &m_values);
+  Entity(const EntityCore *m_core, const IdMap &m_components, const IdMap &m_controllers, const size_t m_viewId, const std::map<size_t,AnyMemory> &m_values);
 
   virtual ~Entity();
 
   template<typename T>
-  inline T* ptr(const size_t componentId) 
+  inline T* ptr(const Component<T> &component) 
   {
-    return components.getPointer<T>( type->getComponentOffset(componentId) );
+    return components.getPointer<T>( type->getComponentOffset(component.id) );
   }
 
   template<typename T>
-  inline T* ptrs(const size_t componentId) 
+  inline T* ptrs(const Component<T> &component) 
   {
-    const int offset = type->getComponentOffsetSafe(componentId);
+    const int offset = type->getComponentOffsetSafe(component.id);
     return (offset == -1 ? nullptr : components.getSafe<T>( offset ));
   }
 
   template<typename T>
-  inline T& get(const size_t componentId) 
+  inline T& get(const Component<T> &component) 
   {
-    return components.get<T>( type->getComponentOffset(componentId) );
+    return components.get<T>( type->getComponentOffset(component.id) );
   }
 
   template<typename T>
-  inline T& get(const size_t componentId, T &out)
+  inline T gets(const Component<T> &component, const T &defaultIfMissing)
   {
-    DynamicComponent<T> *dynamic = EntityCore::getDynamicComponent<T>(componentId);
-
-    if (dynamic != nullptr && has(dynamic->required)) {
-      out = dynamic->compute( this, out );
-    }
-
-    return out;
+    return (has(component) ? get<T>(component) : defaultIfMissing);
   }
 
   template<typename T>
-  inline T gets(const size_t componentId, const T &defaultIfMissing)
+  inline T& set(const ComponentSet<T> &component, T& out) 
   {
-    return (has(componentId) ? get<T>(componentId) : defaultIfMissing);
+    return ( out = component.set(*this, out) );
   }
 
   template<typename T>
-  inline bool grab(const size_t componentId, T *target)
+  inline T& sets(const ComponentSet<T> &component, T& out) 
   {
-    T* ptr = ptrs<T>(componentId);
+    return ( out = (has(component.required) ? component.set(*this, out) : out) );
+  }
+
+  template<typename T>
+  inline T get(const ComponentGet<T> &component) 
+  {
+    return component.get(*this);
+  }
+
+  template<typename T>
+  inline T gets(const ComponentGet<T> &component) 
+  {
+    return has(component.required) ? component.get(*this) : T();
+  }
+
+  template<typename T>
+  inline bool grab(const Component<T> &component, T *target)
+  {
+    T* ptr = ptrs<T>(component);
     bool found = (ptr != nullptr);
     if (found) {
       *target = *ptr;
@@ -93,15 +101,36 @@ public:
   }
 
   template<typename T>
-  inline void set(const size_t componentId, const T &value) 
+  bool put(const Component<T> &component, const T &value) 
   {
-    components.set<T>( type->getComponentOffset(componentId), value );
+    bool missing = !has(component);
+    if (missing) {
+      add<T>(component, value); 
+    } else { 
+      set<T>(component, value);
+    }
+    return missing;
   }
 
   template<typename T>
-  inline bool sets(const size_t componentId, const T &value)
+  T& take(const Component<T> &component)
   {
-    const int offset = type->getComponentOffsetSafe(componentId);
+    if (!has(component)) {
+      add<T>(component, T());
+    }
+    return get<T>(component);
+  }
+
+  template<typename T>
+  inline void set(const Component<T> &component, const T &value) 
+  {
+    components.set<T>( type->getComponentOffset(component.id), value );
+  }
+
+  template<typename T>
+  inline bool sets(const Component<T> &component, const T &value)
+  {
+    const int offset = type->getComponentOffsetSafe(component.id);
     bool found = (offset != -1);
     if (found) {
       components.set<T>(size_t(offset), value);
@@ -116,15 +145,33 @@ public:
     return type->hasComponent(componentId);
   }
 
+  template<typename T>
+  inline bool has(const Component<T> &component) 
+  {
+    return type->hasComponent(component.id) && type->getCore() == component.core;
+  }
+
   inline bool has(const BitSet& components)
   {
     return type->getComponents().getBitSet().contains( components );
   }
 
   template<typename T>
-  inline bool operator()(const size_t componentId, const T &value)
+  inline T& operator()(const Component<T> &component) 
   {
-    return sets<T>(componentId, value);
+    return get<T>(component);
+  }
+
+  template<typename T>
+  inline T operator()(const ComponentGet<T> &component) 
+  {
+    return gets<T>(component);
+  }
+
+  template<typename T>
+  inline bool operator()(const Component<T> &component, const T &value) 
+  {
+    return sets<T>(component, value);
   }
 
   inline bool hasController(const size_t controllerId)
@@ -142,14 +189,25 @@ public:
     return type->isCustom();
   }
 
-  bool add(const size_t componentId);
+  template<typename T>
+  bool add(const Component<T> &component)
+  {
+    bool missing = !has(component);
+
+    if (missing) {
+      setEntityType( type->addCustomComponent(component) );
+      components.add<T>(component.typedDefaultValue);
+    }
+
+    return missing;
+  }
 
   template<typename T>
-  inline bool add(const size_t componentId, const T &value)
+  inline bool add(const Component<T> &component, const T &value)
   {
-    bool added = add(componentId);
+    bool added = add(component);
     if (added) {
-      set<T>(componentId, value);
+      set<T>(component, value);
     }
     return added;
   }

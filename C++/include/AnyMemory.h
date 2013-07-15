@@ -1,7 +1,8 @@
 #ifndef ANYMEMORY_H
 #define ANYMEMORY_H
 
-#include <Common.h>
+#include <string.h>
+#include <iostream>
 
 struct AnyMemory 
 {

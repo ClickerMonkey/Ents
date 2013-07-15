@@ -1,7 +1,8 @@
 #ifndef IDMAP_H
 #define IDMAP_H
 
-#include <Common.h>
+#include <vector>
+
 #include <BitSet.h>
 
 struct IdMap 

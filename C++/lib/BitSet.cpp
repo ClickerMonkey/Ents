@@ -87,7 +87,7 @@ bool BitSet::equals(const BitSet &other) const
 
 ostream& operator<<(ostream &out, const BitSet &a)
 {
-  out << "{";
+  out << "[BitSet]{";
 
   for (size_t i = 0; i < a.size(); i++) {
     out << a.get(i);

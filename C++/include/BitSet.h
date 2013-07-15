@@ -1,7 +1,9 @@
 #ifndef BITSET_H
 #define BITSET_H
 
-#include <Common.h>
+#include <cstdlib>
+#include <vector>
+#include <iostream>
 
 struct BitSet 
 {

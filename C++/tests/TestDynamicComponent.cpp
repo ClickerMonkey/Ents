@@ -3,23 +3,18 @@
 
 using namespace std;
 
-// Normal Components and Entity Type
-size_t RIGHT = EntityCore::newComponent<float>("right", 0.0f);
-size_t LEFT = EntityCore::newComponent<float>("left", 0.0f);
-size_t XAXIS = EntityCore::newEntityType({RIGHT, LEFT}, {}, View::NONE);
+EntityCore Core;
 
-// Dynamic Component Function 
-DynamicComponentFunction<float> CenterDynamicComponent({LEFT,RIGHT},
-  [](Entity *e, float &out) -> float& {
-    float l = e->get<float>(LEFT);
-    float r = e->get<float>(RIGHT);
-    return ( out = (l + r) * 0.5f );
+Component<float>      LEFT   = Core.newComponent("left", 0.0f);
+Component<float>      RIGHT  = Core.newComponent("right", 0.0f);
+ComponentGet<float>   CENTER = Core.newComponentGet<float>("center", {LEFT.id, RIGHT.id}, 
+  [](Entity &e) -> float {
+    return ( e(LEFT) + e(RIGHT) ) * 0.5f;
   }
 );
 
-// Add to EntityCore
-size_t CENTER = EntityCore::newDynamicComponent<float>("center", &CenterDynamicComponent);
 
+EntityType* XAXIS = Core.newEntityType({RIGHT.id, LEFT.id}, {}, View::NONE);
 
 
 //*****************************************************************************
@@ -35,9 +30,8 @@ void testSimple()
   e.set(LEFT, 1.0f);
   e.set(RIGHT, 5.0f);
 
-  float centerOut = 0.0f;
-  e.get(CENTER, centerOut);
-
+  float centerOut = e.get(CENTER);
+  
   assert( centerOut == 3.0f );
 
   cout << "Pass" << endl;
@@ -49,10 +43,9 @@ void testWithDefault()
   
   Entity e(XAXIS);
 
-  e.set(RIGHT, 4.0f);
+  e(RIGHT) = 4.0f;
 
-  float centerOut = 0.0f;
-  e.get(CENTER, centerOut);
+  float centerOut = e.get(CENTER);
 
   assert( centerOut == 2.0f );
 

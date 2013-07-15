@@ -3,21 +3,16 @@
 
 using namespace std;
 
-struct Vector { float x, y; };
+struct Vector { float x, y; 
+	Vector() {}
+	Vector(float m_x, float m_y) : x(m_x), y(m_y) {}
+};
 
-size_t POSITION 	= EntityCore::newComponent<Vector>("position", {0.0f, 0.0f});
-size_t SPRITE_VIEW 	= EntityCore::newView();
-size_t SPRITE  		= EntityCore::newEntityType({POSITION}, {}, SPRITE_VIEW);
+EntityCore Core;
 
-ViewFunction SpriteView({POSITION}, 
-	[](Entity *e, void *drawState) {
-		string graphics = *((string*)drawState);
-
-		Vector *p = e->ptr<Vector>(POSITION);
-		
-		cout << "Drawing sprite at {" << p->x << ", " << p->y << "} with " << graphics << "." << " ";
-	}
-);
+Component<Vector>  POSITION 	= Core.newComponent("position", Vector(0.0f, 0.0f));
+size_t 			   SPRITE_VIEW 	= Core.newView();
+EntityType*        SPRITE  		= Core.newEntityType({POSITION.id}, {}, SPRITE_VIEW);
 
 void testDraw()
 {
@@ -27,10 +22,8 @@ void testDraw()
 
 	Entity e(SPRITE);
 
-	Vector *p = e.ptr<Vector>(POSITION);
-
-	p->x = 5.1f;
-	p->y = 2.34f;
+	e(POSITION).x = 5.1f;
+	e(POSITION).y = 2.34f;
 
 	e.draw( &graphics );
 
@@ -41,7 +34,13 @@ int main()
 {
 	cout << "Starting " << __FILE__ << "..." << endl;
 
-	EntityCore::setView(SPRITE_VIEW, &SpriteView);
+	Core.setView(SPRITE_VIEW, {POSITION.id}, 
+		[] (Entity &e, void *drawState) {
+			string graphics = *((string*)drawState);
+			Vector p = e(POSITION);
+			cout << "Drawing sprite at {" << p.x << ", " << p.y << "} with " << graphics << "." << " ";
+		}
+	);
 
 	testDraw();
 

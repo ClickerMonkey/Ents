@@ -3,43 +3,38 @@
 
 using namespace std;
 
-// Component Creation
-size_t LEFT 	= EntityCore::newComponent<float>("left", 0.0f);
-size_t RIGHT 	= EntityCore::newComponent<float>("right", 0.0f);
-size_t SPEED 	= EntityCore::newComponent<float>("speed", 0.0f);
+EntityCore Core;
 
-// Controller, View, & Dynamic Component Definitions
-ControllerFunction MotionController({LEFT, RIGHT, SPEED}, 
-	[](Entity *e, void *updateState) {
-		float dt = *((float*)updateState);
-		float *l = e->ptr<float>(LEFT);
-		float *r = e->ptr<float>(RIGHT);
-		float s = e->get<float>(SPEED);
-		*l += s * dt;
-		*r += s * dt;
-	}
-);
-DynamicComponentFunction<float> CenterDynamicComponent({LEFT, RIGHT}, 
-	[](Entity *e, float &out) -> float& {
-	    float l = e->get<float>(LEFT);
-	    float r = e->get<float>(RIGHT);
-	    return ( out = (l + r) * 0.5f );
-	}
-);
-ViewFunction ExtentView({LEFT,RIGHT}, 
-	[](Entity *e, void *drawState) {
-		string graphics = *((string*)drawState);
-		float l = e->get<float>(LEFT);
-		float r = e->get<float>(RIGHT);
-		cout << "Drawing extent at {" << l << "->" << r << "} with " << graphics << "." << endl;
-	}
-);
+// Component Creation
+Component<float> LEFT 	= Core.newComponent("left", 0.0f);
+Component<float> RIGHT 	= Core.newComponent("right", 0.0f);
+Component<float> SPEED 	= Core.newComponent("speed", 0.0f);
 
 // Controller, View, Dynamic Component, & EntityType Creation
-size_t CENTER 		= EntityCore::newDynamicComponent<float>("center", &CenterDynamicComponent);
-size_t MOTION 		= EntityCore::addController(&MotionController);
-size_t EXTENT_VIEW 	= EntityCore::addView(&ExtentView);
-size_t EXTENT 		= EntityCore::newEntityType({LEFT, RIGHT}, {MOTION}, EXTENT_VIEW);
+ComponentGet<float> CENTER 	= Core.newComponentGet<float>("center", {LEFT.id, RIGHT.id},
+	[](Entity &e) -> float {
+		return ( e(LEFT) + e(RIGHT) ) * 0.5f;
+	}
+);
+
+size_t MOTION = Core.addController({LEFT.id, RIGHT.id, SPEED.id},
+	[](Entity &e, void *updateState) {
+		float dt = *((float*)updateState);
+		float s = e(SPEED);
+
+		e(LEFT) += s * dt;
+		e(RIGHT) += s * dt;
+	}
+);
+
+size_t EXTENT_VIEW = Core.addView({LEFT.id, RIGHT.id}, 
+	[](Entity &e, void *drawState) {
+		string graphics = *((string*)drawState);
+		cout << "Drawing extent at {" << e(LEFT) << "->" << e(RIGHT) << "} with " << graphics << "." << endl;
+	}
+);
+
+EntityType* EXTENT = Core.newEntityType({LEFT.id, RIGHT.id}, {MOTION}, EXTENT_VIEW);
 
 void testConstructorId()
 {
@@ -58,7 +53,7 @@ void testConstructorReference()
 {
   	cout << "Running " << __func__ << "() ... ";	
 
-	EntityType *type = EntityCore::getEntityType(EXTENT);
+	EntityType *type = Core.getEntityType(EXTENT->getId());
 
 	Entity e(type);
 
@@ -74,13 +69,10 @@ void testCustomEntity()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e;
+	Entity e(&Core);
 
 	assert( e.isCustom() );
 
-	int* x = e.ptrs<int>(325);
-
-	assert( x == nullptr );
 	assert(!e.has(LEFT) );
 
 	e.add(LEFT);
@@ -89,7 +81,7 @@ void testCustomEntity()
 
 	e.set(LEFT, 3.0f);
 
-	assert( e.get<float>(LEFT) == 3.0f );
+	assert( e.get(LEFT) == 3.0f );
 
 	cout << "Pass" << endl;
 }
@@ -98,7 +90,7 @@ void testCustomEntityDefined()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id}, {}, View::NONE);
 
 	assert( e.has(LEFT) );
 	assert(!e.has(RIGHT) );
@@ -115,7 +107,11 @@ void testSetMethod()
 
 	e(LEFT, 3.5f);
 
-	assert( e.get<float>(LEFT) == 3.5f );
+	assert( e.get(LEFT) == 3.5f );
+
+	e(LEFT) = 3.467f;
+
+	assert( e.get(LEFT) == 3.467f );
 
 	cout << "Pass" << endl;
 }
@@ -126,8 +122,8 @@ void testToString()
 
 	Entity e(EXTENT);
 
-	e(LEFT, 3.0f);
-	e(RIGHT, 5.5f);
+	e(LEFT) = 3.0f;
+	e(RIGHT) = 5.5f;
 
 	cout << e << " ";
 
@@ -140,8 +136,8 @@ void testPtr()
 
 	Entity e(EXTENT);
 
-	float* l = e.ptr<float>(LEFT);
-	float* r = e.ptr<float>(RIGHT);
+	float* l = e.ptr(LEFT);
+	float* r = e.ptr(RIGHT);
 
 	assert( l != nullptr );
 	assert( r != nullptr );
@@ -155,8 +151,8 @@ void testPtr()
 	assert( *l == 3.5f );
 	assert( *r ==-2.0f );
 
-	assert( e.get<float>(LEFT) == 3.5f );
-	assert( e.get<float>(RIGHT) ==-2.0f );
+	assert( e.get(LEFT) == 3.5f );
+	assert( e.get(RIGHT) ==-2.0f );
 
 	cout << "Pass" << endl;
 }
@@ -165,15 +161,15 @@ void testPtrSafe()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT, RIGHT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id, RIGHT.id}, {}, View::NONE);
 
 	assert( e.has(LEFT) );
 	assert( e.has(RIGHT) );
 	assert(!e.has(SPEED) );
 
-	assert( e.ptrs<float>(LEFT) != nullptr );
-	assert( e.ptrs<float>(RIGHT) != nullptr );
-	assert( e.ptrs<float>(SPEED) == nullptr );
+	assert( e.ptrs(LEFT) != nullptr );
+	assert( e.ptrs(RIGHT) != nullptr );
+	assert( e.ptrs(SPEED) == nullptr );
 
 	cout << "Pass" << endl;
 }
@@ -184,11 +180,11 @@ void testGet()
 
 	Entity e(EXTENT);
 
-	e.get<float>(LEFT) = 3.0f;
-	e.get<float>(RIGHT) = 5.0f;
+	e.get(LEFT) = 3.0f;
+	e.get(RIGHT) = 5.0f;
 
-	assert( e.get<float>(LEFT) == 3.0f );
-	assert( e.get<float>(RIGHT) == 5.0f );
+	assert( e.get(LEFT) == 3.0f );
+	assert( e.get(RIGHT) == 5.0f );
 
 	cout << "Pass" << endl;
 }
@@ -199,11 +195,10 @@ void testGetDynamic()
 
 	Entity e(EXTENT);
 
-	e(LEFT, 2.0f);
-	e(RIGHT, 3.0f);
+	e(LEFT) = 2.0f;
+	e(RIGHT) = 3.0f;
 
-	float center = 0.0f;
-	e.get(CENTER, center);
+	float center = e(CENTER);
 
 	assert( center == 2.5f );
 
@@ -214,15 +209,14 @@ void testGetDynamicMissing()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id}, {}, View::NONE);
 
 	assert( e(LEFT, 2.0f) );
 	assert(!e(RIGHT, 3.0f) );
 
-	float center = 0.1234f;
-	e.get(CENTER, center);
+	float center = e.gets(CENTER);
 
-	assert( center == 0.1234f );
+	assert( center == 0.0f );
 
 	cout << "Pass" << endl;
 }
@@ -231,7 +225,7 @@ void testGetSafe()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id}, {}, View::NONE);
 
 	e(LEFT, 2.0f);
 	e(RIGHT, 3.5f);
@@ -246,7 +240,7 @@ void testGrab()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id}, {}, View::NONE);
 
 	e(LEFT, 2.0f);
 	e(RIGHT, 3.5f);
@@ -266,13 +260,13 @@ void testHasComponents()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT, RIGHT}, {}, View::NONE);
+	Entity e(&Core, {LEFT.id, RIGHT.id}, {}, View::NONE);
 
-	assert( e.has({LEFT}) );
-	assert( e.has({RIGHT}) );
-	assert( e.has({RIGHT, LEFT}) );
-	assert(!e.has({SPEED}) );
-	assert(!e.has({LEFT,SPEED}) );
+	assert( e.has({LEFT.id}) );
+	assert( e.has({RIGHT.id}) );
+	assert( e.has({RIGHT.id, LEFT.id}) );
+	assert(!e.has({SPEED.id}) );
+	assert(!e.has({LEFT.id,SPEED.id}) );
 
 	cout << "Pass" << endl;
 }
@@ -281,11 +275,11 @@ void testHasController()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity a({LEFT}, {MOTION}, View::NONE);
+	Entity a(&Core, {LEFT.id}, {MOTION}, View::NONE);
 
 	assert( a.hasController(MOTION) );
 
-	Entity b({LEFT}, {}, View::NONE);
+	Entity b(&Core, {LEFT.id}, {}, View::NONE);
 
 	assert(!b.hasController(MOTION) );
 
@@ -296,7 +290,7 @@ void testAdd()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({LEFT}, {MOTION}, View::NONE);
+	Entity e(&Core, {LEFT.id}, {MOTION}, View::NONE);
 
 	assert( e.has(LEFT) );
 	assert(!e.has(RIGHT) );
@@ -356,16 +350,15 @@ void testVisible()
 }
 
 // testVisibleDraw() 
-size_t DRAWS = EntityCore::newComponent<int>("draws", 0);
+Component<int> DRAWS = Core.newComponent("draws", 0);
 
-ViewFunction DrawView({DRAWS}, 
-	[](Entity *e, void *drawState) {
-		e->get<int>(DRAWS)++;
+size_t DRAWS_VIEW = Core.addView({DRAWS.id}, 
+	[](Entity &e, void *drawState) {
+		e(DRAWS)++;
 	}
 );
 
-size_t DRAWS_VIEW = EntityCore::addView(&DrawView);
-size_t DRAWS_TYPE = EntityCore::newEntityType({DRAWS}, {}, DRAWS_VIEW);
+EntityType* DRAWS_TYPE = Core.newEntityType({DRAWS.id}, {}, DRAWS_VIEW);
 
 void testVisibleDraw()
 {
@@ -373,21 +366,21 @@ void testVisibleDraw()
 
 	Entity e(DRAWS_TYPE);
 
-	assert( e.get<int>(DRAWS) == 0 );
+	assert( e.get(DRAWS) == 0 );
 
 	e.draw(nullptr);
 
-	assert( e.get<int>(DRAWS) == 1 );
+	assert( e.get(DRAWS) == 1 );
 
 	e.hide();
 	e.draw(nullptr);
 
-	assert( e.get<int>(DRAWS) == 1 );
+	assert( e.get(DRAWS) == 1 );
 
 	e.show();
 	e.draw(nullptr);
 
-	assert( e.get<int>(DRAWS) == 2 );
+	assert( e.get(DRAWS) == 2 );
 
 	cout << "Pass" << endl;
 }
@@ -431,16 +424,15 @@ void testEnabled()
 }
 
 // testVisibleDraw() 
-size_t UPDATES = EntityCore::newComponent<int>("draws", 0);
+Component<int> UPDATES = Core.newComponent("draws", 0);
 
-ControllerFunction UpdateController({UPDATES}, 
-	[](Entity *e, void *updateState) {
-		e->get<int>(UPDATES)++;
+size_t UPDATES_CONTROLLER = Core.addController({UPDATES.id}, 
+	[] (Entity& e, void *updateState) {
+		e(UPDATES)++;
 	}
 );
 
-size_t UPDATES_CONTROLLER = EntityCore::addController(&UpdateController);
-size_t UPDATES_TYPE = EntityCore::newEntityType({UPDATES}, {UPDATES_CONTROLLER}, View::NONE);
+EntityType* UPDATES_TYPE = Core.newEntityType({UPDATES.id}, {UPDATES_CONTROLLER}, View::NONE);
 
 void testEnabledUpdate()
 {
@@ -448,21 +440,21 @@ void testEnabledUpdate()
 
 	Entity e(UPDATES_TYPE);
 
-	assert( e.get<int>(UPDATES) == 0 );
+	assert( e.get(UPDATES) == 0 );
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 1 );
+	assert( e.get(UPDATES) == 1 );
 
 	e.disable();
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 1 );
+	assert( e.get(UPDATES) == 1 );
 
 	e.enable();
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 2 );
+	assert( e.get(UPDATES) == 2 );
 
 	cout << "Pass" << endl;
 }
@@ -473,11 +465,11 @@ void testControllerEnabled()
 
 	Entity e(UPDATES_TYPE);
 
-	assert( e.get<int>(UPDATES) == 0 );
+	assert( e.get(UPDATES) == 0 );
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 1 );
+	assert( e.get(UPDATES) == 1 );
 
 	assert( e.isControllerEnabled(UPDATES_CONTROLLER) );
 
@@ -487,7 +479,7 @@ void testControllerEnabled()
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 1 );
+	assert( e.get(UPDATES) == 1 );
 
 	e.enable( UPDATES_CONTROLLER );
 
@@ -495,7 +487,7 @@ void testControllerEnabled()
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 2 );
+	assert( e.get(UPDATES) == 2 );
 
 	cout << "Pass" << endl;
 }
@@ -504,21 +496,21 @@ void testAddController()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity e({UPDATES}, {}, View::NONE);
+	Entity e(&Core, {UPDATES.id}, {}, View::NONE);
 
 	assert(!e.hasController(UPDATES_CONTROLLER) );
-	assert( e.get<int>(UPDATES) == 0 );
+	assert( e.get(UPDATES) == 0 );
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 0 );
+	assert( e.get(UPDATES) == 0 );
 
 	e.addController(UPDATES_CONTROLLER);
 	assert( e.hasController(UPDATES_CONTROLLER) );
 
 	e.update(nullptr);
 
-	assert( e.get<int>(UPDATES) == 1 );
+	assert( e.get(UPDATES) == 1 );
 
 	cout << "Pass" << endl;
 }
@@ -534,14 +526,14 @@ void testClone()
 	Entity *b = a->clone();
 
 	assert( a != b );
-	assert( b->get<float>(LEFT) == 2.0f );
-	assert( b->get<float>(RIGHT) == 3.7f );
+	assert( b->get(LEFT) == 2.0f );
+	assert( b->get(RIGHT) == 3.7f );
 
 	a->set(LEFT, -3.5f);
 	a->set(RIGHT, 5.6f);
 
-	assert( b->get<float>(LEFT) == 2.0f );
-	assert( b->get<float>(RIGHT) == 3.7f );
+	assert( b->get(LEFT) == 2.0f );
+	assert( b->get(RIGHT) == 3.7f );
 
 	delete b;
 	delete a;
@@ -554,10 +546,10 @@ void testSetMap()
 	cout << "Running " << __func__ << "() ... ";
 
 	Entity e(EXTENT);
-	e.set({{LEFT,3.0f},{RIGHT,4.5f}});
+	e.set({{LEFT.id,3.0f},{RIGHT.id,4.5f}});
 
-	assert( e.get<float>(LEFT) == 3.0f );
-	assert( e.get<float>(RIGHT) == 4.5f );
+	assert( e.get(LEFT) == 3.0f );
+	assert( e.get(RIGHT) == 4.5f );
 	
 	cout << "Pass" << endl;
 }
@@ -566,11 +558,11 @@ void testEquals()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
-	Entity b(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
-	Entity c(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
-	Entity d;
-	Entity e;
+	Entity a(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.5f}});
+	Entity b(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.5f}});
+	Entity c(EXTENT, {{LEFT.id,3.1f},{RIGHT.id,4.5f}});
+	Entity d(&Core);
+	Entity e(&Core);
 
 	assert( a == b );
 	assert( a != c );
@@ -593,11 +585,11 @@ void testHashCode()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
-	Entity b(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
-	Entity c(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
-	Entity d;
-	Entity e;
+	Entity a(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.5f}});
+	Entity b(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.5f}});
+	Entity c(EXTENT, {{LEFT.id,3.1f},{RIGHT.id,4.5f}});
+	Entity d(&Core);
+	Entity e(&Core);
 
 	assert( a.hashCode() == b.hashCode() );
 	assert( a.hashCode() != c.hashCode() );
@@ -620,10 +612,10 @@ void testCompareTo()
 {
 	cout << "Running " << __func__ << "() ... ";
 
-	Entity a(EXTENT, {{LEFT,3.0f},{RIGHT,4.5f}});
-	Entity b(EXTENT, {{LEFT,3.1f},{RIGHT,4.5f}});
-	Entity c(EXTENT, {{LEFT,3.0f},{RIGHT,4.6f}});
-	Entity d;
+	Entity a(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.5f}});
+	Entity b(EXTENT, {{LEFT.id,3.1f},{RIGHT.id,4.5f}});
+	Entity c(EXTENT, {{LEFT.id,3.0f},{RIGHT.id,4.6f}});
+	Entity d(&Core);
 	
 	assert( a < b );
 	assert( a < b );
@@ -632,7 +624,7 @@ void testCompareTo()
 	assert( b > d );
 	assert( c > d );
 
-	cout << "Pass" << endl;
+	cout << "Pass" << endl 	;
 }
 
 int main()
