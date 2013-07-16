@@ -176,9 +176,9 @@ public:
   template<class R, class... A>
   R execute(const Method<R(A...)> &method, A... arguments ) 
   {
-    Method<R(A...)> *method = type->getMethod<R,A...>(method.id);
-    if (method != nullptr) {
-      return method(*this, argments);
+    std::function<R(Entity&,A...)> *function = type->getMethod<R,A...>(method.id);
+    if (function != nullptr && has(method.required)) {
+      return function(*this, arguments...);
     }
     return R();
   }
@@ -215,10 +215,43 @@ public:
   inline bool add(const Component<T> &component, const T &value)
   {
     bool added = add(component);
+
     if (added) {
       set<T>(component, value);
     }
+
     return added;
+  }
+
+  template<class R, class... A>
+  bool addMethod(const Method<R(A...)> &method, const std::function<R(Entity&,A...)> &methodImplementation)
+  {
+    bool missing = type->hasMethod(method.id);
+
+    if (missing) {
+      setEntityType( type->addCustomMethod(method) );
+      type->setMethod(method, methodImplementation);
+    }
+
+    return missing;
+  }
+
+  template<class R, class... A>
+  inline bool addMethod(const Method<R(A...)> &method)
+  {
+    return addMethod(method, method.function);
+  }
+
+  template<class R, class... A>
+  bool setMethod(const Method<R(A...)> &method, const std::function<R(Entity&,A...)> &methodImplementation)
+  {
+    bool exists = type->hasMethod(method.id);
+    
+    if (exists) {
+      setEntityType( type->setCustomMethod(method, methodImplementation) );
+    }
+
+    return exists;
   }
 
   inline bool isExpired()

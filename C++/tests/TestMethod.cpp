@@ -1,31 +1,37 @@
 #include <Method.h>
+#include <Entity.h>
+#include <EntityCore.h>
 
 using namespace std;
 
-class EntityCore {
-};
+EntityCore Core;
 
-class Entity {
-public:
-	const EntityCore *core;
-	const int id;
-	Entity(const EntityCore* m_core, const int m_id) : core(m_core), id(m_id) {}
-};
+Component<float> LEFT 		= Core.newComponent("left",0.0f);
+Component<float> RIGHT 		= Core.newComponent("right",0.0f);
+EntityType* EXTENT 			= Core.newEntityType({LEFT.id, RIGHT.id}, {}, View::NONE);
 
-int times(Entity& e, int x) {
-	return x * e.id;
+
+void shrinkDefault(Entity &e, float amount) {
+	float gap = (e.get(RIGHT) - e.get(LEFT)) * 0.5f;
+	float center = gap + e.get(LEFT);
+	e.set(LEFT, center - gap * amount);
+	e.set(RIGHT, center + gap * amount);
 }
+
+Method<void(float)> SHRINK = Core.newMethod<void,float>("shrink", {LEFT.id, RIGHT.id}, shrinkDefault);
 
 int main()
 {
-	EntityCore core;
-	Entity e(&core, 4);
+	EXTENT->addMethod(SHRINK);
 
-	Method<float(int)> m(&core, 0, "test", times);
+	Entity e(EXTENT);
 
-	int x = m.function(e, 4);
+	e.set(LEFT, 2.0f);
+	e.set(RIGHT, 6.0f);
 
-	cout << "x: " << x << endl;
+	e.execute(SHRINK, 0.5f);
+
+	cout << e(LEFT) << " -> " << e(RIGHT) << endl;
 
 	return 0;
 } 

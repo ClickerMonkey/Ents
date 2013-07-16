@@ -2,8 +2,9 @@
 #define ENTITYTYPE_H
 
 #include <AnyMemory.h>
-#include <Component.h>
 #include <IdMap.h>
+#include <Component.h>
+#include <Method.h>
 
 class EntityType 
 {
@@ -27,7 +28,7 @@ protected:
 
   AnyMemory defaultComponents;
 
-  vector<void*> methodMap;
+  std::vector<void*> methodMap;
 
 public:
 
@@ -110,7 +111,7 @@ public:
   }
 
   template<class R, class... A>
-  bool setMethod(const Method<R(A...)> &method, const function<R(Entity&,A...)> &methodImplementation)
+  bool setMethod(const Method<R(A...)> &method, const std::function<R(Entity&,A...)> &methodImplementation)
   {
     int index = methods.getIndexSafe(method.id);
     bool exists = (index != -1);
@@ -121,13 +122,13 @@ public:
   }
 
   template<class R, class... A>
-  function<R(Entity&,A...)>* getMethod(const size_t methodId) const
+  std::function<R(Entity&,A...)>* getMethod(const size_t methodId) const
   {
     if (!hasMethod(methodId)) {
       return nullptr;
     }
 
-    return dynamic_cast<function<R(Entity&,A...)>*>(methodMap[methodId]);
+    return dynamic_cast<std::function<R(Entity&,A...)>*>(methodMap[methodId]);
   }
 
   void setView(const size_t view);
@@ -203,9 +204,9 @@ public:
   }
 
   template<class R, class... A>
-  EntityType* setCustomMethod(const Method<R(A...)> &method, const function<R(Entity&,A...)> &methodImplementation)
+  EntityType* setCustomMethod(const Method<R(A...)> &method, const std::function<R(Entity&,A...)> &methodImplementation)
   {
-     EntityType* target = this;
+    EntityType* target = this;
 
     if (!isCustom()) {
       target = getCustom();

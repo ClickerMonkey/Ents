@@ -7,7 +7,7 @@ FLAGS_LIB = $(FLAGS_CXX) -shared
 SOURCES = lib/*.cpp
 INCLUDE = include/
 OBJECTS = AnyMemory.o EntityCore.o EntityType.o EntityTypeCustom.o Entity.o EntityList.o BitSet.o Component.o 
-DEPENDENCIES = $(OBJECTS) IdMap.o VectorIterator.o View.o Controller.o
+DEPENDENCIES = $(OBJECTS) IdMap.o VectorIterator.o View.o Controller.o Method.o
 
 
 # Compile and run Testing
@@ -26,6 +26,9 @@ Controller.o: include/Controller.h
 
 View.o: include/View.h
 	$(CXX) $(FLAGS_CXX) -c include/View.h -I$(INCLUDE)
+
+Method.o: include/Method.h
+	$(CXX) $(FLAGS_CXX) -c include/Method.h -I$(INCLUDE)
 
 # Compiling Source Files
 BitSet.o: lib/BitSet.cpp
@@ -116,6 +119,12 @@ TestEntityList.o-fast: tests/TestEntityList.cpp
 	$(CXX) $(FLAGS_LD) -o TestEntityList $(OBJECTS) TestEntityList.o -I$(INCLUDE)
 	./TestEntityList
 TestEntityList.o: $(DEPENDENCIES) TestEntityList.o-fast
+
+TestMethod.o-fast: tests/TestMethod.cpp
+	$(CXX) $(FLAGS_CXX) -c tests/TestMethod.cpp -I$(INCLUDE)
+	$(CXX) $(FLAGS_LD) -o TestMethod $(OBJECTS) TestMethod.o -I$(INCLUDE)
+	./TestMethod
+TestMethod.o: $(DEPENDENCIES) TestMethod.o-fast
 
 TestAll-fast: TestIdMap.o-fast TestView.o-fast TestController.o-fast TestComponentType.o-fast \
 			  TestDynamicComponent.o-fast TestAnyMemory.o-fast TestBitSet.o-fast TestEntity.o-fast \

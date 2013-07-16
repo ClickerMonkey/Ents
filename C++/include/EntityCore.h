@@ -16,7 +16,7 @@ protected:
   std::vector<View*> views;
   std::vector<Controller*> controllers;
   std::vector<ComponentBase*> components;
-  std::vector<Method*> methods;
+  std::vector<MethodBase*> methods;
 
 public:
 
@@ -98,7 +98,7 @@ public:
 
 
 
-  inline MethodBase* getMethod(const size_t methodId)
+  inline MethodBase* getMethod(const size_t methodId) const
   {
     return methods[methodId];
   }
@@ -120,9 +120,9 @@ public:
   }
 
   template<class R, class... A>
-  Method<R(A...)>& newMethod(const std::string &name, const std::function<R(Entity&,A...)> &defaultFunction)
+  Method<R(A...)>& newMethod(const std::string &name, const BitSet &required, const std::function<R(Entity&,A...)> &defaultFunction)
   {
-    Method<R(A...)> *m = new Method<R(A...)>(this, methods.size(), name, defaultFunction);
+    Method<R(A...)> *m = new Method<R(A...)>(this, methods.size(), name, required, defaultFunction);
     methods.push_back(m);
     return *m;
   }
