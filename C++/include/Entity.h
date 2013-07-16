@@ -183,6 +183,12 @@ public:
     return R();
   }
 
+  template<class R, class... A>
+  R operator()(const Method<R(A...)> &method, A... arguments)
+  {
+    return execute(method, arguments...);
+  }
+
   inline bool hasController(const size_t controllerId)
   {
     return type->hasController(controllerId);
@@ -246,7 +252,7 @@ public:
   bool setMethod(const Method<R(A...)> &method, const std::function<R(Entity&,A...)> &methodImplementation)
   {
     bool exists = type->hasMethod(method.id);
-    
+
     if (exists) {
       setEntityType( type->setCustomMethod(method, methodImplementation) );
     }

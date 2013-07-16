@@ -33,5 +33,15 @@ int main()
 
 	cout << e(LEFT) << " -> " << e(RIGHT) << endl;
 
+	e.setMethod(SHRINK, [] (Entity &e, float amount) {
+		cout << "SHRINK BY " << amount << endl;
+	});
+
+	e(SHRINK, 0.5f);
+
+	cout << e(LEFT) << " -> " << e(RIGHT) << endl;
+
+	cout << e.isCustom() << endl;
+
 	return 0;
 } 
