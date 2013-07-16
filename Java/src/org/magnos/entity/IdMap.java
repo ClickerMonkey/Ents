@@ -1,7 +1,6 @@
 package org.magnos.entity;
 
 import java.util.Arrays;
-import java.util.BitSet;
 
 public final class IdMap
 {
@@ -12,17 +11,26 @@ public final class IdMap
 
 	public BitSet bitset;
 	
+	public IdMap()
+	{
+		this( new int[0], new int[0] );
+	}
 	
 	public IdMap( int... ids )
 	{
 		this( ids, buildMap( ids ) );
+	}
+	
+	public IdMap( Identified ... identifieds )
+	{
+		this( buildIds( identifieds ), buildMap( identifieds ) );
 	}
 
 	private IdMap( int[] ids, int[] map )
 	{
 		this.ids = ids;
 		this.map = map;
-		this.bitset = EntityUtility.createBitset( ids );
+		this.bitset = new BitSet( ids );
 	}
 
 	public boolean has( int id )
@@ -93,6 +101,18 @@ public final class IdMap
 		return new IdMap( Arrays.copyOf( ids, ids.length ), Arrays.copyOf( map, map.length ) );
 	}
 
+	public static int[] buildIds( Identified[] identifieds )
+	{
+		int[] ids = new int[ identifieds.length ];
+		
+		for (int i = 0; i < identifieds.length; i++)
+		{
+			ids[i] = identifieds[i].id;
+		}
+		
+		return ids;
+	}
+	
 	public static int[] buildMap( int[] ids )
 	{
 		int max = 0;
@@ -109,6 +129,27 @@ public final class IdMap
 		for (int i = 0; i < ids.length; i++)
 		{
 			map[ids[i]] = i;
+		}
+
+		return map;
+	}
+	
+	public static int[] buildMap( Identified[] identifieds )
+	{
+		int max = 0;
+
+		for (int i = 0; i < identifieds.length; i++)
+		{
+			max = Math.max( max, identifieds[i].id );
+		}
+
+		int[] map = new int[max + 1];
+
+		Arrays.fill( map, -1 );
+
+		for (int i = 0; i < identifieds.length; i++)
+		{
+			map[identifieds[i].id] = i;
 		}
 
 		return map;

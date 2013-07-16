@@ -1,8 +1,8 @@
 package org.magnos.entity;
 
-public interface ComponentFactory
+public interface ComponentFactory<T>
 {
-	public Object create();
+	public T create();
 
-	public Object clone( Object value );
+	public T clone( T value );
 }

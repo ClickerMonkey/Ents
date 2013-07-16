@@ -2,24 +2,17 @@ package org.magnos.entity.factory;
 
 import org.magnos.entity.ComponentFactory;
 
-public class ComponentFactoryNull implements ComponentFactory
+public class ComponentFactoryNull<T> implements ComponentFactory<T>
 {
 
-	private static final ComponentFactoryNull instance = new ComponentFactoryNull();
-
-	public static ComponentFactoryNull get()
-	{
-		return instance;
-	}
-
 	@Override
-	public Object create()
+	public T create()
 	{
 		return null;
 	}
 
 	@Override
-	public Object clone( Object value )
+	public T clone( Object value )
 	{
 		return null;
 	}

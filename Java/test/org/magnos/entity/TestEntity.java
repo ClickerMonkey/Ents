@@ -13,21 +13,24 @@ import org.junit.Test;
 public class TestEntity 
 {
 	
-	static class DynamicBounds implements DynamicComponent<Rectangle> {
-		public Rectangle compute(Entity e, Rectangle out) {
-			Point p = e.get(Components.POSITION);
-			Point s = e.get(Components.SIZE);
-			if (p == null || s == null) {
-				return null;
-			}
-			out.setFrameFromCenter(p.x, p.y, p.x - s.x * 0.5, p.y - s.y * 0.5);
-			return out;
+	public static final EntityCore core = new EntityCore();
+	
+	public class Scalar implements ComponentFactory<Scalar>{ 
+		float x;
+		public Scalar(float x) {
+			this.x = x;
+		}
+		public Scalar create() {
+			return new Scalar( x );
+		}
+		public Scalar clone( Scalar value ) {
+			return new Scalar( value.x );
 		}
 	}
 	
 	static class PhysicsController implements Controller {
 		public void control( Entity e, Object updateState ) {
-			float dt = (float)updateState;
+			float dt = (Float)updateState;
 			Point pos = e.get( Components.POSITION );
 			Point vel = e.get( Components.VELOCITY );
 			pos.x += vel.x * dt;
@@ -36,39 +39,46 @@ public class TestEntity
 	}
 	
 	static class Components {
-		public static int NAME = EntityCore.newComponent("name", String.class);
-		public static int POSITION = EntityCore.newComponent("position", Point.class);
-		public static int VELOCITY = EntityCore.newComponent("velocity", Point.class);
-		public static int ID = EntityCore.newComponent("id", int.class);
-		public static int SPATIAL_POSITION = EntityCore.newComponent("spatial position", Point.class);
-		public static int SPATIAL_VELOCITY = EntityCore.newComponent("spatial velocity", Point.class);
-		public static int SIZE = EntityCore.newComponent("size", Point.class);
-		public static int BOUNDS = EntityCore.newDynamicComponent("bounds", Rectangle.class, new DynamicBounds());
+		public static Component<String>		NAME 				= core.newComponent("name");
+		public static Component<Point> 		POSITION 			= core.newComponent("position");
+		public static Component<Point> 		VELOCITY 			= core.newComponent("velocity");
+		public static Component<Integer> 	ID 					= core.newComponent("id");
+		public static Component<Point> 		SPATIAL_POSITION 	= core.newComponent("spatial position");
+		public static Component<Point> 		SPATIAL_VELOCITY 	= core.newComponent("spatial velocity");
+		public static Component<Point> 		SIZE 				= core.newComponent("size");
+		
+		public static ComponentSet<Rectangle> BOUNDS = core.newComponentSet("bounds", new BitSet(POSITION, SIZE), new ComponentSet.Set<Rectangle>() {
+			public Rectangle set( Entity e, Rectangle target ) {
+				Point p = e.get(POSITION);
+				Point s = e.get(SIZE);
+				target.setFrameFromCenter(p.x, p.y, p.x - s.x * 0.5, p.y - s.y * 0.5);
+				return target;
+			}
+		});
 	}
 	
 	static class Views {
-		public static int SPRITE = EntityCore.newView();
+		public static int SPRITE = core.newView();
 	}
 	
 	static class Controllers {
-		public static int PHYSICS = EntityCore.addController( new PhysicsController() );
+		public static int PHYSICS = core.addController( "physics", new BitSet(Components.POSITION, Components.VELOCITY), new PhysicsController() );
 	}
 	
 	static class Entities {
-		public static int SPRITE = EntityCore.newEntityType(
-			new IdMap(Components.NAME, Components.POSITION, Components.VELOCITY, Components.SIZE), 
-			new IdMap(Controllers.PHYSICS), 
-			Views.SPRITE
-		); 
+		public static EntityType SPRITE = core.newEntityType(
+			/* components  */ new IdMap(Components.NAME, Components.POSITION, Components.VELOCITY, Components.SIZE), 
+			/* controllers */ new IdMap(Controllers.PHYSICS),
+			/*   methods   */ new IdMap(),
+			/*    view     */ Views.SPRITE
+		)
+		.setComponentAlias( Components.POSITION, Components.SPATIAL_POSITION )
+		.setComponentAlias( Components.VELOCITY, Components.SPATIAL_VELOCITY );
 	}
 
 	@Test
 	public void testBasic()
 	{
-		EntityType spriteType = EntityCore.getEntityType(Entities.SPRITE);
-		spriteType.setComponentAlias(Components.POSITION, Components.SPATIAL_POSITION);
-		spriteType.setComponentAlias(Components.VELOCITY, Components.SPATIAL_VELOCITY);
-		
 		Entity x = new Entity(Entities.SPRITE);
 		x.set(Components.NAME, "Philip Diffenderfer");
 		x.set(Components.POSITION, new Point(5, 10));
@@ -76,7 +86,6 @@ public class TestEntity
 		x.set(Components.SIZE, new Point(6, 4));
 		
 		System.out.println( x.get(Components.NAME) );
-		System.out.println( x.get(Components.NAME, String.class) );
 		
 		assertFalse( x.has(Components.ID) );
 		
@@ -92,7 +101,7 @@ public class TestEntity
 		assertEquals( new Point(5, 10), x.get(Components.SPATIAL_POSITION) );
 		assertSame( x.get(Components.POSITION), x.get(Components.SPATIAL_POSITION) );
 		
-		Rectangle bounds = x.get(Components.BOUNDS, new Rectangle());
+		Rectangle bounds = x.set(Components.BOUNDS, new Rectangle());
 		assertEquals( 2, bounds.x, 0.00001 );
 		assertEquals( 8, bounds.y, 0.00001 );
 		assertEquals( 6, bounds.width, 0.00001 );

@@ -4,60 +4,46 @@ import java.util.ArrayList;
 
 import org.magnos.entity.factory.ComponentFactoryNull;
 
+@SuppressWarnings("unchecked")
 public class EntityCore
 {
 
-	private static ArrayList<ComponentType> componentTypes = new ArrayList<ComponentType>();
+	private ArrayList<ComponentBase> components = new ArrayList<ComponentBase>();
+	private ArrayList<ControllerBase> controllers = new ArrayList<ControllerBase>();
+	private ArrayList<ViewBase> views = new ArrayList<ViewBase>();
+	private ArrayList<MethodBase> methods = new ArrayList<MethodBase>();
+	private ArrayList<EntityType> entityTypes = new ArrayList<EntityType>();
 
-	private static ArrayList<EntityType> entityTypes = new ArrayList<EntityType>();
-
-	private static ArrayList<Controller> controllers = new ArrayList<Controller>();
-
-	private static ArrayList<View> views = new ArrayList<View>();
-	
-	private static ArrayList<ArrayList<EntityList>> listeners = new ArrayList<ArrayList<EntityList>>();
-
-	private static EntityList listening = new EntityList();
-
-	public static ArrayList<EntityType> getEntityTypes()
+	public ArrayList<EntityType> getEntityTypes()
 	{
 		return entityTypes;
 	}
 	
-	public static EntityType getEntityType( int entityTypeId )
+	public EntityType getEntityType( int entityTypeId )
 	{
 		return entityTypes.get(entityTypeId);
 	}
 
-	public static EntityType getEntityTypeSafe( int entityTypeId )
+	public EntityType getEntityTypeSafe( int entityTypeId )
 	{
 		return hasEntityType( entityTypeId ) ? getEntityType( entityTypeId ) : null;
 	}
 
-	public static boolean hasEntityType( int entityTypeId )
+	public boolean hasEntityType( int entityTypeId )
 	{
 		return ( entityTypeId >= 0 && entityTypeId < entityTypes.size() );
 	}
 
-	public static int newEntityType( IdMap components, IdMap controllers, int view )
+	public EntityType newEntityType( IdMap components, IdMap controllers, IdMap methods, int view )
 	{
-		int id = entityTypes.size();
-		
-		entityTypes.add( new EntityType( id, components, controllers, view ) );
-		
-		return id;
+		EntityType type = new EntityType( this, entityTypes.size(), components, controllers, methods, view );
+		entityTypes.add( type );
+		return type;
 	}
 
-	public static int newEntityTypeExtension( int parentEntityTypeId, IdMap components, IdMap controllers, int view )
+	public EntityType newEntityTypeExtension( EntityType parent, IdMap components, IdMap controllers, IdMap methods, int view )
 	{
-		return newEntityTypeExtension( getEntityType( parentEntityTypeId ), components, controllers, view );
-	}
-
-	public static int newEntityTypeExtension( EntityType parent, IdMap components, IdMap controllers, int view )
-	{
-		int id = entityTypes.size();
-
-		EntityType type = parent.extend( id );
+		EntityType type = parent.extend( entityTypes.size() );
 		
 		for (int i = 0; i < components.size(); i++)
 		{
@@ -69,6 +55,11 @@ public class EntityCore
 			type.addController( controllers.ids[i] );
 		}
 		
+		for (int i = 0; i < methods.size(); i++)
+		{
+			type.addMethod( getMethodCast( methods.ids[i] ) );
+		}
+		
 		if ( view != -1 )
 		{
 			type.setView( view );	
@@ -76,141 +67,175 @@ public class EntityCore
 
 		entityTypes.add( type );
 
-		return id;
+		return type;
 	}
 
 	
-	public static ArrayList<ComponentType> getComponents()
+	public ArrayList<ComponentBase> getComponents()
 	{
-		return componentTypes;
+		return components;
 	}
 
-	public static ComponentType getComponent( int componentId )
+	public ComponentBase getComponent( int componentId )
 	{
-		return componentTypes.get(componentId);
+		return components.get(componentId);
 	}
 
-	public static ComponentType getComponentSafe( int componentId )
+	public ComponentBase getComponentSafe( int componentId )
 	{
 		return hasComponent( componentId ) ? getComponent( componentId ) : null;
 	}
-
-	public static boolean hasComponent( int componentId )
+	
+	public <T> Component<T> getComponentCast( int componentId )
 	{
-		return ( componentId >= 0 && componentId < componentTypes.size() );
+		return (Component<T>) components.get(componentId);
 	}
 
-	public static <T> int newComponent( String name, Class<T> type )
+	public boolean hasComponent( int componentId )
 	{
-		return newComponent( name, type, ComponentFactoryNull.get() );
-	}
-
-	public static <T> int newComponent( String name, Class<T> type, ComponentFactory factory )
-	{
-		int id = componentTypes.size();
-
-		componentTypes.add( new ComponentType( id, name, type, factory ) );
-		listeners.add( new ArrayList<EntityList>() );
-		
-		return id;
-	}
-
-	public static <T> int newDynamicComponent( String name, Class<T> type, DynamicComponent<T> component )
-	{
-		int id = componentTypes.size();
-
-		componentTypes.add( new DynamicComponentType<T>( id, name, type, component ) );
-		listeners.add( new ArrayList<EntityList>() );
-		
-		return id;
+		return ( componentId >= 0 && componentId < components.size() );
 	}
 	
-	public static ArrayList<Controller> getControllers()
+	public <T> Component<T> newComponent( String name )
+	{
+		return newComponent( name, new ComponentFactoryNull<T>() );
+	}
+
+	public <T> Component<T> newComponent( String name, ComponentFactory<T> factory )
+	{
+		Component<T> component = new Component<T>( this, components.size(), name, factory ); 
+		components.add( component );
+		return component;
+	}
+
+	public <T> ComponentGet<T> newComponentGet( String name, BitSet required, ComponentGet.Get<T> get )
+	{
+		ComponentGet<T> component = new ComponentGet<T>( this, components.size(), name, required, get );
+		components.add( component );
+		return component;
+	}
+
+	public <T> ComponentSet<T> newComponentSet( String name, BitSet required, ComponentSet.Set<T> set )
+	{
+		ComponentSet<T> component = new ComponentSet<T>( this, components.size(), name, required, set );
+		components.add( component );
+		return component;
+	}
+	
+	
+	public ArrayList<ControllerBase> getControllers()
 	{
 		return controllers;
 	}
 
-	public static Controller getController( int controllerId )
+	public ControllerBase getController( int controllerId )
 	{
 		return controllers.get(controllerId);
 	}
 
-	public static Controller getControllerSafe( int controllerId )
+	public ControllerBase getControllerSafe( int controllerId )
 	{
 		return hasController( controllerId ) ? getController( controllerId ) : null;
 	}
-
-	public static boolean hasController( int controllerId )
+	
+	public Controller getControllerImplementation( int controllerId )
 	{
-		return ( controllerId >= 0 && controllerId < controllers.size() );
+		return hasController( controllerId ) ? getController( controllerId ).controller : null;
 	}
 
-	public static int addController( Controller controller )
+	public boolean hasController( int controllerId )
+	{
+		return ( controllerId >= 0 && controllerId < controllers.size() && controllers.get( controllerId ).controller != null );
+	}
+
+	public int addController( String name, BitSet required, Controller controller )
 	{
 		int id = controllers.size();
-
-		controllers.add( controller );
-
+		controllers.add( new ControllerBase( this, id, name, required, controller ) );
 		return id;
 	}
+	
+	public int newController()
+	{
+		return addController( null, null, null );
+	}
+	
+	public void setController( int controllerId, String name, BitSet required, Controller controller )
+	{
+		controllers.set( controllerId, new ControllerBase( this, controllerId, name, required, controller ) );
+	}
 
-	public static ArrayList<View> getViews()
+	
+	public ArrayList<ViewBase> getViews()
 	{
 		return views;
 	}
 	
-	public static View getView( int viewId )
+	public ViewBase getView( int viewId )
 	{
 		return views.get(viewId);
 	}
 
-	public static View getViewSafe( int viewId )
+	public ViewBase getViewSafe( int viewId )
 	{
 		return hasView( viewId ) ? getView( viewId ) : null;
 	}
-
-	public static boolean hasView( int viewId )
+	
+	public boolean hasView( int viewId )
 	{
-		return ( viewId >= 0 && viewId < views.size() && views.get(viewId) != null );
+		return ( viewId >= 0 && viewId < views.size() && views.get(viewId).view != null );
 	}
 
-	public static int addView( View view )
+	public int addView( String name, BitSet required, View view )
 	{
 		int id = views.size();
-
-		views.add( view );
-
+		views.add( new ViewBase( this, id, name, required, view ) );
 		return id;
 	}
 
-	public static int newView()
+	public int newView()
 	{
-		return addView( null );
+		return addView( null, null, null );
 	}
 
-	public static void setView( int viewId, View view )
+	public void setView( int viewId, String name, BitSet required, View view )
 	{
-		views.set( viewId, view );
+		views.set( viewId, new ViewBase( this, viewId, name, required, view ) );
 	}
 	
-	public static void clean()
+
+
+	
+	public ArrayList<MethodBase> getMethods()
 	{
-		listening.clean();
+		return methods;
 	}
 	
-	public static void listenTo(Entity e)
+	public MethodBase getMethod( int methodId )
 	{
-		listening.add( e );
+		return methods.get(methodId);
 	}
 
-	public static void addListener(EntityList list, int ... components)
+	public MethodBase getMethodSafe( int methodId )
 	{
-		for (int i = 0; i < components.length; i++)
-		{
-			final int k = components[i]; 
-			
-			listeners.get(k).add( list );
-		}
+		return hasMethod( methodId ) ? getMethod( methodId ) : null;
+	}
+	
+	public <R> Method<R> getMethodCast( int methodId )
+	{
+		return (Method<R>) methods.get( methodId );
+	}
+
+	public boolean hasMethod( int methodId )
+	{
+		return ( methodId >= 0 && methodId < methods.size() && methods.get(methodId) != null );
+	}
+
+	public <R> Method<R> newMethod( String name, BitSet required, Method.Execute<R> execute )
+	{
+		Method<R> method = new Method<R>( this, methods.size(), name, required, execute );
+		methods.add( method );
+		return method;
 	}
 
 }

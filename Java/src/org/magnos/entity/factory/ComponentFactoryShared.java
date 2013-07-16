@@ -2,24 +2,24 @@ package org.magnos.entity.factory;
 
 import org.magnos.entity.ComponentFactory;
 
-public class ComponentFactoryShared implements ComponentFactory
+public class ComponentFactoryShared<T> implements ComponentFactory<T>
 {
 
-	public Object sharedComponentValue;
+	public T sharedComponentValue;
 
-	public ComponentFactoryShared( Object sharedComponentValue )
+	public ComponentFactoryShared( T sharedComponentValue )
 	{
 		this.sharedComponentValue = sharedComponentValue;
 	}
 
 	@Override
-	public Object create()
+	public T create()
 	{
 		return sharedComponentValue;
 	}
 
 	@Override
-	public Object clone( Object value )
+	public T clone( T value )
 	{
 		return sharedComponentValue;
 	}

@@ -1,21 +1,7 @@
 package org.magnos.entity;
 
-import java.util.BitSet;
-
 public class EntityUtility 
 {
-
-	public static BitSet createBitset(int[] indices)
-	{
-		BitSet bits = new BitSet();
-		
-		for (int i = 0; i < indices.length; i++)
-		{
-			bits.set(indices[i]);
-		}
-
-		return bits;
-	}
 
 	public static boolean equals(Object a, Object b)
 	{

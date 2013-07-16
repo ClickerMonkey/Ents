@@ -1,7 +1,6 @@
 package org.magnos.entity;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -14,26 +13,25 @@ public class EntityList extends Entity implements Iterable<Entity>
 	protected int entityCount = 0;
 	
 	// Iterators
-	protected EntityIterator iterator;
-	protected final ComponentIterator componentIterator;
-	protected final ControllerIterator controllerIterator;
-	protected final ValueIterator valueIterator;
-	protected final VisibleIterator visibleIterator;
-	protected final EnabledIterator enabledIterator;
+	protected EntityIterator iterator = new EntityIterator();
+	protected final ComponentIterator componentIterator = new ComponentIterator();
+	protected final ControllerIterator controllerIterator = new ControllerIterator();
+	protected final ValueIterator valueIterator = new ValueIterator();
+	protected final VisibleIterator visibleIterator = new VisibleIterator();
+	protected final EnabledIterator enabledIterator = new EnabledIterator();
+	protected final ExpiredIterator expiredIterator = new ExpiredIterator();
+	protected final EntityTypeIterator entityTypeIterator = new EntityTypeIterator();
+	protected final MethodIterator methodIterator = new MethodIterator();
+	protected final MethodResultIterator methodResultIterator = new MethodResultIterator();
 	
-	public EntityList()
+	public EntityList(EntityCore core)
 	{
-		this( null, DEFAULT_CAPACITY );
+		this( new EntityType( core ), DEFAULT_CAPACITY );
 	}
 	
-	public EntityList(int initialCapacity)
+	public EntityList(EntityCore core, int initialCapacity)
 	{
-		this( null, initialCapacity );
-	}
-	
-	public EntityList(int entityTypeId, int initialCapacity)
-	{
-		this( EntityCore.getEntityType(entityTypeId), initialCapacity );
+		this( new EntityType( core ), initialCapacity );
 	}
 	
 	protected EntityList( EntityType entityType, int initialCapacity )
@@ -41,12 +39,6 @@ public class EntityList extends Entity implements Iterable<Entity>
 		super( entityType );
 		
 		this.entities = new Entity[ initialCapacity ];
-		this.iterator = new EntityIterator();
-		this.componentIterator = new ComponentIterator();
-		this.controllerIterator = new ControllerIterator();
-		this.valueIterator = new ValueIterator();
-		this.visibleIterator = new VisibleIterator();
-		this.enabledIterator = new EnabledIterator();
 	}
 	
 	protected void onEntityAdd(Entity e, int index)
@@ -205,21 +197,21 @@ public class EntityList extends Entity implements Iterable<Entity>
 	
 	public Iterable<Entity> filterByComponents(int ... componentIds)
 	{
-		BitSet componentsBits = EntityUtility.createBitset(componentIds);
+		BitSet componentsBits = new BitSet(componentIds);
 		
 		return ( componentIterator.hasNext() ? new ComponentIterator(componentsBits) : componentIterator.reset(componentsBits) );
 	}
 	
 	public Iterable<Entity> filterByControllers(int ... controllerIds)
 	{
-		BitSet controllersBits = EntityUtility.createBitset(controllerIds);
+		BitSet controllersBits = new BitSet(controllerIds);
 		
 		return ( controllerIterator.hasNext() ? new ControllerIterator(controllersBits) : controllerIterator.reset(controllersBits) );
 	}
 	
-	public Iterable<Entity> filterByValue(int componentId, Object value)
+	public <T> Iterable<Entity> filterByValue(Component<T> component, T value)
 	{
-		return ( valueIterator.hasNext() ? new ValueIterator(componentId, value) : valueIterator.reset(componentId, value) );
+		return ( valueIterator.hasNext() ? new ValueIterator(component, value) : valueIterator.reset(component, value) );
 	}
 	
 	public Iterable<Entity> filterByVisible(boolean visible)
@@ -230,6 +222,26 @@ public class EntityList extends Entity implements Iterable<Entity>
 	public Iterable<Entity> filterByEnabled(boolean enabled)
 	{
 		return ( enabledIterator.hasNext() ? new EnabledIterator(enabled) : enabledIterator.reset(enabled) );
+	}
+	
+	public Iterable<Entity> filterByExpired(boolean expired)
+	{
+		return ( expiredIterator.hasNext() ? new ExpiredIterator(expired) : expiredIterator.reset(expired) );
+	}
+	
+	public Iterable<Entity> filterByEntityType(EntityType type)
+	{
+		return ( entityTypeIterator.hasNext() ? new EntityTypeIterator(type) : entityTypeIterator.reset(type) );
+	}
+	
+	public <R> Iterable<Entity> filterByMethod(Method<R> method)
+	{
+		return ( methodIterator.hasNext() ? new MethodIterator(method.id) : methodIterator.reset(method.id) );
+	}
+	
+	public <R> Iterable<Entity> filterByMethodResult(Method<R> method, R result, Object ... arguments)
+	{
+		return ( methodResultIterator.hasNext() ? new MethodResultIterator(method, result, arguments) : methodResultIterator.reset(method, result, arguments) );
 	}
 	
 	public int size()
@@ -391,21 +403,21 @@ public class EntityList extends Entity implements Iterable<Entity>
 
 	private class ValueIterator extends FilterIterator
 	{
-		private int componentId;
+		private Component<?> component;
 		private Object value;
 
 		public ValueIterator()
 		{
 		}
 		
-		public ValueIterator(int componentId, Object value)
+		public ValueIterator(Component<?> component, Object value)
 		{
-			reset( componentId, value );
+			reset( component, value );
 		}
 		
-		public ValueIterator reset( int componentId, Object value )
+		public ValueIterator reset( Component<?> component, Object value )
 		{
-			this.componentId = componentId;
+			this.component = component;
 			this.value = value;
 			
 			return this;
@@ -414,7 +426,7 @@ public class EntityList extends Entity implements Iterable<Entity>
 		@Override
 		protected boolean isValid(Entity e) 
 		{
-			return e.has(componentId) && EntityUtility.equals( e.get(componentId), value );
+			return e.has(component) && EntityUtility.equals( e.get(component), value );
 		}	
 	}
 	
@@ -469,6 +481,118 @@ public class EntityList extends Entity implements Iterable<Entity>
 		protected boolean isValid(Entity e) 
 		{
 			return e.isEnabled() == enabled;
+		}
+	}
+	
+	private class ExpiredIterator extends FilterIterator
+	{
+		private boolean expired;
+		
+		public ExpiredIterator()
+		{
+		}
+		
+		public ExpiredIterator(boolean expired)
+		{
+			reset( expired );
+		}
+		
+		public ExpiredIterator reset(boolean expired)
+		{
+			this.expired = expired;
+			
+			return this;
+		}
+		
+		@Override
+		protected boolean isValid(Entity e) 
+		{
+			return e.isExpired() == expired;
+		}
+	}
+	
+	private class EntityTypeIterator extends FilterIterator
+	{
+		private EntityType type;
+		
+		public EntityTypeIterator()
+		{
+		}
+		
+		public EntityTypeIterator(EntityType type)
+		{
+			reset( type );
+		}
+		
+		public EntityTypeIterator reset(EntityType type)
+		{
+			this.type = type;
+			
+			return this;
+		}
+		
+		@Override
+		protected boolean isValid(Entity e) 
+		{
+			return e.getType() == type;
+		}
+	}
+	
+	private class MethodIterator extends FilterIterator
+	{
+		private int methodId;
+		
+		public MethodIterator()
+		{
+		}
+		
+		public MethodIterator(int methodId)
+		{
+			reset( methodId );
+		}
+		
+		public MethodIterator reset(int methodId)
+		{
+			this.methodId = methodId;
+			
+			return this;
+		}
+		
+		@Override
+		protected boolean isValid(Entity e) 
+		{
+			return e.type.hasMethod( methodId );
+		}
+	}
+	
+	private class MethodResultIterator extends FilterIterator
+	{
+		private Method<?> method;
+		private Object[] arguments;
+		private Object expectedResult;
+		
+		public MethodResultIterator()
+		{
+		}
+		
+		public <R> MethodResultIterator(Method<R> method, R expectedResult, Object[] arguments)
+		{
+			reset( method, expectedResult, arguments );
+		}
+		
+		public <R> MethodResultIterator reset(Method<R> method, R expectedResult, Object[] arguments)
+		{
+			this.method = method;
+			this.expectedResult = expectedResult;
+			this.arguments = arguments;
+			
+			return this;
+		}
+		
+		@Override
+		protected boolean isValid(Entity e) 
+		{
+			return EntityUtility.equals( expectedResult, e.executes( method, arguments ) );
 		}
 	}
 	
