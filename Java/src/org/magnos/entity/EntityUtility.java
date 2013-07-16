@@ -1,7 +1,24 @@
 package org.magnos.entity;
 
+import java.util.Arrays;
+
 public class EntityUtility 
 {
+	
+	public static <T> T[] prepend(T element, T[] array)
+	{
+		array = Arrays.copyOf( array, array.length + 1 );
+		System.arraycopy( array, 0, array, 1, array.length - 1 );
+		array[0] = element;
+		return array;
+	}
+	
+	public static <T> T[] append(T[] array, T element)
+	{
+		array = Arrays.copyOf( array, array.length + 1 );
+		array[ array.length - 1 ] = element;
+		return array;
+	}
 
 	public static boolean equals(Object a, Object b)
 	{

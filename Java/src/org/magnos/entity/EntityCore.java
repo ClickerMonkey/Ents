@@ -148,7 +148,7 @@ public class EntityCore
 		return ( controllerId >= 0 && controllerId < controllers.size() && controllers.get( controllerId ).controller != null );
 	}
 
-	public int addController( String name, BitSet required, Controller controller )
+	public int newController( String name, BitSet required, Controller controller )
 	{
 		int id = controllers.size();
 		controllers.add( new ControllerBase( this, id, name, required, controller ) );
@@ -157,7 +157,7 @@ public class EntityCore
 	
 	public int newController()
 	{
-		return addController( null, null, null );
+		return newController( null, null, null );
 	}
 	
 	public void setController( int controllerId, String name, BitSet required, Controller controller )
@@ -186,7 +186,7 @@ public class EntityCore
 		return ( viewId >= 0 && viewId < views.size() && views.get(viewId).view != null );
 	}
 
-	public int addView( String name, BitSet required, View view )
+	public int newView( String name, BitSet required, View view )
 	{
 		int id = views.size();
 		views.add( new ViewBase( this, id, name, required, view ) );
@@ -195,7 +195,7 @@ public class EntityCore
 
 	public int newView()
 	{
-		return addView( null, null, null );
+		return newView( null, null, null );
 	}
 
 	public void setView( int viewId, String name, BitSet required, View view )

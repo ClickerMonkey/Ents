@@ -1,44 +1,27 @@
 package org.magnos.entity;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.magnos.entity.helper.Vector;
 
 public class TestController
 {
 
-	public static class Vector implements ComponentFactory<Vector> {
-		public float x, y;
-		public Vector(float x, float y) {
-			this.x = x;
-			this.y = y;
-		}
-		public Vector create() {
-			return new Vector( x, y );
-		}
-		public Vector clone( Vector value ) {
-			return new Vector( value.x, value.y );
-		}
-		public void addsi( Vector v, float s) {
-			x += v.x * s;
-			y += v.y * s;
-		}
-	}
-
 	public static final EntityCore core = new EntityCore();
 
-	public static Component<Vector> POSITION = core.newComponent( "position", new Vector( 0, 0 ) );
-	public static Component<Vector> VELOCITY = core.newComponent( "velocity", new Vector( 0, 0 ) );
-	public static Component<Vector> ACCELERATION = core.newComponent( "acceleration", new Vector( 0, 0 ) );
+	public static Component<Vector> POSITION = core.newComponent( "position", new Vector() );
+	public static Component<Vector> VELOCITY = core.newComponent( "velocity", new Vector() );
+	public static Component<Vector> ACCELERATION = core.newComponent( "acceleration", new Vector() );
 
-	public static int PHYSICS_SIMPLE = core.addController("physics-simple", new BitSet(POSITION, VELOCITY), new Controller() {
+	public static int PHYSICS_SIMPLE = core.newController("physics-simple", new BitSet(POSITION, VELOCITY), new Controller() {
 		public void control( Entity e, Object updateState ) {
 			float dt = (Float)updateState;
 			e.get(POSITION).addsi( e.get(VELOCITY), dt );
 		}
 	});
 
-	public static int PHYSICS = core.addController("physics", new BitSet(POSITION, VELOCITY, ACCELERATION), new Controller() {
+	public static int PHYSICS = core.newController("physics", new BitSet(POSITION, VELOCITY, ACCELERATION), new Controller() {
 		public void control( Entity e, Object updateState ) {
 			float dt = (Float)updateState;
 			e.get(POSITION).addsi( e.get(VELOCITY), dt );

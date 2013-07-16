@@ -9,14 +9,14 @@ public class ComponentSet<T> extends ComponentBase
 	}
 
 	public final BitSet required;
-	public final Set<T> set;
+	public final Set<T> setter;
 	
-	public ComponentSet( EntityCore core, int id, String name, BitSet required, Set<T> set )
+	public ComponentSet( EntityCore core, int id, String name, BitSet required, Set<T> setter )
 	{
 		super( core, id, name );
 		
 		this.required = required;
-		this.set = set;
+		this.setter = setter;
 	}
 
 }

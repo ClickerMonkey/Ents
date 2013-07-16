@@ -1,7 +1,6 @@
 package org.magnos.entity;
 
 import java.util.Arrays;
-import java.util.BitSet;
 
 @SuppressWarnings("unchecked")
 public class Entity
@@ -84,7 +83,7 @@ public class Entity
 		{
 			ViewBase viewBase = type.core.getViewSafe( type.view );
 			
-			if ( type.components.bitset.contains( viewBase.required ) && viewBase.view != null )
+			if ( has( viewBase.required ) && viewBase.view != null )
 			{
 				viewBase.view.draw( this, drawState );
 			}
@@ -123,11 +122,11 @@ public class Entity
 
 			for (int i = 0; i < controllerIds.length; i++)
 			{
-				if ( controllers.get( i ) )
+				if ( controllers.get( i, true ) )
 				{
 					ControllerBase controllerBase = type.core.getControllerSafe( controllerIds[i] );
 					
-					if ( type.components.bitset.contains( controllerBase.required ) && controllerBase.controller != null )
+					if ( has( controllerBase.required ) && controllerBase.controller != null )
 					{
 						controllerBase.controller.control( this, updateState );
 					}
@@ -178,6 +177,21 @@ public class Entity
 	{
 		return type.hasComponent( component.id );
 	}
+	
+	public <T> boolean hass( Component<T> component )
+	{
+		if ( component.core != type.core )
+		{
+			throw new CoreMismatchException();
+		}
+		
+		return type.hasComponent( component.id );
+	}
+	
+	public boolean has( BitSet components )
+	{
+		return type.components.bitset.contains( components );
+	}
 
 	public <T> T get( Component<T> component )
 	{
@@ -188,37 +202,52 @@ public class Entity
 	{
 		int index = type.getComponentIndex( component.id );
 		
+		if ( component.core != type.core )
+		{
+			throw new CoreMismatchException();
+		}
+		
 		return ( index == 0 ? null : (T)components[index] );
 	}
 	
 	public <T> T get( ComponentGet<T> component )
 	{
-		return component.get.get( this );
+		return component.getter.get( this );
 	}
 	
 	public <T> T gets( ComponentGet<T> component )
 	{
-		if ( !type.components.bitset.contains( component.required ) ) 
+		if ( !has( component.required ) ) 
 		{
 			return null;
 		}
 		
-		return component.get.get( this );
+		if ( component.core != type.core )
+		{
+			throw new CoreMismatchException();
+		}
+		
+		return component.getter.get( this );
 	}
 	
 	public <T> T set( ComponentSet<T> component, T target )
 	{
-		return component.set.set( this, target );
+		return component.setter.set( this, target );
 	}
 	
 	public <T> T sets( ComponentSet<T> component, T target )
 	{
-		if ( !type.components.bitset.contains( component.required ) ) 
+		if ( !has( component.required ) ) 
 		{
 			return null;
 		}
 		
-		return component.set.set( this, target );
+		if ( component.core != type.core )
+		{
+			throw new CoreMismatchException();
+		}
+		
+		return component.setter.set( this, target );
 	}
 
 	public <T> void set( Component<T> component, T value )
@@ -230,10 +259,17 @@ public class Entity
 	{
 		int index = type.getComponentIndex( component.id );
 		boolean exists = ( index != 0 );
+		
 		if (exists)
 		{
+			if ( component.core != type.core )
+			{
+				throw new CoreMismatchException();
+			}
+			
 			components[index] = value;
 		}
+		
 		return exists;
 	}
 	
@@ -252,21 +288,52 @@ public class Entity
 	{
 		Method.Execute<R> implementation = type.getMethodImplementationSafe( method.id );
 		
-		return ( implementation == null ? null : implementation.execute( this, arguments ) );
+		if ( implementation == null || !has(method.required) )
+		{
+			return null;
+		}
+		
+		if ( method.core != type.core )
+		{
+			throw new CoreMismatchException();
+		}
+		
+		return implementation.execute( this, arguments );
 	}
 
 	/*
 	 * Dynamic Functions 
 	 */
 	
-	public <T> void add( Component<T> component, T defaultValue )
+	public <T> boolean add( Component<T> component )
 	{
-		if ( !type.hasComponent( component.id ) )
+		return add( component, component.factory.create() );
+	}
+	
+	public <T> boolean add( Component<T> component, T defaultValue )
+	{
+		boolean missing = !type.hasComponent( component.id ); 
+		
+		if ( missing )
 		{
 			type = type.addCustomComponent( component.id );
-			components = Arrays.copyOf( components, type.getComponentCount() + 1 );
-			set( component, defaultValue );
+			components = EntityUtility.append( components, defaultValue );
 		}
+		
+		return missing;
+	}
+	
+	public <T> boolean adds( Component<T> component, T defaultValue )
+	{
+		boolean missing = !type.hasComponent( component.id ) && ( component.core == type.core ); 
+		
+		if ( missing )
+		{
+			type = type.addCustomComponent( component.id );
+			components = EntityUtility.append( components, defaultValue );
+		}
+		
+		return missing;
 	}
 
 	public void addController( int controllerId )

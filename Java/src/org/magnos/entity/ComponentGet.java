@@ -9,14 +9,14 @@ public class ComponentGet<T> extends ComponentBase
 	}
 	
 	public final BitSet required;
-	public final Get<T> get;
+	public final Get<T> getter;
 	
-	public ComponentGet( EntityCore core, int id, String name, BitSet required, Get<T> get )
+	public ComponentGet( EntityCore core, int id, String name, BitSet required, Get<T> getter )
 	{
 		super( core, id, name );
 		
 		this.required = required;
-		this.get = get;
+		this.getter = getter;
 	}
 
 }
