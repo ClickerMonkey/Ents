@@ -19,6 +19,35 @@ public class EntityUtility
 		array[ array.length - 1 ] = element;
 		return array;
 	}
+	
+	public static <T> T[] removeAt(T[] array, int index)
+	{
+		System.arraycopy( array, index + 1, array, index, array.length - index - 1 );
+		return Arrays.copyOf( array, array.length - 1 );
+	}
+	
+	public static <T> T[] remove(T[] array, T item, int max) 
+	{
+		if (max <= 0)
+		{
+			return array;
+		}
+		
+		for (int i = 0; i < array.length; i++)
+		{
+			if ( equals(array[i], item) ) 
+			{
+				array = removeAt( array, i-- );
+				
+				if (--max <= 0) 
+				{
+					break;
+				}
+			}
+		}
+		
+		return array;
+	}
 
 	public static boolean equals(Object a, Object b)
 	{
