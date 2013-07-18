@@ -20,23 +20,21 @@ public class EntityList extends Entity implements Iterable<Entity>
 	protected final VisibleIterator visibleIterator = new VisibleIterator();
 	protected final EnabledIterator enabledIterator = new EnabledIterator();
 	protected final ExpiredIterator expiredIterator = new ExpiredIterator();
-	protected final EntityTypeIterator entityTypeIterator = new EntityTypeIterator();
-	protected final MethodIterator methodIterator = new MethodIterator();
-	protected final MethodResultIterator methodResultIterator = new MethodResultIterator();
+	protected final TemplateIterator entityTypeIterator = new TemplateIterator();
 	
-	public EntityList(EntityCore core)
+	public EntityList()
 	{
-		this( new EntityType( core ), DEFAULT_CAPACITY );
+		this( EntityCore.newTemplate(), DEFAULT_CAPACITY );
 	}
 	
-	public EntityList(EntityCore core, int initialCapacity)
+	public EntityList(int initialCapacity)
 	{
-		this( new EntityType( core ), initialCapacity );
+		this( EntityCore.newTemplate(), initialCapacity );
 	}
 	
-	protected EntityList( EntityType entityType, int initialCapacity )
+	protected EntityList( Template template, int initialCapacity )
 	{
-		super( entityType );
+		super( template );
 		
 		this.entities = new Entity[ initialCapacity ];
 	}
@@ -195,16 +193,16 @@ public class EntityList extends Entity implements Iterable<Entity>
 		return (iterator.hasNext() ? new EntityIterator() : iterator.reset() );
 	}
 	
-	public Iterable<Entity> filterByComponents(int ... componentIds)
+	public Iterable<Entity> filterByComponents(Component<?> ... components)
 	{
-		BitSet componentsBits = new BitSet(componentIds);
+		BitSet componentsBits = new BitSet(components);
 		
 		return ( componentIterator.hasNext() ? new ComponentIterator(componentsBits) : componentIterator.reset(componentsBits) );
 	}
 	
-	public Iterable<Entity> filterByControllers(int ... controllerIds)
+	public Iterable<Entity> filterByControllers(Controller ... controllers)
 	{
-		BitSet controllersBits = new BitSet(controllerIds);
+		BitSet controllersBits = new BitSet(controllers);
 		
 		return ( controllerIterator.hasNext() ? new ControllerIterator(controllersBits) : controllerIterator.reset(controllersBits) );
 	}
@@ -229,19 +227,9 @@ public class EntityList extends Entity implements Iterable<Entity>
 		return ( expiredIterator.hasNext() ? new ExpiredIterator(expired) : expiredIterator.reset(expired) );
 	}
 	
-	public Iterable<Entity> filterByEntityType(EntityType type)
+	public Iterable<Entity> filterByTemplate(Template template)
 	{
-		return ( entityTypeIterator.hasNext() ? new EntityTypeIterator(type) : entityTypeIterator.reset(type) );
-	}
-	
-	public <R> Iterable<Entity> filterByMethod(Method<R> method)
-	{
-		return ( methodIterator.hasNext() ? new MethodIterator(method.id) : methodIterator.reset(method.id) );
-	}
-	
-	public <R> Iterable<Entity> filterByMethodResult(Method<R> method, R result, Object ... arguments)
-	{
-		return ( methodResultIterator.hasNext() ? new MethodResultIterator(method, result, arguments) : methodResultIterator.reset(method, result, arguments) );
+		return ( entityTypeIterator.hasNext() ? new TemplateIterator(template) : entityTypeIterator.reset(template) );
 	}
 	
 	public int size()
@@ -365,9 +353,9 @@ public class EntityList extends Entity implements Iterable<Entity>
 		@Override
 		protected boolean isValid(Entity e) 
 		{
-			EntityType type = e.type;
+			Template template = e.template;
 			
-			return ( type != null && type.components.bitset.intersects(components) );
+			return ( template != null && template.componentBitSet.intersects(components) );
 		}
 	}
 	
@@ -395,9 +383,9 @@ public class EntityList extends Entity implements Iterable<Entity>
 		@Override
 		protected boolean isValid(Entity e) 
 		{
-			EntityType type = e.type;
+			Template template = e.template;
 			
-			return ( type != null && type.controllers.bitset.intersects(controllers) );
+			return ( template != null && template.controllerBitSet.intersects(controllers) );
 		}
 	}
 
@@ -511,22 +499,22 @@ public class EntityList extends Entity implements Iterable<Entity>
 		}
 	}
 	
-	private class EntityTypeIterator extends FilterIterator
+	private class TemplateIterator extends FilterIterator
 	{
-		private EntityType type;
+		private Template template;
 		
-		public EntityTypeIterator()
+		public TemplateIterator()
 		{
 		}
 		
-		public EntityTypeIterator(EntityType type)
+		public TemplateIterator(Template template)
 		{
-			reset( type );
+			reset( template );
 		}
 		
-		public EntityTypeIterator reset(EntityType type)
+		public TemplateIterator reset(Template template)
 		{
-			this.type = type;
+			this.template = template;
 			
 			return this;
 		}
@@ -534,65 +522,7 @@ public class EntityList extends Entity implements Iterable<Entity>
 		@Override
 		protected boolean isValid(Entity e) 
 		{
-			return e.getType() == type;
-		}
-	}
-	
-	private class MethodIterator extends FilterIterator
-	{
-		private int methodId;
-		
-		public MethodIterator()
-		{
-		}
-		
-		public MethodIterator(int methodId)
-		{
-			reset( methodId );
-		}
-		
-		public MethodIterator reset(int methodId)
-		{
-			this.methodId = methodId;
-			
-			return this;
-		}
-		
-		@Override
-		protected boolean isValid(Entity e) 
-		{
-			return e.type.hasMethod( methodId );
-		}
-	}
-	
-	private class MethodResultIterator extends FilterIterator
-	{
-		private Method<?> method;
-		private Object[] arguments;
-		private Object expectedResult;
-		
-		public MethodResultIterator()
-		{
-		}
-		
-		public <R> MethodResultIterator(Method<R> method, R expectedResult, Object[] arguments)
-		{
-			reset( method, expectedResult, arguments );
-		}
-		
-		public <R> MethodResultIterator reset(Method<R> method, R expectedResult, Object[] arguments)
-		{
-			this.method = method;
-			this.expectedResult = expectedResult;
-			this.arguments = arguments;
-			
-			return this;
-		}
-		
-		@Override
-		protected boolean isValid(Entity e) 
-		{
-			return EntityUtility.equals( expectedResult, e.executes( method, arguments ) );
+			return e.getTemplate() == template;
 		}
 	}
 	

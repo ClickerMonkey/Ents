@@ -2,473 +2,372 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
-@SuppressWarnings("unchecked")
 public class Entity
 {
 
-	protected EntityType type;
+	protected Template template;
 
-	protected Object[] components;
+	protected Object[] values;
 
-	protected BitSet controllers;
-	
-	protected boolean expired;
-	
-	protected boolean visible;
-	
-	protected boolean enabled;
-	
+	protected BitSet controllerEnabled;
 
-	public Entity( EntityCore core )
+	protected boolean expired = false;
+
+	protected boolean visible = true;
+
+	protected boolean enabled = true;
+
+	
+	public Entity()
 	{
-		this( new EntityType( core ), new Object[1] );
-	}
-	
-	public Entity( EntityType entityType )
-	{
-		this( entityType, entityType.createComponents() );
+		this( EntityCore.newTemplate() );
 	}
 
-	private Entity( EntityType entityType, Object[] components )
+	public Entity( Template template )
 	{
-		this.type = entityType;
-		this.components = components;
-		this.controllers = new BitSet( type.controllers.size() );
-		this.expired = false;
-		this.visible = true;
-		this.enabled = true;
+		this( template, template.createDefaultValues() );
 	}
-	
+
+	private Entity( Template template, Object[] values )
+	{
+		this.setTemplate( template );
+		this.values = values;
+		this.controllerEnabled = new BitSet( template.controllers.length );
+		this.setControllerEnabledAll( true );
+	}
+
+	private boolean setTemplate( Template newTemplate )
+	{
+		boolean changed = ( template != newTemplate );
+
+		if ( changed )
+		{
+			if ( template != null )
+			{
+				template.removeInstance();
+			}
+
+			( template = newTemplate ).newInstance();
+		}
+
+		return changed;
+	}
+
 	/*
 	 * Expire Methods
 	 */
-	
+
 	public boolean isExpired()
 	{
 		return expired;
 	}
-	
+
 	public void expire()
 	{
 		expired = true;
 	}
-	
+
 	/*
 	 * View Draw
 	 */
-	
-	public void setVisible(boolean visible)
+
+	public void setVisible( boolean visible )
 	{
 		this.visible = visible;
 	}
-	
+
 	public void show()
 	{
 		visible = false;
 	}
-	
+
 	public void hide()
 	{
 		visible = false;
 	}
-	
+
 	public boolean isVisible()
 	{
 		return visible;
 	}
-	
+
 	public void draw( Object drawState )
 	{
 		if ( visible )
 		{
-			ViewBase viewBase = type.core.getViewSafe( type.view );
-			
-			if ( has( viewBase.required ) && viewBase.view != null )
+			View view = template.view;
+
+			if ( view != null )
 			{
-				viewBase.view.draw( this, drawState );
+				view.renderer.draw( this, drawState );
 			}
 		}
 	}
-	
+
 	/*
 	 * Controller Update
 	 */
-	
-	public void setEnabled(boolean enabled)
+
+	public void setEnabled( boolean enabled )
 	{
 		this.enabled = enabled;
 	}
-	
+
 	public void enable()
 	{
 		enabled = true;
 	}
-	
+
 	public void disable()
 	{
 		enabled = true;
 	}
-	
+
 	public boolean isEnabled()
 	{
 		return enabled;
 	}
-	
+
 	public void update( Object updateState )
 	{
 		if ( enabled )
 		{
-			int[] controllerIds = type.controllers.ids;
+			final Controller[] controllers = template.controllers;
 
-			for (int i = 0; i < controllerIds.length; i++)
+			for (int i = 0; i < controllers.length; i++)
 			{
-				if ( controllers.get( i, true ) )
+				final Controller c = controllers[i];
+
+				if ( controllerEnabled.get( template.indexOf( c ) ) )
 				{
-					ControllerBase controllerBase = type.core.getControllerSafe( controllerIds[i] );
-					
-					if ( has( controllerBase.required ) && controllerBase.controller != null )
-					{
-						controllerBase.controller.control( this, updateState );
-					}
+					c.control.control( this, updateState );
 				}
 			}
 		}
 	}
-	
+
 	/*
-	 * Controller Functions 
+	 * Controller Functions
 	 */
 
-	public boolean isControllerEnabled( int controllerId )
+	public boolean isControllerEnabled( Controller controller )
 	{
-		return controllers.get( type.getControllerIndex( controllerId ) );
+		return controllerEnabled.get( template.indexOf( controller ) );
 	}
 
-	public void setControllerEnabled( int controllerId, boolean enabled )
+	public void setControllerEnabled( Controller controller, boolean enabled )
 	{
-		controllers.set( type.getControllerIndex( controllerId ), enabled );
+		controllerEnabled.set( template.indexOf( controller ), enabled );
 	}
 
 	public void setControllerEnabledAll( boolean enabled )
 	{
-		controllers.set( 0, type.getControllerCount(), enabled );
+		controllerEnabled.set( 0, template.controllers.length, enabled );
 	}
 
-	public void enable( int controllerId )
+	public void enable( Controller controller )
 	{
-		setControllerEnabled( controllerId, true );
+		setControllerEnabled( controller, true );
 	}
 
-	public void disable( int controllerId )
+	public void disable( Controller controller )
 	{
-		setControllerEnabled( controllerId, false );
+		setControllerEnabled( controller, false );
 	}
 
 	/*
-	 * Component Functions 
+	 * Component Functions
 	 */
-	
-	public boolean has( int id )
+
+	public boolean has( Component<?> component )
 	{
-		return type.hasComponent( id );
-	}
-	
-	public <T> boolean has( Component<T> component )
-	{
-		return type.hasComponent( component.id );
-	}
-	
-	public <T> boolean hass( Component<T> component )
-	{
-		if ( component.core != type.core )
-		{
-			throw new CoreMismatchException();
-		}
-		
-		return type.hasComponent( component.id );
-	}
-	
-	public boolean has( BitSet components )
-	{
-		return type.components.bitset.contains( components );
+		return template.has( component );
 	}
 
+	public boolean has( BitSet components )
+	{
+		return template.componentBitSet.contains( components );
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T> T get( Component<T> component )
 	{
-		return (T) components[type.getComponentIndex( component.id )];
+		TemplateComponent<T> ch = (TemplateComponent<T>) template.handlers[component.id];
+		return ch.get( this );
 	}
 
 	public <T> T gets( Component<T> component )
 	{
-		int index = type.getComponentIndex( component.id );
-		
-		if ( component.core != type.core )
-		{
-			throw new CoreMismatchException();
-		}
-		
-		return ( index == 0 ? null : (T)components[index] );
-	}
-	
-	public <T> T get( ComponentGet<T> component )
-	{
-		return component.getter.get( this );
-	}
-	
-	public <T> T gets( ComponentGet<T> component )
-	{
-		if ( !has( component.required ) ) 
-		{
-			return null;
-		}
-		
-		if ( component.core != type.core )
-		{
-			throw new CoreMismatchException();
-		}
-		
-		return component.getter.get( this );
-	}
-	
-	public <T> T set( ComponentSet<T> component, T target )
-	{
-		return component.setter.set( this, target );
-	}
-	
-	public <T> T sets( ComponentSet<T> component, T target )
-	{
-		if ( !has( component.required ) ) 
-		{
-			return null;
-		}
-		
-		if ( component.core != type.core )
-		{
-			throw new CoreMismatchException();
-		}
-		
-		return component.setter.set( this, target );
+		return template.has( component ) ? get( component ) : null;
 	}
 
+	public <T> T gets( Component<T> component, T missingValue )
+	{
+		return template.has( component ) ? get( component ) : missingValue;
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T> void set( Component<T> component, T value )
 	{
-		components[type.getComponentIndex( component.id )] = value;
+		TemplateComponent<T> ch = (TemplateComponent<T>) template.handlers[component.id];
+		ch.set( this, value );
 	}
 
 	public <T> boolean sets( Component<T> component, T value )
 	{
-		int index = type.getComponentIndex( component.id );
-		boolean exists = ( index != 0 );
-		
-		if (exists)
+		boolean has = template.has( component );
+		if ( has )
 		{
-			if ( component.core != type.core )
-			{
-				throw new CoreMismatchException();
-			}
-			
-			components[index] = value;
+			set( component, value );
 		}
-		
-		return exists;
-	}
-	
-	/*
-	 * Method Functions
-	 */
-	
-	public <R> R execute(Method<R> method, Object ... arguments)
-	{
-		Method.Execute<R> implementation = type.getMethodImplementation( method.id );
-		
-		return implementation.execute( this, arguments );
-	}
-
-	public <R> R executes(Method<R> method, Object ... arguments)
-	{
-		Method.Execute<R> implementation = type.getMethodImplementationSafe( method.id );
-		
-		if ( implementation == null || !has(method.required) )
-		{
-			return null;
-		}
-		
-		if ( method.core != type.core )
-		{
-			throw new CoreMismatchException();
-		}
-		
-		return implementation.execute( this, arguments );
+		return has;
 	}
 
 	/*
-	 * Dynamic Functions 
+	 * Dynamic Functions
 	 */
-	
+
 	public <T> boolean add( Component<T> component )
 	{
-		return add( component, component.factory.create() );
+		boolean hasExact = template.hasExact( component );
+
+		setTemplate( template.addCustomComponent( component ) );
+
+		if ( !hasExact )
+		{
+			component.postCustomAdd( this );
+		}
+
+		return !hasExact;
 	}
-	
+
 	public <T> boolean add( Component<T> component, T defaultValue )
 	{
-		boolean missing = !type.hasComponent( component.id ); 
-		
-		if ( missing )
+		boolean added = add( component );
+
+		if ( added )
 		{
-			type = type.addCustomComponent( component.id );
-			components = EntityUtility.append( components, defaultValue );
+			set( component, defaultValue );
 		}
-		
-		return missing;
-	}
-	
-	public <T> boolean adds( Component<T> component, T defaultValue )
-	{
-		boolean missing = !type.hasComponent( component.id ) && ( component.core == type.core ); 
-		
-		if ( missing )
-		{
-			type = type.addCustomComponent( component.id );
-			components = EntityUtility.append( components, defaultValue );
-		}
-		
-		return missing;
+
+		return added;
 	}
 
-	public void addController( int controllerId )
+	public void add( Controller controller )
 	{
-		type = type.addCustomController( controllerId );
-	}
-	
-	public <R> void addMethod( Method<R> method )
-	{
-		type = type.addCustomMethod( method );
-	}
-	
-	public <R> void setMethod( Method<R> method, Method.Execute<R> execute )
-	{
-		type = type.setCustomMethod( method, execute );
+		setTemplate( template.addCustomController( controller ) );
+		controllerEnabled.set( controller.id );
 	}
 
-	public void setView( int viewId )
+	public void setView( View view )
 	{
-		if ( type.view != viewId )
-		{
-			type = type.setCustomView( viewId );
-		}
+		setTemplate( template.setCustomView( view ) );
 	}
-	
+
 	public <T> void alias( Component<T> component, Component<T> alias )
 	{
-		type = type.setCustomComponentAlias( component, alias );
-	}
-	
-	public void aliasController( int controllerId, int aliasId )
-	{
-		type = type.setCustomControllerAlias( controllerId, aliasId );
-	}
-	
-	public <R> void aliasMethod( Method<R> method, Method<R> alias )
-	{
-		type = type.setCustomMethodAlias( method, alias );
+		setTemplate( template.setCustomAlias( component, alias ) );
 	}
 
 	/*
-	 * Cloning 
+	 * Cloning
 	 */
-	
+
+	@SuppressWarnings("unchecked")
 	public Entity clone( boolean deep )
 	{
-		Object[] copy = new Object[components.length];
+		final int valueCount = values.length;
+		final Object[] clonedValues = new Object[valueCount];
 
-		for (int i = 1; i < components.length; i++)
+		if ( deep )
 		{
-			if ( deep )
+			for (int i = 0; i < valueCount; i++)
 			{
-				copy[i] = type.cloneComponentAtIndex( i, components[i] );
-			}
-			else
-			{
-				copy[i] = components[i];
+				ComponentFactory<Object> factory = (ComponentFactory<Object>) template.factories[i];
+				clonedValues[i] = factory.clone( values[i] );
 			}
 		}
+		else
+		{
+			System.arraycopy( values, 0, clonedValues, 0, valueCount );
+		}
 
-		return new Entity( type, copy );
+		return new Entity( template, clonedValues );
 	}
 
-	public EntityType getType()
+	public Template getTemplate()
 	{
-		return type;
+		return template;
 	}
 
-	public Object[] getComponents()
+	public Object[] getValues()
 	{
-		return components;
+		return values;
 	}
-	
+
 	public BitSet getControllerFlags()
 	{
-		return controllers;
+		return controllerEnabled;
 	}
-	
+
 	/*
 	 * hashCode(), equals() and toString
 	 */
-	
+
 	@Override
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append( '[' );
-		
-		for (int i = 0; i < type.getComponentCount(); i++)
+
+		for (Component<?> c : template.components)
 		{
-			if (i > 0 )
+			if ( sb.length() > 1 )
 			{
-				sb.append(',');
+				sb.append( ',' );
 			}
-			
-			ComponentBase componentBase = type.core.getComponent( type.components.ids[i] );
-		
-			sb.append( componentBase.name ) ;
+
+			sb.append( c.name );
 			sb.append( '=' );
-			sb.append( components[i] );
+			sb.append( get( c ) );
 		}
-		
+
 		sb.append( ']' );
-		
+
 		return sb.toString();
 	}
 
 	@Override
-	public int hashCode() 
+	public int hashCode()
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Arrays.hashCode(components);
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + Arrays.hashCode( values );
+		result = prime * result + ( ( template == null ) ? 0 : template.hashCode() );
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) 
+	public boolean equals( Object obj )
 	{
-		if (obj == null) {
+		if ( obj == null )
+		{
 			return false;
 		}
-		if (obj == this) {
+		if ( obj == this )
+		{
 			return true;
 		}
-		if (!(obj instanceof Entity)) {
+		if ( ! ( obj instanceof Entity ) )
+		{
 			return false;
 		}
-		
-		Entity e = (Entity)obj;
-		
-		return EntityUtility.equals(type, e.type) &&
-			   EntityUtility.equals(components, e.components);
+
+		Entity e = (Entity) obj;
+
+		return EntityUtility.equals( template, e.template ) &&
+		EntityUtility.equals( values, e.values );
 	}
 
 }

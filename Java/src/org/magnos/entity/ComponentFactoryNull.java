@@ -1,6 +1,5 @@
-package org.magnos.entity.factory;
+package org.magnos.entity;
 
-import org.magnos.entity.ComponentFactory;
 
 public class ComponentFactoryNull<T> implements ComponentFactory<T>
 {

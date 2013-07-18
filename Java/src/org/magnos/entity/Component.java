@@ -1,16 +1,15 @@
 package org.magnos.entity;
 
-
-public class Component<T> extends ComponentBase
+public abstract class Component<T> extends Id
 {
 
-	public final ComponentFactory<T> factory;
-	
-	public Component( EntityCore core, int id, String name, ComponentFactory<T> factory )
+	public Component( int id, String name )
 	{
-		super( core, id, name );
-		
-		this.factory = factory;
+		super( id, name );
 	}
+
+	public abstract TemplateComponent<T> add( Template template );
+
+	public abstract void postCustomAdd( Entity e );
 
 }

@@ -16,7 +16,6 @@ public class TestBitSet
 										// integer
 		assertEquals( 0, a.length() );
 		assertFalse( a.get( 0 ) );
-		assertTrue( a.get( 0, true ) );
 	}
 
 	@Test

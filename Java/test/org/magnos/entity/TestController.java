@@ -3,6 +3,7 @@ package org.magnos.entity;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.magnos.entity.Controller.Control;
 import org.magnos.entity.helper.Vector;
 
 public class TestController
@@ -10,18 +11,18 @@ public class TestController
 
 	public static final EntityCore core = new EntityCore();
 
-	public static Component<Vector> POSITION = core.newComponent( "position", new Vector() );
-	public static Component<Vector> VELOCITY = core.newComponent( "velocity", new Vector() );
-	public static Component<Vector> ACCELERATION = core.newComponent( "acceleration", new Vector() );
+	public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
+	public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
+	public static Component<Vector> ACCELERATION = EntityCore.newComponent( "acceleration", new Vector() );
 
-	public static int PHYSICS_SIMPLE = core.newController("physics-simple", new BitSet(POSITION, VELOCITY), new Controller() {
+	public static Controller PHYSICS_SIMPLE = EntityCore.newController("physics-simple", new Control() {
 		public void control( Entity e, Object updateState ) {
 			float dt = (Float)updateState;
 			e.get(POSITION).addsi( e.get(VELOCITY), dt );
 		}
 	});
 
-	public static int PHYSICS = core.newController("physics", new BitSet(POSITION, VELOCITY, ACCELERATION), new Controller() {
+	public static Controller PHYSICS = EntityCore.newController("physics", new Control() {
 		public void control( Entity e, Object updateState ) {
 			float dt = (Float)updateState;
 			e.get(POSITION).addsi( e.get(VELOCITY), dt );
@@ -29,7 +30,7 @@ public class TestController
 		}
 	});
 
-	public static EntityType SPRITE = core.newEntityType( new IdMap(POSITION, VELOCITY), new IdMap(PHYSICS_SIMPLE), new IdMap(), View.NONE );
+	public static Template SPRITE = EntityCore.newTemplate( "sprite", new Components(POSITION, VELOCITY), new Controllers(PHYSICS_SIMPLE), null );
 
 	@Test
 	public void testUpdate()
