@@ -1,14 +1,12 @@
 package org.magnos.entity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.magnos.entity.factory.ComponentFactoryNull;
 import org.magnos.entity.helper.Bounds;
 import org.magnos.entity.helper.Scalar;
 import org.magnos.entity.helper.Vector;
@@ -17,8 +15,20 @@ import org.magnos.entity.helper.Vector;
 
 @SuppressWarnings("unchecked")
 public class TestNewDesign {
-
 	
+	public static class Bag<T> {
+		T[] values;
+		public Bag(T ... values) {
+			this.values = values;
+		}
+		public static <T> Bag<T> of(T ... values) {
+			return new Bag<T>(values);
+		}
+		public static <T> Bag<T> empty(Class<T> type) {
+			return new Bag<T>();
+		}
+	}
+
 	public static class Id {
 		final int index;
 		final String name;
@@ -28,97 +38,6 @@ public class TestNewDesign {
 		}
 	}
 
-	public static class IdMap<I extends Id> {
-		I[] ids;
-		int[] map;
-		
-		public static <D extends Id> IdMap<D> NEW(D ... ids) {
-			return new IdMap<D>(ids);
-		}
-		
-		public IdMap(I ...ids ) {
-			this.ids = ids;
-			int max = 0;
-			for (int i = 0; i < ids.length; i++) {
-				max = Math.max(max, ids[i].index );
-			}
-			map = new int[max + 1];
-			Arrays.fill( map, -1 );
-			for (int i = 0; i < ids.length; i++) {
-				map[ids[i].index] = i;
-			}
-		}
-		public I getId(I id) {
-			return ids[indexOf(id)];
-		}
-		public void refresh(I id) {
-			ids[indexOf(id)] = id;
-		}
-		public boolean has(I id) {
-			return map[id.index] != -1;
-		}
-		public int indexOf(I id) {
-			return map[id.index];
-		}
-		public void add(I id, int index) {
-			ensureMapSize(id.index);
-			map[id.index] = index;
-			ids = EntityUtility.append(ids, id);
-		}
-		public void add(I id) {
-			add(id, ids.length);
-		}
-		public void put(I id) {
-			int i = id.index >= map.length ? -1 : indexOf(id);
-			if (i != -1) {
-				ids[i] = id;
-			} else {
-				add( id );
-			}
-		}
-		public int size() {
-			return ids.length;
-		}
-		private void ensureMapSize(int index) {
-			int size = map.length;
-			if (size <= index) {
-				map = Arrays.copyOf(map, index + 1);
-				while (size < map.length) {
-					map[size++] = -1;
-				}
-			}
-		}
-	}	
-	
-	public static class IdValueMap<I extends Id, V> extends IdMap<I> {
-		V[] values;
-		public IdValueMap(V[] values)	{
-			this.values = values;
-		}
-		public V get(I id) {
-			return values[map[id.index]];
-		}
-		public void set(I id, V value) {
-			values[map[id.index]] = value;
-		}
-		public void add(I id, V value) {
-			add( id, value, ids.length );
-		}
-		public void add(I id, V value, int index) {
-			super.add( id, index );
-			values = EntityUtility.append(values, value);
-		}
-		public void put(I id, V value) {
-			int i = id.index >= map.length ? -1 : indexOf(id);
-			if (i != -1) {
-				ids[i] = id;
-				values[i] = value;
-			} else {
-				add(id, value);
-			}
-		}
-	}
-	
 	public static interface Renderer {
 		void draw(Entity e, Object drawState);
 	}
@@ -143,49 +62,233 @@ public class TestNewDesign {
 		}
 	}
 	
-	public static class EntityType {
-		IdMap<Component<?>> components;
-		IdValueMap<Component<?>, Object> sharedValues;
-		IdMap<Component<?>> entityValues;
+	public static class Template extends Id {
+		public static final int CUSTOM = Integer.MAX_VALUE;
+		public static final String CUSTOM_NAME = "custom";
+		
+		final Template parent;
+		
+		Component<?>[] components;
+		BitSet componentsBitSet;
+		Controller[] controllers;
+		BitSet controllerBitSet;
+		TemplateComponent<?>[] handlers = {};
+		ComponentFactory<?>[] factories = {};
 		View view;
-		EntityType(IdMap<Component<?>> components, View view) {
+		int instances;
+		
+		Template() {
+			this(CUSTOM, CUSTOM_NAME, null, new Bag<Component<?>>(), new Bag<Controller>(), null);
+		}
+		
+		Template(int id, String name, Template parent, Bag<Component<?>> component, Bag<Controller> controllers, View view) {
+			super(id, name);
 			
-			this.components = components;
-			this.sharedValues = new IdValueMap<Component<?>, Object>( new Object[0] );
-			this.entityValues = new IdMap<Component<?>>();
+			this.parent = parent;
+			this.components = component.values;
+			this.controllers = controllers.values;
 			this.view = view;
 			
-			for (int i = 0; i < components.ids.length; i++) {
-				Component<Object> c = (Component<Object>)components.ids[i];
-				c.handler.addToType( c, this );
+			for (int i = 0; i < components.length; i++) {
+				Component<?> c = components[i];
+				if (has(c)) {
+					throw new RuntimeException( "A template cannot have the same component more than once!" );
+				}
+				TemplateComponent<?> handler = c.add(this);
+				ensureFit(c);
+				handlers[c.index] = handler;
 			}
 		}
+		
+		Template extend(int id, String name) {
+			return new Template( id, name, this, new Bag<Component<?>>(components), new Bag<Controller>(controllers), view );
+		}
+		
+		Object[] createDefaultValues() {
+			final int n = factories.length;
+			Object[] values = new Object[n];
+			for (int i = 0; i < n; i++) {
+				values[i] = factories[i].create();
+			}
+			return values;
+		}
+		public void newInstance() {
+			instances++;
+		}
+		public void removeInstance() {
+			instances--;
+		}
 		<T> boolean has(Component<T> component) {
-			return components.has( component );
+			return component.index < handlers.length && handlers[component.index] != null;
 		}
 		<T> boolean hasExact(Component<T> component) {
-			return components.getId( component ) == component;
+			return has(component) && EntityUtility.indexOfSame(components, component) != -1;
+		}
+		boolean has(Component<?> ... components) {
+			for (Component<?> c : components) {
+				if (!has(c)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		<T> void add(Component<T> component) {
+			ensureFit(component);
+			TemplateComponent<?> existing = handlers[component.index];
+			if (existing != null) {
+				existing.remove(this);
+			}
+			handlers[component.index] = component.add(this);
+			if (existing == null) {
+				componentsBitSet.set(components.length);
+				components = EntityUtility.append(components, component);
+			}
+		}
+		
+		boolean has(Controller controller) {
+			return controllerBitSet.get(controller.index);
+		}
+		boolean hasExact(Controller controller) {
+			return has(controller) && EntityUtility.indexOfSame(controllers, controller) != -1;
+		}
+		boolean has(Controller ... controllers) {
+			for (Controller c : controllers) {
+				if (!has(c)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		void add(Controller controller) {
+			if (!has(controller)) {
+				controllerBitSet.set(controllers.length);
+				controllers = EntityUtility.append(controllers, controller);
+			}
+		}
+		
+		boolean has(View view) {
+			return (this.view.index == view.index);
+		}
+		boolean hasExact(View view) {
+			return this.view == view;
+		}
+		void setView(View view) {
+			this.view = view;
+		}
+		
+		private void ensureFit(Id id) {
+			if (handlers.length <= id.index) {
+				handlers = Arrays.copyOf(handlers, id.index + 1);
+			}
+		}
+		
+		boolean isCustom() {
+			return (index == CUSTOM);
+		}
+		
+		<T> Template addCustomComponent(Component<T> component) {
+			if (hasExact(component)) {
+				return this;
+			}
+			Template t = getCustomTemplate();
+			t.add(component);
+			return t;
+		}
+		Template addCustomController(Controller controller) {
+			if (hasExact(controller)) {
+				return this;
+			}
+			Template t = getCustomTemplate();
+			t.add(controller);
+			return t;
+		}
+		Template setCustomView(View view) {
+			if (hasExact(view)) {
+				return this;
+			}
+			Template t = getCustomTemplate();
+			t.setView(view);
+			return t;
+		}
+		
+		Template getCustomTemplate() {
+			return isCustom() && instances == 1 ? this : extend(CUSTOM, CUSTOM_NAME);
 		}
 	}
 	
 	public static class Entity {
-		EntityType type;
-		Object[] components = {};
+		Template template;
+		Object[] values;
 		
-		public Entity(EntityType type) {
-			this.type = type;
-			for (int i = 0; i < type.components.size(); i++) {
-				Component<Object> c = (Component<Object>) type.components.ids[i];
-				c.handler.addToEntity( c, this );
+		public Entity(Template template) {
+			this( template, template.createDefaultValues() );
+		}
+		private Entity(Template template, Object[] values) {
+			this.setTemplate(template);
+			this.values = values;
+		}
+		protected boolean setTemplate(Template newTemplate) {
+			boolean changed = (template != newTemplate);
+			if (changed) {
+				if (template != null) {
+					template.removeInstance();
+				}
+				(template = newTemplate).newInstance();
 			}
+			return changed;
 		}
 		public <T> T get(Component<T> component) {
-			Component<T> c = (Component<T>)type.components.getId(component);
-			return c.handler.get(c, this);
+			TemplateComponent<T> ch = (TemplateComponent<T>)template.handlers[component.index];
+			return ch.get(this);
+		}
+		public <T> T gets(Component<T> component) {
+			if (!template.has(component)) {
+				return null;
+			}
+			return get(component);
+		}
+		public <T> T gets(Component<T> component, T missingValue) {
+			if (!template.has(component)) {
+				return missingValue;
+			}
+			return get(component);
 		}
 		public <T> void set(Component<T> component, T value) {
-			Component<T> c = (Component<T>)type.components.getId(component);
-			c.handler.set( c, this, value );
+			TemplateComponent<T> ch = (TemplateComponent<T>)template.handlers[component.index];
+			ch.set(this, value);
+		}
+		public <T> boolean sets(Component<T> component, T value) {
+			boolean has = template.has(component);
+			if (has) {
+				set(component, value);
+			}
+			return has;
+		}
+		
+		public Entity clone(boolean deep) {
+			final int valueCount = values.length;
+			Object[] clonedValues = new Object[valueCount];
+			if (deep) {
+				for (int i = 0; i < valueCount; i++) {
+					ComponentFactory<Object> factory = (ComponentFactory<Object>)template.factories[i]; 
+					clonedValues[i] = factory.clone(values[i]);
+				}	
+			} else {
+				System.arraycopy(values, 0, clonedValues, 0, valueCount);
+			}
+			return new Entity( template, clonedValues );
+		}
+		
+		public <T> void add(Component<T> component) {
+			if (setTemplate(template.addCustomComponent(component))) {
+				component.postCustomAdd(this);
+			}
+		}
+		public <T> void add(Controller controller) {
+			setTemplate(template.addCustomController(controller));
+		}
+		public <T> void setView(View view) {
+			setTemplate(template.setCustomView(view));
 		}
 	}
 	
@@ -227,59 +330,64 @@ public class TestNewDesign {
 		// Components
 		private ArrayList<Component<?>> components = new ArrayList<Component<?>>( 64 );
 		public <T> Component<T> newComponent(String name) {
-			return newComponent( name, new ComponentFactoryNull<T>() );
+			return newComponent( new ComponentUndefined<T>( components.size(), name ) );
 		}
 		// Entity contains component value
 		public <T> Component<T> newComponent(String name, ComponentFactory<T> factory) {
-			return newComponent( name, new ComponentValued<T>( factory ) );
+			return newComponent( new ComponentDistinct<T>( components.size(), name, factory ) );
 		}
 		public <T> Component<T> newComponentAlternative(Component<T> component, ComponentFactory<T> factory) {
-			return newComponentAlternative( component, new ComponentValued<T>( factory ) );
+			return new ComponentDistinct<T>(component.index, component.name, factory );
 		}
-		// EntityType contains component value
+		// Template contains component value
 		public <T> Component<T> newComponentShared(String name, ComponentFactory<T> factory) {
-			return newComponent( name, new ComponentShared<T>( factory ) );
+			return newComponent( new ComponentShared<T>( components.size(), name, factory ) );
 		}
 		public <T> Component<T> newComponentSharedAlternative(Component<T> component, ComponentFactory<T> factory) {
-			return newComponentAlternative( component, new ComponentShared<T>( factory ) );
+			return new ComponentShared<T>( component.index, component.name, factory );
 		}
 		// Nothing contains component value, is calculated upon request.
-		public <T> Component<T> newComponentDynamic(String name, Dynamic<T> setter) {
-			return newComponent( name, new ComponentDynamic<T>( setter ) );
+		public <T> Component<T> newComponentDynamic(String name, Dynamic<T> dynamic) {
+			return newComponent( new ComponentDynamic<T>(components.size(), name, dynamic ) );
 		}
-		public <T> Component<T> newComponentDynamicAlternative(Component<T> component, Dynamic<T> setter) {
-			return newComponentAlternative( component, new ComponentDynamic<T>( setter ) );
+		public <T> Component<T> newComponentDynamicAlternative(Component<T> component, Dynamic<T> dynamic) {
+			return new ComponentDynamic<T>(component.index, component.name, dynamic);
+		}
+		// All entities share same value
+		public <T> Component<T> newComponentConstant(String name, T constant, boolean settable) {
+			return newComponent( new ComponentConstant<T>(components.size(), name, constant, settable) );
+		}
+		public <T> Component<T> newComponentConstantAlternative(Component<T> component, T constant, boolean settable) {
+			return new ComponentConstant<T>(component.index, component.name, constant, settable);
 		}
 		
-		private <T> Component<T> newComponent(String name, ComponentHandler<T> handler	) {
-			Component<T> c = new Component<T>( components.size(), name, handler );
-			components.add( c );
+		private <T> Component<T> newComponent(Component<T> c) {
+			components.add(c);
 			return c;
 		}
-		private <T> Component<T> newComponentAlternative(Component<T> component, ComponentHandler<T> handler) {
-			return new Component<T>( component.index, component.name, handler );
-		}
 		
-		// Entity Type
-		public EntityType newEntityType( IdMap<Component<?>> components, View view) {
-			return new EntityType(components, view);
+		// Template
+		private ArrayList<Template> templates = new ArrayList<Template>();
+		
+		public Template newTemplate( String name, Bag<Component<?>> components, Bag<Controller> controllers, View view) {
+			Template t = new Template(templates.size(), name, null, components, controllers, view);
+			templates.add(t);
+			return t;
 		}
 	}
 	
-	public static interface ComponentHandler<T> {
-		public void set(Component<T> component, Entity e, T value);
-		public T get(Component<T> component, Entity e);
-		public void addToEntity(Component<T> component, Entity e);
-		public void addToType(Component<T> component, EntityType type);
-		public void removeFromType(Component<T> component, EntityType type);
-	}
-	
-	public static class Component<T> extends Id {
-		ComponentHandler<T> handler;
-		Component(int index, String name, ComponentHandler<T> handler) {
+	public static abstract class Component<T> extends Id {
+		Component(int index, String name) {
 			super(index, name);
-			this.handler = handler;
 		}
+		public abstract TemplateComponent<T> add(Template template);
+		public abstract void postCustomAdd(Entity e);
+	}
+	
+	public static interface TemplateComponent<T> {
+		public void set(Entity e, T value);
+		public T get(Entity e);
+		public void remove(Template template);
 	}
 	
 	public static interface Dynamic<T>{
@@ -287,79 +395,145 @@ public class TestNewDesign {
 		void set(Entity e, T target);
 	}
 	
-	public static class ComponentValued<T> implements ComponentHandler<T> {
-		ComponentFactory<T> factory;
-		public ComponentValued(ComponentFactory<T> factory) {
-			this.factory = factory;
+	public static class ComponentUndefined<T> extends Component<T> {
+		ComponentUndefined(int index, String name) {
+			super(index, name);
 		}
-		@Override
-		public void set(Component<T> component, Entity e, T value) {
-			e.components[e.type.entityValues.indexOf(component)] = value;
-		}
-		@Override
-		public T get(Component<T> component, Entity e) {
-			return (T)e.components[e.type.entityValues.indexOf(component)];
-		}
-		@Override
-		public void addToEntity(Component<T> component, Entity e) {
-			e.components = EntityUtility.append(e.components, factory.create());
-		}
-		@Override
-		public void addToType(Component<T> component, EntityType type) {
-			type.entityValues.put( component );
-		}
-		@Override
-		public void removeFromType( Component<T> component, EntityType type ) {
-
-		}
-	}
-	
-	public static class ComponentDynamic<T> implements ComponentHandler<T> {
-		Dynamic<T> dynamic;
-		public ComponentDynamic(Dynamic<T> dynamic) {
-			this.dynamic = dynamic;
-		}
-		public void set(Component<T> component, Entity e, T value) {
-			dynamic.set(e, value);
-		}
-		@Override
-		public T get(Component<T> component, Entity e) {
-			return dynamic.get( e );
-		}
-		@Override
-		public void addToEntity(Component<T> component, Entity e) {
-		}
-		@Override
-		public void addToType(Component<T> component, EntityType e) {
-		}
-		@Override
-		public void removeFromType( Component<T> component, EntityType type ) {
-		}
-	}
-	
-	public static class ComponentShared<T> implements ComponentHandler<T> {
-		ComponentFactory<T> factory;
-		public ComponentShared(ComponentFactory<T> factory) {
-			this.factory = factory;
-		}
-		@Override
-		public void set(Component<T> component, Entity e, T value) {
-			e.type.sharedValues.set(component, value);
-		}
-		@Override
-		public T get(Component<T> component, Entity e) {
-			return (T)e.type.sharedValues.get(component);
-		}
-		@Override
-		public void addToEntity(Component<T> component, Entity e) {
-		}
-		@Override
-		public void addToType(Component<T> component, EntityType type) {
-			type.sharedValues.put(component, factory.create());
-		}
-		@Override
-		public void removeFromType( Component<T> component, EntityType type ) {
+		public void postCustomAdd(Entity e) {
 			
+		}
+		public TemplateComponent<T> add(Template template) {
+			throw new RuntimeException("An undefined component cannot be added to an Template");
+		}
+	}
+	
+	public static class ComponentDistinct<T> extends Component<T> {
+		ComponentFactory<T> factory;
+		public ComponentDistinct(int index, String name, ComponentFactory<T> factory) {
+			super(index, name);
+			this.factory = factory;
+		}
+		public void postCustomAdd(Entity e) {
+			e.values = EntityUtility.append(e.values, factory.create());
+		}
+		public TemplateComponent<T> add(Template template) {
+			final ComponentFactory<?>[] factories = template.factories;
+			int i = 0;
+			while (i < factories.length) {
+				if (factories[i] == null) {
+					break;
+				}
+				i++;
+			}
+			if (i == factories.length) {
+				template.factories = EntityUtility.append(factories, factory);	
+			} else {
+				factories[i] = factory;
+			}
+			return new ComponentValuedHandler(i);
+		}
+		
+		private class ComponentValuedHandler implements TemplateComponent<T> {
+			int componentIndex;
+			public ComponentValuedHandler(int index) {
+				this.componentIndex = index;
+			}
+			public void set(Entity e, T value) {
+				e.values[componentIndex] = value;
+			}
+			public T get(Entity e) {
+				return (T)e.values[componentIndex];
+			}
+			public void remove(Template template) {
+				template.factories[componentIndex] = null;
+			}
+		}
+	}
+	
+	public static class ComponentDynamic<T> extends Component<T> {
+		Dynamic<T> dynamic;
+		ComponentDynamicHandler handler;
+		public ComponentDynamic(int index, String name, Dynamic<T> dynamic) {
+			super(index, name);
+			this.dynamic = dynamic;
+			this.handler = new ComponentDynamicHandler();
+		}
+		public void postCustomAdd(Entity e) {
+			
+		}
+		public TemplateComponent<T> add(Template template) {
+			return handler;
+		}
+		private class ComponentDynamicHandler implements TemplateComponent<T> {
+			public void set(Entity e, T value) { 
+				dynamic.set(e, value);
+			}
+			public T get(Entity e) {
+				return dynamic.get(e);
+			}
+			public void remove(Template template) { 
+				
+			}
+		}
+	}
+	
+	public static class ComponentShared<T> extends Component<T> {
+		ComponentFactory<T> factory;
+		public ComponentShared(int index, String name, ComponentFactory<T> factory) {
+			super(index, name);
+			this.factory = factory;
+		}
+		public void postCustomAdd(Entity e) {
+			
+		}
+		public TemplateComponent<T> add(Template template) {
+			return new ComponentSharedHandler( factory.create() );
+		}
+		private class ComponentSharedHandler implements TemplateComponent<T> {
+			T value;
+			public ComponentSharedHandler(T value) {
+				this.value = value;
+			}
+			public void set(Entity e, T value) {
+				this.value = value;
+			}
+			public T get(Entity e) {
+				return value;
+			}
+			public void remove(Template template) {
+				
+			}
+		}
+	}
+	
+	public static class ComponentConstant<T> extends Component<T> {
+		T constant;
+		boolean settable;
+		ComponentConstantHandler handler;
+		public ComponentConstant(int index, String name, T constant, boolean settable) {
+			super(index, name);
+			this.constant = constant;
+			this.settable = settable;
+			this.handler = new ComponentConstantHandler();
+		}
+		public void postCustomAdd(Entity e) {
+			
+		}
+		public TemplateComponent<T> add(Template template) {
+			return handler;
+		}
+		private class ComponentConstantHandler implements TemplateComponent<T> {
+			public void set(Entity e, T value) {
+				if (settable) {
+					constant = value;
+				}
+			}
+			public T get(Entity e) {
+				return constant;
+			}
+			public void remove(Template template) {
+				
+			}
 		}
 	}
 	
@@ -429,28 +603,18 @@ public class TestNewDesign {
 		final View SHIP_VIEW = core.newView( "ship", new ViewDefault() );
 		final View ASTEROID_VIEW = core.newView( "asteroid", new ViewDefault() );
 		
-		final EntityType SHIP = core.newEntityType( IdMap.NEW(POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC), SHIP_VIEW );
-		final EntityType ASTEROID = core.newEntityType( IdMap.NEW(POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC), ASTEROID_VIEW );
+		final Template SHIP = core.newTemplate( "ship", Bag.of(POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC), new Bag<Controller>(), SHIP_VIEW );
+		final Template ASTEROID = core.newTemplate( "asteroid", Bag.of(POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC), new Bag<Controller>(), ASTEROID_VIEW );
 
 		assertTrue( SHIP.has(SHAPE) );
 		assertTrue( SHIP.has(BOUNDS) );
 		assertTrue( SHIP.has(COLLISION_HANDLER) );
 		assertTrue( SHIP.has(POSITION) );
 		
-		assertFalse( SHIP.hasExact(SHAPE) );
-		assertFalse( SHIP.hasExact(BOUNDS) );
-		assertFalse( SHIP.hasExact(COLLISION_HANDLER) );
-		assertTrue( SHIP.hasExact(POSITION) );
-		
 		assertTrue( ASTEROID.has(SHAPE) );
 		assertTrue( ASTEROID.has(BOUNDS) );
 		assertTrue( ASTEROID.has(COLLISION_HANDLER) );
 		assertTrue( ASTEROID.has(POSITION) );
-		
-		assertFalse( ASTEROID.hasExact(SHAPE) );
-		assertFalse( ASTEROID.hasExact(BOUNDS) );
-		assertFalse( ASTEROID.hasExact(COLLISION_HANDLER) );
-		assertTrue( ASTEROID.hasExact(POSITION) );
 		
 		Entity e = new Entity( SHIP );
 		e.get( POSITION ).x = 1.0f;

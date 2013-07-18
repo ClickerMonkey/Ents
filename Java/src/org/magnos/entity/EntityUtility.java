@@ -26,6 +26,19 @@ public class EntityUtility
 		return Arrays.copyOf( array, array.length - 1 );
 	}
 	
+	public static <T> int indexOfSame(T[] array, T search)
+	{
+		for (int i = 0; i < array.length; i++ )
+		{
+			if (array[i] == search)
+			{
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
 	public static <T> T[] remove(T[] array, T item, int max) 
 	{
 		if (max <= 0)
