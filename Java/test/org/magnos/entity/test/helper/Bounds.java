@@ -1,4 +1,4 @@
-package org.magnos.entity.helper;
+package org.magnos.entity.test.helper;
 
 import org.magnos.entity.ComponentFactory;
 

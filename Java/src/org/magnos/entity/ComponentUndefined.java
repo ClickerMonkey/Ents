@@ -1,6 +1,6 @@
 package org.magnos.entity;
 
-public class ComponentUndefined<T> extends Component<T>
+class ComponentUndefined<T> extends Component<T>
 {
 
 	public ComponentUndefined( int id, String name )
@@ -8,14 +8,14 @@ public class ComponentUndefined<T> extends Component<T>
 		super( id, name );
 	}
 
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
-		throw new RuntimeException( "An undefined component cannot be added to an Template" );
+		throw new RuntimeException( "An undefined component cannot be added to a Template" );
 	}
 
 }

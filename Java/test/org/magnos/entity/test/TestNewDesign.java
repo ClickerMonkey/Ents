@@ -1,18 +1,33 @@
-package org.magnos.entity;
+package org.magnos.entity.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.magnos.entity.Component;
+import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.Components;
+import org.magnos.entity.Controllers;
+import org.magnos.entity.DynamicValue;
+import org.magnos.entity.Entity;
+import org.magnos.entity.EntityCore;
+import org.magnos.entity.Template;
+import org.magnos.entity.View;
 import org.magnos.entity.View.Renderer;
-import org.magnos.entity.ComponentDynamic.Dynamic;
-import org.magnos.entity.helper.Bounds;
-import org.magnos.entity.helper.Scalar;
-import org.magnos.entity.helper.Vector;
+import org.magnos.entity.test.helper.Bounds;
+import org.magnos.entity.test.helper.Scalar;
+import org.magnos.entity.test.helper.Vector;
 
 
 public class TestNewDesign 
 {
+	
+	@AfterClass
+	public static void afterTest()
+	{
+		EntityCore.clear();
+	}
 	
 	public static interface CollisionHandler {
 		void handleCollision(Entity a, Entity b, float time);
@@ -60,7 +75,7 @@ public class TestNewDesign
 		final Component<Shape> SHAPE_SHIP = EntityCore.newComponentSharedAlternative( SHAPE, new Shape() );
 		final Component<Shape> SHAPE_ASTEROID = EntityCore.newComponentSharedAlternative( SHAPE, new Shape() );
 		
-		final Component<Bounds> BOUNDS_DYNAMIC = EntityCore.newComponentDynamicAlternative( BOUNDS, new Dynamic<Bounds>() {
+		final Component<Bounds> BOUNDS_DYNAMIC = EntityCore.newComponentDynamicAlternative( BOUNDS, new DynamicValue<Bounds>() {
 			public Bounds get( Entity e ) {
 				Bounds b = new Bounds();
 				set( e, b );

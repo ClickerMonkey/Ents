@@ -1,19 +1,35 @@
-package org.magnos.entity;
+package org.magnos.entity.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.Test;
-import org.magnos.entity.ComponentDynamic.Dynamic;
+import org.magnos.entity.Component;
+import org.magnos.entity.ComponentFactoryNull;
+import org.magnos.entity.Components;
+import org.magnos.entity.Controller;
 import org.magnos.entity.Controller.Control;
-import org.magnos.entity.helper.Bounds;
-import org.magnos.entity.helper.Index;
-import org.magnos.entity.helper.Vector;
+import org.magnos.entity.Controllers;
+import org.magnos.entity.DynamicValue;
+import org.magnos.entity.Entity;
+import org.magnos.entity.EntityCore;
+import org.magnos.entity.Template;
+import org.magnos.entity.View;
+import org.magnos.entity.test.helper.Bounds;
+import org.magnos.entity.test.helper.Index;
+import org.magnos.entity.test.helper.Vector;
 
 public class TestEntity 
 {
+	
+	@AfterClass
+	public static void afterTest()
+	{
+		EntityCore.clear();
+	}
 	
 	static class TestComponents {
 		public static Component<String>		NAME 					= EntityCore.newComponent("name", new ComponentFactoryNull<String>() );
@@ -25,7 +41,7 @@ public class TestEntity
 		public static Component<Vector>		SPATIAL_POSITION_ALIAS 	= EntityCore.newComponentAlias( POSITION, SPATIAL_POSITION );
 		public static Component<Vector>		SPATIAL_VELOCITY_ALIAS 	= EntityCore.newComponentAlias( VELOCITY, SPATIAL_VELOCITY );
 		public static Component<Vector> 	SIZE 					= EntityCore.newComponent("size", new Vector());
-		public static Component<Bounds> 	BOUNDS 					= EntityCore.newComponentDynamic("bounds", new Dynamic<Bounds>() {
+		public static Component<Bounds> 	BOUNDS 					= EntityCore.newComponentDynamic("bounds", new DynamicValue<Bounds>() {
 			public void set( Entity e, Bounds target ) {
 				Vector p = e.get(POSITION);
 				Vector s = e.get(SIZE);

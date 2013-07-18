@@ -1,6 +1,6 @@
 package org.magnos.entity;
 
-public class ComponentShared<T> extends Component<T>
+class ComponentShared<T> extends Component<T>
 {
 
 	public ComponentFactory<T> factory;
@@ -12,12 +12,12 @@ public class ComponentShared<T> extends Component<T>
 		this.factory = factory;
 	}
 
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
 		return new ComponentSharedHandler( factory.create() );
 	}

@@ -2,7 +2,7 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
-public class ComponentDistinct<T> extends Component<T>
+class ComponentDistinct<T> extends Component<T>
 {
 	
 	public ComponentFactory<T> factory;
@@ -16,7 +16,7 @@ public class ComponentDistinct<T> extends Component<T>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 		ComponentValuedHandler handler = (ComponentValuedHandler) e.template.handlers[id];
 
@@ -28,7 +28,7 @@ public class ComponentDistinct<T> extends Component<T>
 		e.values[handler.componentIndex] = factory.create();
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
 		final ComponentFactory<?>[] factories = template.factories;
 		

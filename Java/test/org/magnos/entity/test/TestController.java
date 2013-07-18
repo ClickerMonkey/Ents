@@ -1,15 +1,27 @@
-package org.magnos.entity;
+package org.magnos.entity.test;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.magnos.entity.Component;
+import org.magnos.entity.Components;
+import org.magnos.entity.Controller;
 import org.magnos.entity.Controller.Control;
-import org.magnos.entity.helper.Vector;
+import org.magnos.entity.Controllers;
+import org.magnos.entity.Entity;
+import org.magnos.entity.EntityCore;
+import org.magnos.entity.Template;
+import org.magnos.entity.test.helper.Vector;
 
 public class TestController
 {
-
-	public static final EntityCore core = new EntityCore();
+	
+	@AfterClass
+	public static void afterTest()
+	{
+		EntityCore.clear();
+	}
 
 	public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
 	public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );

@@ -24,12 +24,12 @@ public class IdContainer<I extends Id>
 	{
 		if ( names.containsKey( element.name ) )
 		{
-			throw new RuntimeException( String.format( "Definition of %s with name '%s' and ID %d cannot be added, it has the same name as another %s", element.getClass().getSimpleName(), element.id, element.name, element.getClass().getSimpleName() ) );
+			throw new RuntimeException( String.format( "Definition of %s with name '%s' and ID %d cannot be added, it has the same name as another %s", element.getClass().getSimpleName(), element.name, element.id, element.getClass().getSimpleName() ) );
 		}
 
 		if ( definitions.size() != element.id )
 		{
-			throw new RuntimeException( String.format( "Definition of %s with name '%s' and ID %d cannot be added, the ID of the element must be retrieved by calling nextId() on this container. The alternative is you meant to add an instance and not a definition.", element.getClass().getSimpleName(), element.id, element.name ) );
+			throw new RuntimeException( String.format( "Definition of %s with name '%s' and ID %d cannot be added, the ID of the element must be retrieved by calling nextId() on this container. The alternative is you meant to add an instance and not a definition.", element.getClass().getSimpleName(), element.name, element.id ) );
 		}
 
 		definitions.add( element );

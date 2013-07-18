@@ -1,6 +1,5 @@
 package org.magnos.entity;
 
-import org.magnos.entity.ComponentDynamic.Dynamic;
 import org.magnos.entity.Controller.Control;
 import org.magnos.entity.View.Renderer;
 
@@ -93,12 +92,12 @@ public class EntityCore
 		return components.addInstance( new ComponentShared<T>( component.id, component.name, factory ) );
 	}
 
-	public static <T> Component<T> newComponentDynamic( String name, Dynamic<T> dynamic )
+	public static <T> Component<T> newComponentDynamic( String name, DynamicValue<T> dynamic )
 	{
 		return components.addDefinition( new ComponentDynamic<T>( components.nextId(), name, dynamic ) );
 	}
 
-	public static <T> Component<T> newComponentDynamicAlternative( Component<T> component, Dynamic<T> dynamic )
+	public static <T> Component<T> newComponentDynamicAlternative( Component<T> component, DynamicValue<T> dynamic )
 	{
 		return components.addInstance( new ComponentDynamic<T>( component.id, component.name, dynamic ) );
 	}

@@ -20,7 +20,7 @@ public class EntityList extends Entity implements Iterable<Entity>
 	protected final VisibleIterator visibleIterator = new VisibleIterator();
 	protected final EnabledIterator enabledIterator = new EnabledIterator();
 	protected final ExpiredIterator expiredIterator = new ExpiredIterator();
-	protected final TemplateIterator entityTypeIterator = new TemplateIterator();
+	protected final TemplateIterator templateIterator = new TemplateIterator();
 	
 	public EntityList()
 	{
@@ -229,7 +229,7 @@ public class EntityList extends Entity implements Iterable<Entity>
 	
 	public Iterable<Entity> filterByTemplate(Template template)
 	{
-		return ( entityTypeIterator.hasNext() ? new TemplateIterator(template) : entityTypeIterator.reset(template) );
+		return ( templateIterator.hasNext() ? new TemplateIterator(template) : templateIterator.reset(template) );
 	}
 	
 	public int size()

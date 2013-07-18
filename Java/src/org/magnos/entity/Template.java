@@ -230,22 +230,26 @@ public class Template extends Id
 		{
 			return this;
 		}
-		Template t = getCustomTemplate();
+		
+		Template t = getCustomTarget();
 		t.add( component );
+		
 		return t;
 	}
 
 	protected <T> Template setCustomAlias( Component<T> component, Component<T> alias )
 	{
 		Template t = this;
+		
 		if ( has( component ) )
 		{
 			if ( handlers[alias.id] != handlers[component.id] )
 			{
-				t = getCustomTemplate();
+				t = getCustomTarget();
 				t.alias( component, alias );
 			}
 		}
+		
 		return t;
 	}
 
@@ -255,8 +259,10 @@ public class Template extends Id
 		{
 			return this;
 		}
-		Template t = getCustomTemplate();
+		
+		Template t = getCustomTarget();
 		t.add( controller );
+		
 		return t;
 	}
 
@@ -266,12 +272,14 @@ public class Template extends Id
 		{
 			return this;
 		}
-		Template t = getCustomTemplate();
+		
+		Template t = getCustomTarget();
 		t.setView( view );
+		
 		return t;
 	}
 
-	protected Template getCustomTemplate()
+	protected Template getCustomTarget()
 	{
 		return isCustom() && instances == 1 ? this : extend( CUSTOM, CUSTOM_NAME );
 	}

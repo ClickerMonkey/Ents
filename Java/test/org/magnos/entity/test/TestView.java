@@ -1,18 +1,30 @@
-package org.magnos.entity;
+package org.magnos.entity.test;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.magnos.entity.Component;
+import org.magnos.entity.Components;
+import org.magnos.entity.Controllers;
+import org.magnos.entity.Entity;
+import org.magnos.entity.EntityCore;
+import org.magnos.entity.Template;
+import org.magnos.entity.View;
 import org.magnos.entity.View.Renderer;
-import org.magnos.entity.helper.Vector;
+import org.magnos.entity.test.helper.Vector;
 
 public class TestView
 {
-
-	public static final EntityCore core = new EntityCore();
 	
+	@AfterClass
+	public static void afterTest()
+	{
+		EntityCore.clear();
+	}
+
 	public static final Component<Vector>	POSITION = EntityCore.newComponent( "position", new Vector() );
 	public static final View		 		SPRITE_VIEW = EntityCore.newView( "sprite-view" );
 	public static final Template			SPRITE = EntityCore.newTemplate( "sprite", new Components(POSITION), new Controllers(), SPRITE_VIEW );

@@ -1,6 +1,6 @@
 package org.magnos.entity;
 
-public class ComponentConstant<T> extends Component<T>
+class ComponentConstant<T> extends Component<T>
 {
 
 	public T constant;
@@ -19,12 +19,12 @@ public class ComponentConstant<T> extends Component<T>
 		this.handler = new ComponentConstantHandler();
 	}
 
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
 		return handler;
 	}

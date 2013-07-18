@@ -1,7 +1,8 @@
 package org.magnos.entity;
 
-public class ComponentAlias<T> extends Component<T>
+class ComponentAlias<T> extends Component<T>
 {
+	
 	public int componentId;
 
 	public ComponentAlias( int id, String name, int componentId )
@@ -11,12 +12,12 @@ public class ComponentAlias<T> extends Component<T>
 		this.componentId = componentId;
 	}
 
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
 		return new ComponentAliasHandler( template );
 	}

@@ -1,8 +1,9 @@
-package org.magnos.entity;
+package org.magnos.entity.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.magnos.entity.BitSet;
 
 public class TestBitSet
 {

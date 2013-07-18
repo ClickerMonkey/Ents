@@ -8,8 +8,8 @@ public abstract class Component<T> extends Id
 		super( id, name );
 	}
 
-	public abstract TemplateComponent<T> add( Template template );
+	protected abstract TemplateComponent<T> add( Template template );
 
-	public abstract void postCustomAdd( Entity e );
+	protected abstract void postCustomAdd( Entity e );
 
 }

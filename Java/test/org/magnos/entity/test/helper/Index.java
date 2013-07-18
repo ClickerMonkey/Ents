@@ -1,31 +1,31 @@
-package org.magnos.entity.helper;
+package org.magnos.entity.test.helper;
 
 import org.magnos.entity.ComponentFactory;
 
-public class Scalar implements ComponentFactory<Scalar>
+public class Index implements ComponentFactory<Index>
 {
 	
-	public float x;
-
-	public Scalar()
+	public int x;
+	
+	public Index()
 	{
 	}
-	
-	public Scalar( float x )
+
+	public Index( int x )
 	{
 		this.x = x;
 	}
 
 	@Override
-	public Scalar create()
+	public Index create()
 	{
-		return new Scalar( x );
+		return new Index( x );
 	}
 
 	@Override
-	public Scalar clone( Scalar value )
+	public Index clone( Index value )
 	{
-		return new Scalar( value.x );
+		return new Index( value.x );
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class Scalar implements ComponentFactory<Scalar>
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Float.floatToIntBits( x );
+		result = prime * result + x;
 		return result;
 	}
 
@@ -46,8 +46,8 @@ public class Scalar implements ComponentFactory<Scalar>
 			return false;
 		if ( getClass() != obj.getClass() )
 			return false;
-		Scalar other = (Scalar) obj;
-		if ( Float.floatToIntBits( x ) != Float.floatToIntBits( other.x ) )
+		Index other = (Index) obj;
+		if ( x  != other.x )
 			return false;
 		return true;
 	}

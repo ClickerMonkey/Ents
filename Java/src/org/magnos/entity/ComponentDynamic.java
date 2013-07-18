@@ -1,20 +1,15 @@
 package org.magnos.entity;
 
-public class ComponentDynamic<T> extends Component<T>
+class ComponentDynamic<T> extends Component<T>
 {
-	public static interface Dynamic<T>
-	{
-		public T get( Entity e );
 
-		public void set( Entity e, T target );
-	}
 
-	public Dynamic<T> dynamic;
+	public DynamicValue<T> dynamic;
 
 	public final ComponentDynamicHandler handler;
 
 	
-	public ComponentDynamic( int id, String name, Dynamic<T> dynamic )
+	public ComponentDynamic( int id, String name, DynamicValue<T> dynamic )
 	{
 		super( id, name );
 
@@ -22,12 +17,12 @@ public class ComponentDynamic<T> extends Component<T>
 		this.handler = new ComponentDynamicHandler();
 	}
 
-	public void postCustomAdd( Entity e )
+	protected void postCustomAdd( Entity e )
 	{
 
 	}
 
-	public TemplateComponent<T> add( Template template )
+	protected TemplateComponent<T> add( Template template )
 	{
 		return handler;
 	}

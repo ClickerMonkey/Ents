@@ -1,6 +1,6 @@
 package org.magnos.entity;
 
-public interface TemplateComponent<T>
+interface TemplateComponent<T>
 {
 	
 	public void set( Entity e, T value );
