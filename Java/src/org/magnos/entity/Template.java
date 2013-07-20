@@ -58,6 +58,37 @@ public class Template extends Id
 			handlers[c.id] = c.add( this );
 		}
 	}
+	
+	public Template copy()
+	{
+		return extend(CUSTOM, CUSTOM_NAME);
+	}
+
+	public Template merge(Template template, boolean overwrite)
+	{
+		for (Component<?> c : template.components) 
+		{
+			if (overwrite || !has(c)) 
+			{
+				add( c );
+			}
+		}
+		
+		for (Controller c : template.controllers) 
+		{
+			if (overwrite || !has(c)) 
+			{
+				add( c );
+			}
+		}
+		
+		if (overwrite || !hasView())
+		{
+			setView(template.view);
+		}
+		
+		return this;
+	}
 
 	protected Template extend( int id, String name )
 	{
@@ -86,7 +117,7 @@ public class Template extends Id
 	{
 		instances--;
 	}
-
+	
 	public <T> boolean has( Component<T> component )
 	{
 		return component.id < componentMap.length && handlers[component.id] != null;
@@ -188,9 +219,14 @@ public class Template extends Id
 		}
 	}
 
-	public boolean has( View view )
+	public boolean hasView()
 	{
-		return ( this.view.id == view.id );
+		return ( view != null );
+	}
+	
+	public boolean has( View v )
+	{
+		return (v == view) || (view != null && v != null && view.id == v.id);
 	}
 
 	public boolean hasExact( View view )
@@ -222,6 +258,30 @@ public class Template extends Id
 	public boolean isCustom()
 	{
 		return ( id == CUSTOM );
+	}
+	
+	public boolean isRelative(Template template)
+	{
+		Template curr = this;
+		
+		while (curr != null)
+		{
+			if (curr == template)
+			{
+				return true;
+			}
+			
+			curr = curr.parent;
+		}
+		
+		return false;
+	}
+	
+	public boolean contains(Template template)
+	{
+		return controllerBitSet.contains( template.controllerBitSet ) &&
+			   componentBitSet.contains( template.componentBitSet ) &&
+			   has( template.view );
 	}
 
 	protected <T> Template addCustomComponent( Component<T> component )

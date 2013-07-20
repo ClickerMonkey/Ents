@@ -16,8 +16,8 @@ import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.View.Renderer;
 import org.magnos.entity.test.helper.Bounds;
-import org.magnos.entity.test.helper.Scalar;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.vals.FloatVal;
 
 
 public class TestNewDesign 
@@ -40,6 +40,10 @@ public class TestNewDesign
 		public Shape clone( Shape value ) {
 			return new Shape();
 		}
+		@Override
+		public Shape copy(Shape from, Shape to) {
+			return to;
+		}
 	}
 	
 	public static class CollisionHandlerDefault implements CollisionHandler, ComponentFactory<CollisionHandler> {
@@ -48,6 +52,9 @@ public class TestNewDesign
 		}
 		public CollisionHandler clone( CollisionHandler value ) {
 			return this;
+		}
+		public CollisionHandler copy(CollisionHandler from, CollisionHandler to) {
+			return to;
 		}
 		public void handleCollision( Entity a, Entity b, float time ) {
 			
@@ -64,7 +71,7 @@ public class TestNewDesign
 	public void test()
 	{
 		final Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-		final Component<Scalar> RADIUS = EntityCore.newComponent( "radius", new Scalar() );
+		final Component<FloatVal> RADIUS = EntityCore.newComponent( "radius", new FloatVal() );
 		final Component<CollisionHandler> COLLISION_HANDLER = EntityCore.newComponent( "collision-callback" ); // by default, there is no collision handler
 		final Component<Shape> SHAPE = EntityCore.newComponent( "collision-shape" ); // by default, there is no collision shape on an entity
 		final Component<Bounds> BOUNDS = EntityCore.newComponent( "bounds" ); // by default, an entity has a bounds component 
@@ -77,17 +84,20 @@ public class TestNewDesign
 		
 		final Component<Bounds> BOUNDS_DYNAMIC = EntityCore.newComponentDynamicAlternative( BOUNDS, new DynamicValue<Bounds>() {
 			public Bounds get( Entity e ) {
-				Bounds b = new Bounds();
-				set( e, b );
-				return b;
+				return take( e, new Bounds() );
 			}
 			public void set( Entity e, Bounds target ) {
+				
+			}
+			@Override
+			public Bounds take(Entity e, Bounds target) {
 				Vector p = e.get( POSITION );
-				float r = e.get( RADIUS ).x;
+				float r = e.get( RADIUS ).v;
 				target.left = p.x - r;
 				target.right = p.x + r;
 				target.top = p.y - r;
 				target.bottom = p.y + r;
+				return target;
 			}
 		});
 		
@@ -118,8 +128,8 @@ public class TestNewDesign
 		assertEquals( 2.0f, b.top, 0.00001f );
 		assertEquals( 2.0f, b.bottom, 0.00001f );
 		
-		e.get( RADIUS ).x = 2.0f;
-		e.set( BOUNDS, b );
+		e.get( RADIUS ).v = 2.0f;
+		e.take( BOUNDS, b );
 		
 		assertEquals(-1.0f, b.left, 0.00001f );
 		assertEquals( 3.0f, b.right, 0.00001f );
@@ -127,7 +137,7 @@ public class TestNewDesign
 		assertEquals( 4.0f, b.bottom, 0.00001f );
 		
 		Entity n = e.clone( true );
-		assertEquals( 2.0f, n.get( RADIUS ).x, 0.00001f );
+		assertEquals( 2.0f, n.get( RADIUS ).v, 0.00001f );
 		assertEquals( 1.0f, n.get( POSITION ).x, 0.00001f );
 		assertEquals( 2.0f, n.get( POSITION ).y, 0.00001f );
 	}

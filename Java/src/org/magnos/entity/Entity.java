@@ -2,6 +2,16 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
+
+/**
+ * An Entity is a game object that may be drawn, may be updated, has a set of 
+ * components, has a set of controllers that modify it's state, and optionally
+ * a view which handles the drawing.
+ * 
+ * @author Philip Diffenderfer
+ *
+ */
+@SuppressWarnings("unchecked")
 public class Entity
 {
 
@@ -104,6 +114,16 @@ public class Entity
 		}
 	}
 
+	public boolean has( View view )
+	{
+		return template.has( view );
+	}
+	
+	public boolean hasView()
+	{
+		return template.hasView();
+	}
+	
 	/*
 	 * Controller Update
 	 */
@@ -174,7 +194,17 @@ public class Entity
 	{
 		setControllerEnabled( controller, false );
 	}
+	
+	public boolean has( Controller controller )
+	{
+		return template.has( controller );
+	}
 
+	public boolean hasControllers( BitSet controllers )
+	{
+		return template.controllerBitSet.contains( controllers );
+	}
+	
 	/*
 	 * Component Functions
 	 */
@@ -183,13 +213,17 @@ public class Entity
 	{
 		return template.has( component );
 	}
+	
+	public boolean has( Component<?> ... components )
+	{
+		return template.has( components );
+	}
 
 	public boolean has( BitSet components )
 	{
 		return template.componentBitSet.contains( components );
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T get( Component<T> component )
 	{
 		TemplateComponent<T> ch = (TemplateComponent<T>) template.handlers[component.id];
@@ -206,7 +240,6 @@ public class Entity
 		return template.has( component ) ? get( component ) : missingValue;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> void set( Component<T> component, T value )
 	{
 		TemplateComponent<T> ch = (TemplateComponent<T>) template.handlers[component.id];
@@ -222,23 +255,29 @@ public class Entity
 		}
 		return has;
 	}
-
+	
+	public <T> T take( Component<T> component, T target )
+	{
+		TemplateComponent<T> ch = (TemplateComponent<T>) template.handlers[component.id];
+		return ch.take( this, target );
+	}
+	
 	/*
 	 * Dynamic Functions
 	 */
 
 	public <T> boolean add( Component<T> component )
 	{
-		boolean hasExact = template.hasExact( component );
+		boolean newComponent = !template.hasExact( component );
 
 		setTemplate( template.addCustomComponent( component ) );
 
-		if ( !hasExact )
+		if ( newComponent )
 		{
 			component.postCustomAdd( this );
 		}
 
-		return !hasExact;
+		return newComponent;
 	}
 
 	public <T> boolean add( Component<T> component, T defaultValue )
@@ -251,6 +290,20 @@ public class Entity
 		}
 
 		return added;
+	}
+
+	public <T> boolean put( Component<T> component, T value )
+	{
+		boolean missing = !template.has( component );
+		
+		if (missing)
+		{
+			add(component);
+		}
+		
+		set(component, value);
+		
+		return missing;
 	}
 
 	public void add( Controller controller )
@@ -273,7 +326,6 @@ public class Entity
 	 * Cloning
 	 */
 
-	@SuppressWarnings("unchecked")
 	public Entity clone( boolean deep )
 	{
 		final int valueCount = values.length;
@@ -294,10 +346,43 @@ public class Entity
 
 		return new Entity( template, clonedValues );
 	}
+	
+	public Entity merge(Entity entity, boolean overwrite)
+	{
+		Template template = entity.template;
+		
+		for ( Component<?> component : template.components ) 
+		{
+			if (overwrite || !has( component ) )
+			{
+				add( component );
+			}
+		}
+		
+		for ( Controller controller : template.controllers )
+		{
+			if ( overwrite || !has( controller ) )
+			{
+				add( controller );
+			}
+		}
+		
+		if ( overwrite || !hasView() )
+		{
+			setView( template.view );
+		}
+		
+		return this;
+	}
 
 	public Template getTemplate()
 	{
 		return template;
+	}
+	
+	public boolean isCustom()
+	{
+		return template.isCustom();
 	}
 
 	public Object[] getValues()
@@ -313,6 +398,12 @@ public class Entity
 	/*
 	 * hashCode(), equals() and toString
 	 */
+	
+	protected void fill(EntityFilter filter)
+	{
+		filter.prepare(1);
+		filter.push(this);
+	}
 
 	@Override
 	public String toString()
@@ -367,7 +458,7 @@ public class Entity
 		Entity e = (Entity) obj;
 
 		return EntityUtility.equals( template, e.template ) &&
-		EntityUtility.equals( values, e.values );
+			   EntityUtility.equals( values, e.values );
 	}
-
+	
 }

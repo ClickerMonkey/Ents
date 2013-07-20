@@ -22,13 +22,24 @@ public class Bounds implements ComponentFactory<Bounds>
 	@Override
 	public Bounds create()
 	{
-		return new Bounds( left, top, right, bottom );
+		return copy( this, new Bounds() );
 	}
 
 	@Override
 	public Bounds clone( Bounds value )
 	{
-		return new Bounds( value.left, value.top, value.right, value.bottom );
+		return copy( value, new Bounds() );
+	}
+
+	@Override
+	public Bounds copy(Bounds from, Bounds to) 
+	{
+		to.left = from.left;
+		to.top = from.top;
+		to.right = from.right;
+		to.bottom = from.bottom;
+		
+		return to;
 	}
 
 	@Override

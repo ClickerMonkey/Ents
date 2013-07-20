@@ -102,14 +102,14 @@ public class EntityCore
 		return components.addInstance( new ComponentDynamic<T>( component.id, component.name, dynamic ) );
 	}
 
-	public static <T> Component<T> newComponentConstant( String name, T constant, boolean settable )
+	public static <T> Component<T> newComponentGlobal( String name, T constant, boolean settable )
 	{
-		return components.addDefinition( new ComponentConstant<T>( components.nextId(), name, constant, settable ) );
+		return components.addDefinition( new ComponentGlobal<T>( components.nextId(), name, constant, settable ) );
 	}
 
-	public static <T> Component<T> newComponentConstantAlternative( Component<T> component, T constant, boolean settable )
+	public static <T> Component<T> newComponentGlobalAlternative( Component<T> component, T constant, boolean settable )
 	{
-		return components.addInstance( new ComponentConstant<T>( component.id, component.name, constant, settable ) );
+		return components.addInstance( new ComponentGlobal<T>( component.id, component.name, constant, settable ) );
 	}
 
 	public static <T> Component<T> newComponentAlias( Component<T> component, Component<T> alias )
@@ -151,6 +151,18 @@ public class EntityCore
 			t.setView( view );
 		}
 
+		return t;
+	}
+	
+	public static Template newTemplate( String name, boolean overwrite, Template ... templatesToMerge )
+	{
+		Template t = templates.addDefinition( templatesToMerge[0].extend( templates.nextId(), name ) );
+		
+		for (int i = 1; i < templatesToMerge.length; i++)
+		{
+			t.merge( templatesToMerge[i], overwrite );
+		}
+		
 		return t;
 	}
 

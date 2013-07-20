@@ -29,13 +29,22 @@ public class Vector implements ComponentFactory<Vector>
 	@Override
 	public Vector create() 
 	{
-		return new Vector( x, y );
+		return copy( this, new Vector() );
 	}
 	
 	@Override
 	public Vector clone( Vector value ) 
 	{
-		return new Vector( value.x, value.y );
+		return copy( value, new Vector() );
+	}
+
+	@Override
+	public Vector copy(Vector from, Vector to) 
+	{
+		to.x = from.x;
+		to.y = from.y;
+		
+		return to;
 	}
 	
 	public void addsi( Vector v, float s) 

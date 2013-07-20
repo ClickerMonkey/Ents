@@ -19,8 +19,8 @@ import org.magnos.entity.EntityCore;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Bounds;
-import org.magnos.entity.test.helper.Index;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.vals.IntVal;
 
 public class TestEntity 
 {
@@ -35,25 +35,33 @@ public class TestEntity
 		public static Component<String>		NAME 					= EntityCore.newComponent("name", new ComponentFactoryNull<String>() );
 		public static Component<Vector> 	POSITION 				= EntityCore.newComponent("position", new Vector());
 		public static Component<Vector> 	VELOCITY 				= EntityCore.newComponent("velocity", new Vector());
-		public static Component<Index> 		ID 						= EntityCore.newComponent("id", new Index( ));
+		public static Component<IntVal> 		ID 					= EntityCore.newComponent("id", new IntVal());
 		public static Component<Vector> 	SPATIAL_POSITION 		= EntityCore.newComponent("spatial position", new Vector());
 		public static Component<Vector> 	SPATIAL_VELOCITY 		= EntityCore.newComponent("spatial velocity", new Vector());
 		public static Component<Vector>		SPATIAL_POSITION_ALIAS 	= EntityCore.newComponentAlias( POSITION, SPATIAL_POSITION );
 		public static Component<Vector>		SPATIAL_VELOCITY_ALIAS 	= EntityCore.newComponentAlias( VELOCITY, SPATIAL_VELOCITY );
 		public static Component<Vector> 	SIZE 					= EntityCore.newComponent("size", new Vector());
 		public static Component<Bounds> 	BOUNDS 					= EntityCore.newComponentDynamic("bounds", new DynamicValue<Bounds>() {
-			public void set( Entity e, Bounds target ) {
+			public void set( Entity e, Bounds value ) {
+				Vector p = e.get(POSITION);
+				Vector s = e.get(SIZE);
+				p.x = (value.left + value.right) * 0.5f;
+				p.y = (value.top + value.bottom) * 0.5f;
+				s.x = (value.right - value.left);
+				s.y = (value.bottom - value.top);
+			}
+			public Bounds get( Entity e ) {
+				return take( e, new Bounds() );
+			}
+			@Override
+			public Bounds take(Entity e, Bounds target) {
 				Vector p = e.get(POSITION);
 				Vector s = e.get(SIZE);
 				target.left = p.x - s.x * 0.5f;
 				target.right = p.x + s.x * 0.5f;
 				target.top = p.y - s.y * 0.5f;
 				target.bottom = p.y + s.y * 0.5f;
-			}
-			public Bounds get( Entity e ) {
-				Bounds b = new Bounds();
-				set( e, b );
-				return b;
+				return target;
 			}
 		});
 		
@@ -95,9 +103,9 @@ public class TestEntity
 		
 		assertTrue( e.has(TestComponents.ID) );
 		
-		e.get(TestComponents.ID).x = 345;
+		e.get(TestComponents.ID).v = 345;
 		
-		assertEquals( 345, e.get(TestComponents.ID).x );
+		assertEquals( 345, e.get(TestComponents.ID).v );
 		
 		assertEquals( new Vector(5, 10), e.get(TestComponents.SPATIAL_POSITION) );
 		assertSame( e.get(TestComponents.POSITION), e.get(TestComponents.SPATIAL_POSITION) );
