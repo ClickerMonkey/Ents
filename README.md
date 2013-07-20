@@ -22,7 +22,14 @@ Controllers are invoked on an Entity that has them when the Entity.update method
 
 #### Components  <a name=components/>
 
-Components are values on an Entity. Components in EntityCore can be one of many types:  
+Components are values on an Entity. Components in EntityCore can be one of many types:
+| Type       |                                   |
+|:========== |:================================= |
+| Distinct   |  |
+| Distinct   |  |
+| Distinct   |  |
+| Distinct   |  |
+| Distinct   |  |
 * __Distinct__ = on the entity, each entity has it's own value for the given component.
 * __Shared__ = on the entity's template, therefore entities of the same type point to the same component. (think a collision callback that gets invoked when two things collide, so you can have a different algorithm for ships and asteroids while NOT wasting space storing the callback on each entity)
 * __Constant__ = shared between all entities.
@@ -53,7 +60,7 @@ A filter takes an Entity (typically a container) and traverses all child Entitie
 * __DefaultFilter__ = A filter that returns all entities.
 * __EnabledFilter__ = A filter that returns all enabled entities (entities that can be updated).
 * __ExpiredFilter__ = A filter that returns all entities that have expired (are ready for removal).
-* __NegativeFilter__ = A filter that returns he opposite of a given filter.
+* __NegativeFilter__ = A filter that returns the opposite of a given filter.
 * __TemplateContainsFilter__ = A filter that returns all entities that have a given set of components, controllers, and optionally a view.
 * __TemplateExactFilter__ = A filter that returns all entities that exactly have a given Template and have not had any components, controllers, or views dynamically added.
 * __TemplateRelativeFilter__ = A filter that returns all entities that have a given template or have one of it's parent templates.
