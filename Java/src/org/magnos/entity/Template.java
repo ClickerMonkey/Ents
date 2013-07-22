@@ -1,3 +1,19 @@
+/* 
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the Open Software License (OSL 3.0) that is 
+ * bundled with this package in the file LICENSE.txt. It is also available 
+ * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to obtain it 
+ * through the world-wide-web, please send an email to magnos.software@gmail.com 
+ * so we can send you a copy immediately. If you use any of this software please
+ * notify me via our website or email, your feedback is much appreciated. 
+ * 
+ * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
+ * @license     http://opensource.org/licenses/osl-3.0.php
+ * 				Open Software License (OSL 3.0)
+ */
+
 package org.magnos.entity;
 
 import java.util.Arrays;
@@ -108,19 +124,41 @@ public class Template extends Id
 		return values;
 	}
 
-	protected void newInstance()
+	@SuppressWarnings("unchecked")
+	protected Object[] createClonedValues( Object[] values, boolean deep )
+	{
+		final int valueCount = values.length;
+		final Object[] clonedValues = new Object[valueCount];
+
+		if ( deep )
+		{
+			for (int i = 0; i < valueCount; i++)
+			{
+				ComponentFactory<Object> factory = (ComponentFactory<Object>) factories[i];
+				clonedValues[i] = factory.clone( values[i] );
+			}
+		}
+		else
+		{
+			System.arraycopy( values, 0, clonedValues, 0, valueCount );
+		}
+		
+		return clonedValues;
+	}
+
+	protected void newInstance( Entity e )
 	{
 		instances++;
 	}
 
-	protected void removeInstance()
+	protected void removeInstance( Entity e )
 	{
 		instances--;
 	}
 	
 	public <T> boolean has( Component<T> component )
 	{
-		return component.id < componentMap.length && handlers[component.id] != null;
+		return component.id < handlers.length && handlers[component.id] != null;
 	}
 
 	public <T> boolean hasExact( Component<T> component )
