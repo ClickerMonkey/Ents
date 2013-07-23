@@ -111,15 +111,23 @@ public class EntityChain extends Entity
    }
 
    @Override
-   public Entity clone( boolean deep )
+   public EntityChain clone( boolean deep )
    {
       EntityChain clone = new EntityChain( template, template.createClonedValues( values, deep ) );
 
-      if (validateFirst())
+      clone.controllerEnabled.clear();
+      clone.controllerEnabled.or( controllerEnabled );
+      clone.enabled = enabled;
+      clone.expired = expired;
+      clone.inheritEnabled = inheritEnabled;
+      clone.inheritVisible = inheritVisible;
+      clone.visible = visible;
+      
+      if (first != null)
       {
          clone.first = deep ? first.clone( deep ) : first;
       }
-      if (validateLast())
+      if (last != null)
       {
          clone.last = deep ? last.clone( deep ) : last;
       }

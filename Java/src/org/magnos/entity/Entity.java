@@ -668,7 +668,15 @@ public class Entity
 
    public Entity clone( boolean deep )
    {
-      return new Entity( template, template.createClonedValues( values, deep ) );
+      Entity clone = new Entity( template, template.createClonedValues( values, deep ) );
+      
+      clone.controllerEnabled.clear();
+      clone.controllerEnabled.or( controllerEnabled );
+      clone.enabled = enabled;
+      clone.expired = expired;
+      clone.visible = visible;
+      
+      return clone;
    }
 
    public Entity merge( Entity entity, boolean overwrite )

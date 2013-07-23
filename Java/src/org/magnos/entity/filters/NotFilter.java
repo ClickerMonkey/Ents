@@ -29,26 +29,26 @@ import org.magnos.entity.EntityList;
  * @see EntityFilter
  * 
  */
-public class NegativeFilter extends EntityFilter
+public class NotFilter extends EntityFilter
 {
 
    protected EntityFilter filter;
 
    /**
-    * Instantiates a new NegativeFilter.
+    * Instantiates a new NotFilter.
     * 
     * @param defaultFilterCapacity
     *        The default capacity of this filter. The filter works by filling an
     *        array of entities that meet the filtering criteria. If the array is
     *        not large enough it resizes to 150% it's previous size.
     */
-   public NegativeFilter( int defaultFilterCapacity )
+   public NotFilter( int defaultFilterCapacity )
    {
       super( defaultFilterCapacity );
    }
 
    /**
-    * Resets the NegativeFilter specifying the root entity and the filter to
+    * Resets the NotFilter specifying the root entity and the filter to
     * return the negation (opposite) of.
     * 
     * @param root

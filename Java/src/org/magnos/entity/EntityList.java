@@ -255,10 +255,17 @@ public class EntityList extends Entity
    }
 
    @Override
-   public Entity clone( boolean deep )
+   public EntityList clone( boolean deep )
    {
       EntityList clone = new EntityList( template, template.createClonedValues( values, deep ) );
 
+      clone.controllerEnabled.clear();
+      clone.controllerEnabled.or( controllerEnabled );
+      clone.enabled = enabled;
+      clone.expired = expired;
+      clone.inheritEnabled = inheritEnabled;
+      clone.inheritVisible = inheritVisible;
+      clone.visible = visible;
       clone.pad( entityCount );
 
       if (deep)
