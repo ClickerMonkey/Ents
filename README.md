@@ -67,10 +67,14 @@ A filter takes an Entity (typically a container) and traverses all child Entitie
 | DefaultFilter          | A filter that returns all entities |
 | EnabledFilter          | A filter that returns all enabled entities (entities that can be updated) |
 | ExpiredFilter          | A filter that returns all entities that have expired (are ready for removal) |
-| NegativeFilter         | A filter that returns the opposite of a given filter |
 | TemplateContainsFilter | A filter that returns all entities that have a given set of components, controllers, and optionally a view |
 | TemplateExactFilter    | A filter that returns all entities that exactly have a given Template and have not had any components, controllers, or views dynamically added |
 | TemplateRelativeFilter | A filter that returns all entities that have a given template or have one of it's parent templates |
 | ValueFilter            | A filter that returns all entities that have a specific component value |
 | VisibleFilter          | A filter that returns all visible entities (entities that can be drawn) |
+| NotFilter              | A filter that returns the opposite of a given filter |
+| AndFilter              | A filter that returns the entities that are valid for filter A and filter B |
+| OrFilter               | A filter that returns the entities that are valid for filter A or filter B |
+| XorFilter              | A filter that returns the entities that are valid for filter A xor filter B |
+
 
