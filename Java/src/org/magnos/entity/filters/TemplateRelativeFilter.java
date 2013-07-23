@@ -61,7 +61,8 @@ public class TemplateRelativeFilter extends EntityFilter
     *        any number of entities.
     * @param template
     *        The template the Entities filtered must be a relative to.
-    * @return The {@link Iterable} filter by components.
+    * @return The {@link Iterable} filtered by
+    *         {@link Template#isRelative(Template)}.
     */
    public EntityFilter reset( Entity root, Template template )
    {

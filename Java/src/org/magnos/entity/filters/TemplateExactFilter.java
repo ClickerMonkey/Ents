@@ -60,7 +60,7 @@ public class TemplateExactFilter extends EntityFilter
     *        any number of entities.
     * @param template
     *        The template the Entities filtered must have.
-    * @return The {@link Iterable} filter by components.
+    * @return The {@link Iterable} filtered by Template.
     */
    public EntityFilter reset( Entity root, Template template )
    {

@@ -57,7 +57,7 @@ public class NegativeFilter extends EntityFilter
     *        any number of entities.
     * @param filter
     *        The filter to return the negation (opposite) of.
-    * @return The {@link Iterable} filter by components.
+    * @return The {@link Iterable} negation of the given filter.
     */
    public EntityFilter reset( Entity root, EntityFilter filter )
    {

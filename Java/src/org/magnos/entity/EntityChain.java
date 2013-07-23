@@ -59,14 +59,14 @@ public class EntityChain extends Entity
    {
       if (visible || !inheritVisible)
       {
-         if (first != null)
+         if (validateFirst())
          {
             first.draw( drawState );
          }
 
          super.draw( drawState );
 
-         if (last != null)
+         if (validateLast())
          {
             last.draw( drawState );
          }
@@ -78,14 +78,14 @@ public class EntityChain extends Entity
    {
       if (enabled || !inheritEnabled)
       {
-         if (first != null)
+         if (validateFirst())
          {
             first.update( updateState );
          }
 
          super.update( updateState );
 
-         if (last != null)
+         if (validateLast())
          {
             last.update( updateState );
          }
@@ -97,14 +97,14 @@ public class EntityChain extends Entity
    {
       filter.prepare( 3 );
 
-      if (first != null)
+      if (validateFirst())
       {
          first.fill( filter );
       }
 
       filter.push( this );
 
-      if (last != null)
+      if (validateLast())
       {
          last.fill( filter );
       }
@@ -115,16 +115,76 @@ public class EntityChain extends Entity
    {
       EntityChain clone = new EntityChain( template, template.createClonedValues( values, deep ) );
 
-      if (first != null)
+      if (validateFirst())
       {
          clone.first = deep ? first.clone( deep ) : first;
       }
-      if (last != null)
+      if (validateLast())
       {
          clone.last = deep ? last.clone( deep ) : last;
       }
 
       return clone;
+   }
+
+   private boolean validateFirst()
+   {
+      if (first != null && first.isExpired())
+      {
+         first = null;
+      }
+
+      return (first != null);
+   }
+
+   private boolean validateLast()
+   {
+      if (last != null && last.isExpired())
+      {
+         last = null;
+      }
+
+      return (last != null);
+   }
+
+   public Entity getFirst()
+   {
+      return first;
+   }
+
+   public void setFirst( Entity first )
+   {
+      this.first = first;
+   }
+
+   public Entity getLast()
+   {
+      return last;
+   }
+
+   public void setLast( Entity last )
+   {
+      this.last = last;
+   }
+
+   public boolean isInheritVisible()
+   {
+      return inheritVisible;
+   }
+
+   public void setInheritVisible( boolean inheritVisible )
+   {
+      this.inheritVisible = inheritVisible;
+   }
+
+   public boolean isInheritEnabled()
+   {
+      return inheritEnabled;
+   }
+
+   public void setInheritEnabled( boolean inheritEnabled )
+   {
+      this.inheritEnabled = inheritEnabled;
    }
 
 }

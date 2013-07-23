@@ -28,6 +28,8 @@ public class EntityList extends Entity
 
    protected Entity[] entities = {};
    protected int entityCount = 0;
+   protected boolean inheritVisible;
+   protected boolean inheritEnabled;
 
    public EntityList()
    {
@@ -178,34 +180,48 @@ public class EntityList extends Entity
    @Override
    public void draw( Object drawState )
    {
-      super.draw( drawState );
-
-      for (int i = 0; i < entityCount; i++)
+      if (visible || !inheritVisible)
       {
-         entities[i].draw( drawState );
+         super.draw( drawState );
+         
+         for (int i = 0; i < entityCount; i++)
+         {
+            final Entity e = entities[i];
+            
+            if (!e.isExpired())
+            {
+               entities[i].draw( drawState );   
+            }
+         }   
       }
    }
 
    @Override
    public void update( Object updateState )
    {
-      super.update( updateState );
-
-      if (isExpired())
+      if (enabled || !inheritEnabled)
       {
-         return;
+         super.update( updateState );
+
+         if (isExpired())
+         {
+            return;
+         }
+
+         for (int i = 0; i < entityCount; i++)
+         {
+            final Entity e = entities[i];
+
+            if (!e.isExpired())
+            {
+               e.update( updateState );
+
+               onEntityUpdated( e, i, updateState );   
+            }
+         }
+
+         this.clean();   
       }
-
-      for (int i = 0; i < entityCount; i++)
-      {
-         final Entity e = entities[i];
-
-         e.update( updateState );
-
-         onEntityUpdated( e, i, updateState );
-      }
-
-      this.clean();
    }
 
    public int size()
@@ -216,6 +232,26 @@ public class EntityList extends Entity
    public Entity getEntity( int index )
    {
       return entities[index];
+   }
+
+   public boolean isInheritVisible()
+   {
+      return inheritVisible;
+   }
+
+   public void setInheritVisible( boolean inheritVisible )
+   {
+      this.inheritVisible = inheritVisible;
+   }
+
+   public boolean isInheritEnabled()
+   {
+      return inheritEnabled;
+   }
+
+   public void setInheritEnabled( boolean inheritEnabled )
+   {
+      this.inheritEnabled = inheritEnabled;
    }
 
    @Override
