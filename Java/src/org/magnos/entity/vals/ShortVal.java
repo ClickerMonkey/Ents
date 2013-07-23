@@ -18,14 +18,15 @@ package org.magnos.entity.vals;
 
 import org.magnos.entity.ComponentFactory;
 
+
 /**
  * A mutable wrapper around a short that should replace the usage of the
- * {@link java.lang.Short}. Using {@link java.lang.Short} should be 
- * avoided, the "invisible" autoboxing and unboxing can cause a significant
- * performance hit in games when used inappropriately.  
+ * {@link java.lang.Short}. Using {@link java.lang.Short} should be avoided, the
+ * "invisible" autoboxing and unboxing can cause a significant performance hit
+ * in games when used inappropriately.
  * 
  * @author Philip Diffenderfer
- *
+ * 
  */
 public class ShortVal implements ComponentFactory<ShortVal> 
 {

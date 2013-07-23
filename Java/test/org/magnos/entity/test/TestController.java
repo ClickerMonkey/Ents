@@ -30,67 +30,72 @@ import org.magnos.entity.EntityCore;
 import org.magnos.entity.Template;
 import org.magnos.entity.test.helper.Vector;
 
+
 public class TestController
 {
-	
-	@AfterClass
-	public static void afterTest()
-	{
-		EntityCore.clear();
-	}
 
-	public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-	public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
-	public static Component<Vector> ACCELERATION = EntityCore.newComponent( "acceleration", new Vector() );
+   @AfterClass
+   public static void afterTest()
+   {
+      EntityCore.clear();
+   }
 
-	public static Controller PHYSICS_SIMPLE = EntityCore.newController("physics-simple", new Control() {
-		public void control( Entity e, Object updateState ) {
-			float dt = (Float)updateState;
-			e.get(POSITION).addsi( e.get(VELOCITY), dt );
-		}
-	});
+   public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
+   public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
+   public static Component<Vector> ACCELERATION = EntityCore.newComponent( "acceleration", new Vector() );
 
-	public static Controller PHYSICS = EntityCore.newController("physics", new Control() {
-		public void control( Entity e, Object updateState ) {
-			float dt = (Float)updateState;
-			e.get(POSITION).addsi( e.get(VELOCITY), dt );
-			e.get(VELOCITY).addsi( e.get(ACCELERATION), dt );
-		}
-	});
+   public static Controller PHYSICS_SIMPLE = EntityCore.newController( "physics-simple", new Control() {
 
-	public static Template SPRITE = EntityCore.newTemplate( "sprite", new Components(POSITION, VELOCITY), new Controllers(PHYSICS_SIMPLE), null );
+      public void control( Entity e, Object updateState )
+      {
+         float dt = (Float)updateState;
+         e.get( POSITION ).addsi( e.get( VELOCITY ), dt );
+      }
+   } );
 
-	@Test
-	public void testUpdate()
-	{
-		Entity e = new Entity(SPRITE);
-		e.enable(PHYSICS_SIMPLE);
+   public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
 
-		Vector p = e.get(POSITION);
-		Vector v = e.get(VELOCITY);
-		p.x = 5.0f;
-		p.y = 2.0f;
-		v.x = 3.0f;
-		v.y = -1.5f;
+      public void control( Entity e, Object updateState )
+      {
+         float dt = (Float)updateState;
+         e.get( POSITION ).addsi( e.get( VELOCITY ), dt );
+         e.get( VELOCITY ).addsi( e.get( ACCELERATION ), dt );
+      }
+   } );
 
-		final float dt = 0.5f;
-		
-		e.update( dt );
+   public static Template SPRITE = EntityCore.newTemplate( "sprite", new Components( POSITION, VELOCITY ), new Controllers( PHYSICS_SIMPLE ), null );
 
-		assertEquals( 6.5f, p.x, 0.0001f );
-		assertEquals( 1.25f, p.y, 0.0001f );
+   @Test
+   public void testUpdate()
+   {
+      Entity e = new Entity( SPRITE );
+      e.enable( PHYSICS_SIMPLE );
 
-		e.disable(PHYSICS_SIMPLE);
-		e.update( dt );
+      Vector p = e.get( POSITION );
+      Vector v = e.get( VELOCITY );
+      p.x = 5.0f;
+      p.y = 2.0f;
+      v.x = 3.0f;
+      v.y = -1.5f;
 
-		assertEquals( 6.5f, p.x, 0.0001f );
-		assertEquals( 1.25f, p.y, 0.0001f );
+      final float dt = 0.5f;
 
-		e.enable(PHYSICS_SIMPLE);
-		e.update( dt );
+      e.update( dt );
 
-		assertEquals( 8.0f, p.x, 0.0001f );
-		assertEquals( 0.5f, p.y, 0.0001f );
-	}
+      assertEquals( 6.5f, p.x, 0.0001f );
+      assertEquals( 1.25f, p.y, 0.0001f );
+
+      e.disable( PHYSICS_SIMPLE );
+      e.update( dt );
+
+      assertEquals( 6.5f, p.x, 0.0001f );
+      assertEquals( 1.25f, p.y, 0.0001f );
+
+      e.enable( PHYSICS_SIMPLE );
+      e.update( dt );
+
+      assertEquals( 8.0f, p.x, 0.0001f );
+      assertEquals( 0.5f, p.y, 0.0001f );
+   }
 
 }

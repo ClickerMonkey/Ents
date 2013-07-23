@@ -19,18 +19,19 @@ package org.magnos.entity;
 public class View extends Id
 {
 
-	public static interface Renderer
-	{
-		void draw( Entity e, Object drawState );
-	}
+   public static interface Renderer
+   {
 
-	public Renderer renderer;
+      void draw( Entity e, Object drawState );
+   }
 
-	public View( int id, String name, Renderer renderer )
-	{
-		super( id, name );
+   public Renderer renderer;
 
-		this.renderer = renderer;
-	}
+   public View( int id, String name, Renderer renderer )
+   {
+      super( id, name );
+
+      this.renderer = renderer;
+   }
 
 }
