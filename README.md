@@ -3,6 +3,13 @@ EntityCore
 
 A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. EntityCore is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks.
 
+#### What are you talking about?
+
+EntityCore is a library for aiding in creating games where you create your game objects through composition. 
+No more creating classes, no more messy update logic, no more rendering coupled to a specific graphics library.
+You add components to your Entities (i.e. position, velocity, size, angle, image), controllers (i.e. user input, physics, networking, AI), and a view.
+EntityCore is designed to promote modular development, you are no longer creating a sprite which has physics, you are defining Entities that can have position and velocity, and you create a Physics controller that takes velocity and adds it to position.
+
 ### Concepts
 * [View](#views-)
 * [Controller](#controllers-)
