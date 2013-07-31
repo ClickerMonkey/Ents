@@ -1,6 +1,8 @@
 EntityCore
 ==========
 
+![Development](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_development.png)
+
 A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. EntityCore is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks.
 
 #### What are you talking about?
