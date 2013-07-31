@@ -16,6 +16,7 @@
 
 package org.magnos.entity;
 
+
 public class EntityChain extends Entity
 {
 
@@ -49,9 +50,9 @@ public class EntityChain extends Entity
       this.inheritVisible = inheritVisible;
    }
 
-   protected EntityChain( Template template, Object[] values )
+   protected EntityChain( Template template, Object[] values, Renderer renderer )
    {
-      super( template, values );
+      super( template, values, renderer );
    }
 
    @Override
@@ -113,7 +114,7 @@ public class EntityChain extends Entity
    @Override
    public EntityChain clone( boolean deep )
    {
-      EntityChain clone = new EntityChain( template, template.createClonedValues( values, deep ) );
+      EntityChain clone = new EntityChain( template, template.createClonedValues( values, deep ), renderer );
 
       clone.controllerEnabled.clear();
       clone.controllerEnabled.or( controllerEnabled );

@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
 import org.magnos.entity.Components;
+import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
-import org.magnos.entity.Controller.Control;
 import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
@@ -77,7 +77,6 @@ public class TestEntity
             return take( e, new Bounds() );
          }
 
-         @Override
          public Bounds take( Entity e, Bounds target )
          {
             Vector p = e.get( POSITION );

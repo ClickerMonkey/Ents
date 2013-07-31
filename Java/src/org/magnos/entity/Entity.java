@@ -18,8 +18,6 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
-import org.magnos.entity.View.Renderer;
-
 
 /**
  * An Entity is a game object that may be drawn, may be updated, has a set of
@@ -48,6 +46,8 @@ public class Entity
 
    protected BitSet controllerEnabled;
 
+   protected Renderer renderer;
+   
    protected boolean expired = false;
 
    protected boolean visible = true;
@@ -89,7 +89,7 @@ public class Entity
     */
    public Entity( Template template )
    {
-      this( template, template.createDefaultValues() );
+      this( template, template.createDefaultValues(), template.createRenderer() );
    }
 
    /**
@@ -100,10 +100,11 @@ public class Entity
     * @param values
     *        The default values of the entity.
     */
-   protected Entity( Template template, Object[] values )
+   protected Entity( Template template, Object[] values, Renderer renderer )
    {
       this.setTemplate( template );
       this.values = values;
+      this.setRenderer( renderer );
       this.controllerEnabled = new BitSet( template.controllers.length );
       this.setControllerEnabledAll( true );
    }
@@ -145,11 +146,26 @@ public class Entity
 
    /**
     * Expires the entity, setting off the flag that let's any container know
-    * that this Entity should no longer be held (or drawn and updated).
+    * that this Entity should no longer be held (or drawn and updated). This 
+    * also removes this Entity from the Template and destroys the Entity's
+    * Renderer. Once this method is called, this Entity should not by used,
+    * all methods will most likely result in a {@link NullPointerException}.
     */
    public void expire()
    {
-      expired = true;
+      if (!expired)
+      {
+         template.removeInstance( this );
+         
+         if (renderer != null)
+         {
+            renderer.destroy( this );
+         }
+         
+         template = null;
+         renderer = null;
+         expired = true;
+      }
    }
 
    /**
@@ -201,14 +217,9 @@ public class Entity
     */
    public void draw( Object drawState )
    {
-      if (visible)
+      if (visible && renderer != null)
       {
-         View view = template.view;
-
-         if (view != null)
-         {
-            view.renderer.draw( this, drawState );
-         }
+         renderer.draw( this, drawState );
       }
    }
 
@@ -649,17 +660,34 @@ public class Entity
    public void add( Controller controller )
    {
       setTemplate( template.addCustomController( controller ) );
+      
       controllerEnabled.set( controller.id );
    }
 
    public void setView( View view )
    {
-      setTemplate( template.setCustomView( view ) );
+      if( setTemplate( template.setCustomView( view ) ) )
+      {
+         renderer = template.createRenderer();
+      }
    }
 
    public <T> void alias( Component<T> component, Component<T> alias )
    {
       setTemplate( template.setCustomAlias( component, alias ) );
+   }
+   
+   public void setRenderer( Renderer newRenderer )
+   {
+      if (renderer != newRenderer)
+      {
+         if (renderer != null)
+         {
+            renderer.destroy( this );
+         }
+         
+         renderer = (newRenderer != null ? newRenderer.create( this ) : null );
+      }
    }
 
    /*
@@ -668,7 +696,7 @@ public class Entity
 
    public Entity clone( boolean deep )
    {
-      Entity clone = new Entity( template, template.createClonedValues( values, deep ) );
+      Entity clone = new Entity( template, template.createClonedValues( values, deep ), renderer );
       
       clone.controllerEnabled.clear();
       clone.controllerEnabled.or( controllerEnabled );

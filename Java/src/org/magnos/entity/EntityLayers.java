@@ -16,6 +16,7 @@
 
 package org.magnos.entity;
 
+
 /**
  * 
  * @author Philip Diffenderfer
@@ -43,12 +44,12 @@ public class EntityLayers extends Entity
    
    public EntityLayers(Template template, int layerCount)
    {
-      this( template, template.createDefaultValues(), layerCount );
+      this( template, template.createDefaultValues(), template.createRenderer(), layerCount );
    }
    
-   protected EntityLayers( Template template, Object[] values, int layerCount )
+   protected EntityLayers( Template template, Object[] values, Renderer renderer, int layerCount )
    {
-      super( template, values );
+      super( template, values, renderer );
       
       layers = new EntityList[ layerCount ];
       
@@ -138,7 +139,7 @@ public class EntityLayers extends Entity
    @Override
    public EntityLayers clone( boolean deep )
    {
-      EntityLayers clone = new EntityLayers( template, template.createClonedValues( layers, deep ), layers.length );
+      EntityLayers clone = new EntityLayers( template, template.createClonedValues( layers, deep ), renderer, layers.length );
       
       clone.controllerEnabled.clear();
       clone.controllerEnabled.or( controllerEnabled );

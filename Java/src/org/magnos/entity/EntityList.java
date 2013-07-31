@@ -62,9 +62,9 @@ public class EntityList extends Entity
       this.entities = new Entity[initialCapacity];
    }
 
-   protected EntityList( Template template, Object[] values )
+   protected EntityList( Template template, Object[] values, Renderer renderer )
    {
-      super( template, values );
+      super( template, values, renderer );
    }
 
    protected void onEntityAdd( Entity e, int index )
@@ -257,7 +257,7 @@ public class EntityList extends Entity
    @Override
    public EntityList clone( boolean deep )
    {
-      EntityList clone = new EntityList( template, template.createClonedValues( values, deep ) );
+      EntityList clone = new EntityList( template, template.createClonedValues( values, deep ), renderer );
 
       clone.controllerEnabled.clear();
       clone.controllerEnabled.or( controllerEnabled );

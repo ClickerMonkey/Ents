@@ -16,15 +16,72 @@
 
 package org.magnos.entity;
 
-interface TemplateComponent<T>
+/**
+ * The interface responsible for implementing the
+ * {@link Entity#set(Component, Object)}, {@link Entity#sets(Component, Object)}
+ * , {@link Entity#get(Component)}, {@link Entity#gets(Component)},
+ * {@link Entity#gets(Component, Object)},
+ * {@link Entity#take(Component, Object)}, and
+ * {@link Entity#takes(Component, Object)} methods.
+ * 
+ * <p>
+ * If you want slightly quicker access to getting and setting the components of
+ * an Entity you can call these methods directly and pass in the Entity. This is
+ * not recommended if there is ever a chance that the Entity's template had this
+ * component changed to an alternative.
+ * </p>
+ * <p>
+ * Calling these methods on an Entity that doesn't have the component will have
+ * unexpected results and will most likely result in
+ * {@link IndexOutOfBoundsException}, {@link NullPointerException}, or
+ * {@link ClassCastException}.
+ * </p>
+ * 
+ * @author Philip Diffenderfer
+ * 
+ * @param <T>
+ *            The component value type.
+ */
+public interface TemplateComponent<T>
 {
 
-   public void set( Entity e, T value );
+	/**
+	 * Sets the value on the Entity.
+	 * 
+	 * @param e
+	 *            The entity to set the value to.
+	 * @param value
+	 *            The new value for the component.
+	 */
+	public void set( Entity e, T value );
 
-   public T get( Entity e );
+	/**
+	 * Gets the value from the Entity.
+	 * 
+	 * @param e
+	 *            The entity to get the value from.
+	 * @return The reference to the value on the Entity.
+	 */
+	public T get( Entity e );
 
-   public T take( Entity e, T target );
+	/**
+	 * Sets target to the value on the Entity and returns it.
+	 * 
+	 * @param e
+	 *            The entity to take from.
+	 * @param target
+	 *            The target value to set and return.
+	 * @return The reference to target.
+	 */
+	public T take( Entity e, T target );
 
-   public void remove( Template template );
+	/**
+	 * Removes this TemplateComponent from the given template. This is for
+	 * internal use, do not call this directly.
+	 * 
+	 * @param template
+	 *            The template to remove this TemplateComponent from.
+	 */
+	public void remove( Template template );
 
 }

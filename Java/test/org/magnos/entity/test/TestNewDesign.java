@@ -28,9 +28,9 @@ import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
+import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
-import org.magnos.entity.View.Renderer;
 import org.magnos.entity.test.helper.Bounds;
 import org.magnos.entity.test.helper.Vector;
 import org.magnos.entity.vals.FloatVal;
@@ -97,10 +97,19 @@ public class TestNewDesign
 
    public static class ViewDefault implements Renderer
    {
-
       public void draw( Entity e, Object drawState )
       {
 
+      }
+
+      public Renderer create( Entity e )
+      {
+         return this;
+      }
+
+      public void destroy( Entity e )
+      {
+         
       }
    }
 

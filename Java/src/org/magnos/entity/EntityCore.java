@@ -16,8 +16,6 @@
 
 package org.magnos.entity;
 
-import org.magnos.entity.Controller.Control;
-import org.magnos.entity.View.Renderer;
 
 
 public class EntityCore
@@ -130,6 +128,16 @@ public class EntityCore
    public static <T> Component<T> newComponentAlias( Component<T> component, Component<T> alias )
    {
       return components.addInstance( new ComponentAlias<T>( alias.id, alias.name, component.id ) );
+   }
+
+   public static <T> Component<T> newComponentCustom( Component<T> custom )
+   {
+      return components.addDefinition( custom );
+   }
+
+   public static <T> Component<T> newComponentCustomAlternative( Component<T> custom )
+   {
+      return components.addInstance( custom );
    }
 
    public static IdContainer<Component<?>> getComponents()

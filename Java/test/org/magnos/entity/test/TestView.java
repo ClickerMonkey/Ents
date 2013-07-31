@@ -27,9 +27,9 @@ import org.magnos.entity.Components;
 import org.magnos.entity.Controllers;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
+import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
-import org.magnos.entity.View.Renderer;
 import org.magnos.entity.test.helper.Vector;
 
 
@@ -52,10 +52,17 @@ public class TestView
       final AtomicInteger DRAW_COUNTER = new AtomicInteger();
 
       EntityCore.setViewDefault( SPRITE_VIEW, new Renderer() {
-
          public void draw( Entity entity, Object drawState )
          {
             DRAW_COUNTER.incrementAndGet();
+         }
+         public Renderer create( Entity e )
+         {
+            return this;
+         }
+         public void destroy( Entity e )
+         {
+            
          }
       } );
 

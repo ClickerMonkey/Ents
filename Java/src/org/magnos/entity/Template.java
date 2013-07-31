@@ -126,6 +126,11 @@ public class Template extends Id
       return values;
    }
 
+   protected Renderer createRenderer()
+   {
+      return (view == null ? null : view.renderer);
+   }
+
    @SuppressWarnings ("unchecked" )
    protected Object[] createClonedValues( Object[] values, boolean deep )
    {
@@ -156,6 +161,12 @@ public class Template extends Id
    protected void removeInstance( Entity e )
    {
       instances--;
+   }
+
+   @SuppressWarnings ("unchecked" )
+   public <T> TemplateComponent<T> getTemplateComponent( Component<T> component )
+   {
+      return (TemplateComponent<T>)handlers[component.id];
    }
 
    public <T> boolean has( Component<T> component )
