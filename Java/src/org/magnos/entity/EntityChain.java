@@ -94,23 +94,39 @@ public class EntityChain extends Entity
    }
 
    @Override
-   protected void fill( EntityFilter filter )
+   protected int getEntitySize()
    {
-      filter.prepare( 3 );
-
-      if (validateFirst())
-      {
-         first.fill( filter );
-      }
-
-      filter.push( this );
-
-      if (validateLast())
-      {
-         last.fill( filter );
-      }
+      final boolean f = (first != null);
+      final boolean l = (last != null);
+      
+      return (f & l ? 3 : (f | l ? 2 : 1));
    }
 
+   @Override
+   protected Entity getEntity( int index )
+   {
+      final boolean f = (first != null);
+      
+      switch (index) {
+      case 0:
+         return (f ? first : this);
+      case 1:
+         return (f ? this : last);
+      case 2:
+         return last;
+      }
+      
+      return this;
+   }
+
+   @Override
+   protected int getEntityIndex()
+   {
+      final boolean f = (first != null);
+      
+      return (f ? 1 : 0);
+   }
+   
    @Override
    public EntityChain clone( boolean deep )
    {

@@ -229,7 +229,7 @@ public class EntityList extends Entity
       return entityCount;
    }
 
-   public Entity getEntity( int index )
+   public Entity at( int index )
    {
       return entities[index];
    }
@@ -284,17 +284,17 @@ public class EntityList extends Entity
 
       return clone;
    }
+   
+   @Override
+   protected int getEntitySize()
+   {
+      return entityCount + 1;
+   }
 
    @Override
-   protected void fill( EntityFilter filter )
+   protected Entity getEntity( int index )
    {
-      filter.prepare( entityCount + 1 );
-      filter.push( this );
-
-      for (int i = 0; i < entityCount; i++)
-      {
-         entities[i].fill( filter );
-      }
+      return (index == 0 ? this : entities[index - 1]);
    }
 
 }

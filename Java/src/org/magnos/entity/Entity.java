@@ -47,7 +47,7 @@ public class Entity
    protected BitSet controllerEnabled;
 
    protected Renderer renderer;
-   
+
    protected boolean expired = false;
 
    protected boolean visible = true;
@@ -146,7 +146,7 @@ public class Entity
 
    /**
     * Expires the entity, setting off the flag that let's any container know
-    * that this Entity should no longer be held (or drawn and updated). This 
+    * that this Entity should no longer be held (or drawn and updated). This
     * also removes this Entity from the Template and destroys the Entity's
     * Renderer. Once this method is called, this Entity should not by used,
     * all methods will most likely result in a {@link NullPointerException}.
@@ -156,12 +156,12 @@ public class Entity
       if (!expired)
       {
          template.removeInstance( this );
-         
+
          if (renderer != null)
          {
             renderer.destroy( this );
          }
-         
+
          template = null;
          renderer = null;
          expired = true;
@@ -660,13 +660,13 @@ public class Entity
    public void add( Controller controller )
    {
       setTemplate( template.addCustomController( controller ) );
-      
+
       controllerEnabled.set( controller.id );
    }
 
    public void setView( View view )
    {
-      if( setTemplate( template.setCustomView( view ) ) )
+      if (setTemplate( template.setCustomView( view ) ))
       {
          renderer = template.createRenderer();
       }
@@ -676,7 +676,7 @@ public class Entity
    {
       setTemplate( template.setCustomAlias( component, alias ) );
    }
-   
+
    public void setRenderer( Renderer newRenderer )
    {
       if (renderer != newRenderer)
@@ -685,8 +685,8 @@ public class Entity
          {
             renderer.destroy( this );
          }
-         
-         renderer = (newRenderer != null ? newRenderer.create( this ) : null );
+
+         renderer = (newRenderer == null ? null : newRenderer.create( this ));
       }
    }
 
@@ -697,13 +697,13 @@ public class Entity
    public Entity clone( boolean deep )
    {
       Entity clone = new Entity( template, template.createClonedValues( values, deep ), renderer );
-      
+
       clone.controllerEnabled.clear();
       clone.controllerEnabled.or( controllerEnabled );
       clone.enabled = enabled;
       clone.expired = expired;
       clone.visible = visible;
-      
+
       return clone;
    }
 
@@ -756,16 +756,39 @@ public class Entity
    }
 
    /**
-    * Pushes this Entity reference onto the given filter as well as calls
-    * {@link #fill(EntityFilter)} on any child Entities this Entity may contain.
+    * Returns the number of entities within this Entity. This should always be
+    * at least one since this Entity is included in the size.
     * 
-    * @param filter
-    *        The filter to fill.
+    * @return The number of entities in this Entity (including this).
     */
-   protected void fill( EntityFilter filter )
+   protected int getEntitySize()
    {
-      filter.prepare( 1 );
-      filter.push( this );
+      return 1;
+   }
+
+   /**
+    * Returns the reference to the entity at the given position within this
+    * Entity. The index must be greater than or equal to 0 and less than
+    * {@link #getEntitySize()}.
+    * 
+    * @param index
+    *        The index of the entity to return.
+    * @return The reference to the entity at the given index.
+    */
+   protected Entity getEntity( int index )
+   {
+      return this;
+   }
+
+   /**
+    * Returns the index that when passed into {@link #getEntity(int)} will
+    * return the reference to this Entity.
+    * 
+    * @return The index of this entity.
+    */
+   protected int getEntityIndex()
+   {
+      return 0;
    }
 
    @Override

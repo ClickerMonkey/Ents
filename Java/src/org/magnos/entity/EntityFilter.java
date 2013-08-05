@@ -16,7 +16,6 @@
 
 package org.magnos.entity;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 
@@ -45,23 +44,31 @@ import java.util.Iterator;
 public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
 {
 
+   private static final int DEFAULT_MAX_DEPTH = 16;
+
+   private Entity root;
    private Entity[] stack;
-   private int stackSize;
-   private int stackCursor;
+   private Entity previous;
+   private int[] offset;
+   private int depth;
+
+   /**
+    * 
+    */
+   public EntityFilter()
+   {
+      this( DEFAULT_MAX_DEPTH );
+   }
 
    /**
     * Instantiates a new EntityFilter.
     * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
+    * @param defaultMaxDepth
     */
-   public EntityFilter( int defaultFilterCapacity )
+   public EntityFilter( int defaultMaxDepth )
    {
-      this.stack = new Entity[defaultFilterCapacity];
-      this.stackSize = 0;
-      this.stackCursor = 0;
+      this.stack = new Entity[defaultMaxDepth];
+      this.offset = new int[defaultMaxDepth];
    }
 
    /**
@@ -76,70 +83,12 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    public abstract boolean isValid( Entity e );
 
    /**
-    * The method an entity uses to push itself into a filter.
-    * 
-    * @param e
-    *        The entity to attempt to push.
-    */
-   protected void push( Entity e )
-   {
-      if (isValid( e ))
-      {
-         stack[stackSize++] = e;
-      }
-   }
-
-   /**
-    * Prepares the filter for the likely addition of entityCount entities
-    * (before validation and pushing occurs).
-    * 
-    * @param entityCount
-    *        The number of entities that may be pushed into the filter.
-    */
-   protected void prepare( int entityCount )
-   {
-      int desired = stackSize + entityCount;
-
-      if (desired > stack.length)
-      {
-         int suggested = stack.length + (stack.length >> 1);
-
-         stack = Arrays.copyOf( stack, Math.max( suggested, desired ) );
-      }
-   }
-
-   /**
-    * @return The number of entities in the filter.
-    */
-   public int size()
-   {
-      return stackSize;
-   }
-
-   /**
-    * Returns the entity at the given position.
-    * 
-    * @param i
-    *        The index of the entity, this should be >= 0 and < {@link #size()}.
-    * @return The entity at the given index.
-    */
-   public Entity get( int i )
-   {
-      return stack[i];
-   }
-
-   /**
     * Stops the filter by clearing the internal array and setting the size and
     * iteration cursor to zero.
     */
    public void stop()
    {
-      while (--stackSize >= 0)
-      {
-         stack[stackSize] = null;
-      }
-
-      stackCursor = stackSize = 0;
+      depth = -1;
    }
 
    /**
@@ -152,9 +101,8 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
     */
    public EntityFilter reset( Entity root )
    {
-      stop();
-
-      root.fill( this );
+      this.root = root;
+      this.reset();
 
       return this;
    }
@@ -166,7 +114,8 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
     */
    public EntityFilter reset()
    {
-      stackCursor = 0;
+      this.depth = 0;
+      this.offset[0] = -1;
 
       return this;
    }
@@ -183,13 +132,15 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    @Override
    public boolean hasNext()
    {
-      return (stackCursor < stackSize);
+      return (depth != -1);
    }
 
    @Override
    public Entity next()
    {
-      return stack[stackCursor++];
+      Entity e = previous;
+      previous = findNext();
+      return e;
    }
 
    /**
@@ -198,7 +149,25 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    @Override
    public void remove()
    {
-      stack[stackCursor - 1].expire();
+      previous.expire();
+   }
+
+   private Entity findNext()
+   {
+      if (offset[0] == root.getEntitySize())
+      {
+         return null;
+      }
+
+      Entity current = previous;
+      boolean found = false;
+
+      if (current.getEntitySize() == 1)
+      {
+         current = stack[--depth];
+      }
+
+      return null;
    }
 
 }

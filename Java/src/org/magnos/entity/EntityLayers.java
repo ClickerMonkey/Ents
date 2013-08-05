@@ -124,16 +124,15 @@ public class EntityLayers extends Entity
    }
 
    @Override
-   protected void fill( EntityFilter filter )
+   protected int getEntitySize()
    {
-      filter.prepare( layers.length + 1 );
-      
-      filter.push( this );
-      
-      for (int i = 0; i < layers.length; i++)
-      {
-         layers[i].fill( filter );
-      }
+      return layers.length + 1;
+   }
+
+   @Override
+   protected Entity getEntity( int index )
+   {
+      return (index == 0 ? this : layers[index - 1]);
    }
 
    @Override
