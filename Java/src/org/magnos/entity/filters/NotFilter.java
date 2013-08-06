@@ -17,38 +17,36 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that returns the opposite of what another filter would return.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class NotFilter extends EntityFilter
+public class NotFilter implements EntityFilter
 {
 
    protected EntityFilter filter;
 
    /**
-    * Resets the NotFilter specifying the root entity and the filter to
-    * return the negation (opposite) of.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param filter
-    *        The filter to return the negation (opposite) of.
-    * @return The {@link Iterable} negation of the given filter.
     */
-   public EntityFilter reset( Entity root, EntityFilter filter )
+   public NotFilter()
    {
-      return reset( filter ).reset( root );
+   }
+
+   /**
+    * 
+    * @param filter
+    */
+   public NotFilter( EntityFilter filter )
+   {
+      set( filter );
    }
 
    /**
@@ -59,7 +57,7 @@ public class NotFilter extends EntityFilter
     *        The filter to return the negation (opposite) of.
     * @return The {@link Iterable} negation of the given filter.
     */
-   public EntityFilter reset( EntityFilter filter )
+   public NotFilter set( EntityFilter filter )
    {
       this.filter = filter;
 

@@ -17,42 +17,35 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that combines two filters with OR logic.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class OrFilter extends EntityFilter
+public class OrFilter implements EntityFilter
 {
 
    protected EntityFilter first;
    protected EntityFilter second;
 
    /**
-    * Resets the OrFilter specifying the root entity and the filters to combine.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param first
-    *        The first filter to check for valid entities.
-    * @param second
-    *        The second filter to check for valid entities.
-    * @return The {@link Iterable} filtered by both filters.
     */
-   public EntityFilter reset( Entity root, EntityFilter first, EntityFilter second )
+   public OrFilter()
    {
-      return reset( first, second ).reset( root );
    }
-   
+
+   public OrFilter( EntityFilter first, EntityFilter second )
+   {
+      set( first, second );
+   }
+
    /**
     * Resets the OrFilter specifying the filters to combine.
     * 
@@ -62,7 +55,7 @@ public class OrFilter extends EntityFilter
     *        The second filter to check for valid entities.
     * @return The {@link Iterable} filtered by both filters.
     */
-   public EntityFilter reset( EntityFilter first, EntityFilter second )
+   public OrFilter set( EntityFilter first, EntityFilter second )
    {
       this.first = first;
       this.second = second;

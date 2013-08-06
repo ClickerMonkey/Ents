@@ -18,9 +18,8 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Controller;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 import org.magnos.entity.util.BitSet;
 
 
@@ -28,30 +27,29 @@ import org.magnos.entity.util.BitSet;
  * A filter that only returns entities that have given controllers.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class ControllerFilter extends EntityFilter
+public class ControllerFilter implements EntityFilter
 {
 
    protected BitSet controllers;
 
    /**
-    * Resets the ControllerFilter specifying the root entity and the set of
-    * controllers to filter by.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param components
-    *        The set of controllers each entity returned by the filter will
-    *        have.
-    * @return The {@link Iterable} filter by controllers.
     */
-   public EntityFilter reset( Entity root, Controller... controllers )
+   public ControllerFilter()
    {
-      return reset( controllers ).reset( root );
+
+   }
+
+   /**
+    * 
+    * @param controllers
+    */
+   public ControllerFilter( Controller... controllers )
+   {
+      set( controllers );
    }
 
    /**
@@ -63,7 +61,7 @@ public class ControllerFilter extends EntityFilter
     *        have.
     * @return The {@link Iterable} filter by controllers.
     */
-   public EntityFilter reset( Controller... controllers )
+   public ControllerFilter set( Controller... controllers )
    {
       this.controllers = new BitSet( controllers );
 

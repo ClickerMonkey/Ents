@@ -17,39 +17,38 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that returns Entities of a specific class.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class ClassFilter extends EntityFilter
+public class ClassFilter implements EntityFilter
 {
 
    protected Class<? extends Entity> entityClass;
 
    /**
-    * Resets the ClassFilter specifying the root entity and the Entity class.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param entityClass
-    *        The class to filter entities by.
-    * @return The {@link Iterable} filtered by class.
     */
-   public EntityFilter reset( Entity root, Class<? extends Entity> entityClass )
+   public ClassFilter()
    {
-      return reset( entityClass ).reset( root );
    }
-
+   
+   /**
+    * 
+    * @param entityClass
+    */
+   public ClassFilter(Class<? extends Entity> entityClass)
+   {
+      set( entityClass );
+   }
+   
    /**
     * Resets the ClassFilter specifying the Entity class.
     * 
@@ -57,7 +56,7 @@ public class ClassFilter extends EntityFilter
     *        The class to filter entities by.
     * @return The {@link Iterable} filtered by class.
     */
-   public EntityFilter reset( Class<? extends Entity> entityClass )
+   public ClassFilter set( Class<? extends Entity> entityClass )
    {
       this.entityClass = entityClass;
 

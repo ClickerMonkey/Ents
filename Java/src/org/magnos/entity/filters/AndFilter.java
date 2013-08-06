@@ -17,40 +17,39 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that combines two filters with AND logic.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class AndFilter extends EntityFilter
+public class AndFilter implements EntityFilter
 {
 
    protected EntityFilter first;
    protected EntityFilter second;
 
    /**
-    * Resets the AndFilter specifying the root entity and the filters to combine.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param first
-    *        The first filter to check for valid entities.
-    * @param second
-    *        The second filter to check for valid entities.
-    * @return The {@link Iterable} filtered by both filters.
     */
-   public EntityFilter reset( Entity root, EntityFilter first, EntityFilter second )
+   public AndFilter()
    {
-      return reset( first, second ).reset( root );
+
+   }
+
+   /**
+    * 
+    * @param first
+    * @param second
+    */
+   public AndFilter( EntityFilter first, EntityFilter second )
+   {
+      set( first, second );
    }
 
    /**
@@ -62,7 +61,7 @@ public class AndFilter extends EntityFilter
     *        The second filter to check for valid entities.
     * @return The {@link Iterable} filtered by both filters.
     */
-   public EntityFilter reset( EntityFilter first, EntityFilter second )
+   public AndFilter set( EntityFilter first, EntityFilter second )
    {
       this.first = first;
       this.second = second;
@@ -70,7 +69,6 @@ public class AndFilter extends EntityFilter
       return this;
    }
 
-   
    @Override
    public boolean isValid( Entity e )
    {

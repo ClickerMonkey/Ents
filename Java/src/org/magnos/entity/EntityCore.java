@@ -41,7 +41,7 @@ public class EntityCore
    protected static IndexPool indices = new IndexPool();
 
    protected static EntityListener listener;
-   
+
    protected EntityCore()
    {
    }
@@ -55,15 +55,15 @@ public class EntityCore
    {
       indices.push( id );
    }
-   
-   protected static void register( Entity e)
+
+   protected static void register( Entity e )
    {
       if (listener != null)
       {
          listener.onEntityAdd( e );
       }
    }
-   
+
    protected static void unregister( Entity e )
    {
       if (listener != null)
@@ -79,7 +79,7 @@ public class EntityCore
 
    public static View newView( String name, Renderer defaultRenderer )
    {
-      return views.addDefinition( new View( views.nextId(), name, defaultRenderer ) );
+      return registerView( true, views.addDefinition( new View( views.nextId(), name, defaultRenderer ) ) );
    }
 
    public static void setViewDefault( View view, Renderer defaultRenderer )
@@ -89,7 +89,17 @@ public class EntityCore
 
    public static View newViewAlternative( View view, Renderer renderer )
    {
-      return views.addInstance( new View( view.id, view.name, renderer ) );
+      return registerView( false, views.addInstance( new View( view.id, view.name, renderer ) ) );
+   }
+
+   private static View registerView( boolean definition, View view )
+   {
+      if (listener != null)
+      {
+         listener.onViewAdd( view, definition );
+      }
+
+      return view;
    }
 
    public static IdContainer<View> getViews()
@@ -104,7 +114,7 @@ public class EntityCore
 
    public static Controller newController( String name, Control defaultControl )
    {
-      return controllers.addDefinition( new Controller( controllers.nextId(), name, defaultControl ) );
+      return registerController( true, controllers.addDefinition( new Controller( controllers.nextId(), name, defaultControl ) ) );
    }
 
    public static void setControllerDefault( Controller controller, Control defaultControl )
@@ -114,67 +124,92 @@ public class EntityCore
 
    public static Controller newControllerAlternative( Controller controller, Control control )
    {
-      return controllers.addInstance( new Controller( controller.id, controller.name, control ) );
+      return registerController( false, controllers.addInstance( new Controller( controller.id, controller.name, control ) ) );
+   }
+
+   private static Controller registerController( boolean definition, Controller controller )
+   {
+      if (listener != null)
+      {
+         listener.onControllerAdd( controller, definition );
+      }
+
+      return controller;
+   }
+
+   public static IdContainer<Controller> getControllers()
+   {
+      return controllers;
    }
 
    public static <T> Component<T> newComponent( String name )
    {
-      return components.addDefinition( new ComponentUndefined<T>( components.nextId(), name ) );
+      return registerComponent( true, components.addDefinition( new ComponentUndefined<T>( components.nextId(), name ) ) );
    }
 
    public static <T> Component<T> newComponent( String name, ComponentFactory<T> factory )
    {
-      return components.addDefinition( new ComponentDistinct<T>( components.nextId(), name, factory ) );
+      return registerComponent( true, components.addDefinition( new ComponentDistinct<T>( components.nextId(), name, factory ) ) );
    }
 
    public static <T> Component<T> newComponentAlternative( Component<T> component, ComponentFactory<T> factory )
    {
-      return components.addInstance( new ComponentDistinct<T>( component.id, component.name, factory ) );
+      return registerComponent( false, components.addInstance( new ComponentDistinct<T>( component.id, component.name, factory ) ) );
    }
 
    public static <T> Component<T> newComponentShared( String name, ComponentFactory<T> factory )
    {
-      return components.addDefinition( new ComponentShared<T>( components.nextId(), name, factory ) );
+      return registerComponent( true, components.addDefinition( new ComponentShared<T>( components.nextId(), name, factory ) ) );
    }
 
    public static <T> Component<T> newComponentSharedAlternative( Component<T> component, ComponentFactory<T> factory )
    {
-      return components.addInstance( new ComponentShared<T>( component.id, component.name, factory ) );
+      return registerComponent( false, components.addInstance( new ComponentShared<T>( component.id, component.name, factory ) ) );
    }
 
    public static <T> Component<T> newComponentDynamic( String name, DynamicValue<T> dynamic )
    {
-      return components.addDefinition( new ComponentDynamic<T>( components.nextId(), name, dynamic ) );
+      return registerComponent( true, components.addDefinition( new ComponentDynamic<T>( components.nextId(), name, dynamic ) ) );
    }
 
    public static <T> Component<T> newComponentDynamicAlternative( Component<T> component, DynamicValue<T> dynamic )
    {
-      return components.addInstance( new ComponentDynamic<T>( component.id, component.name, dynamic ) );
+      return registerComponent( false, components.addInstance( new ComponentDynamic<T>( component.id, component.name, dynamic ) ) );
    }
 
    public static <T> Component<T> newComponentGlobal( String name, T constant, boolean settable )
    {
-      return components.addDefinition( new ComponentGlobal<T>( components.nextId(), name, constant, settable ) );
+      return registerComponent( true, components.addDefinition( new ComponentGlobal<T>( components.nextId(), name, constant, settable ) ) );
    }
 
    public static <T> Component<T> newComponentGlobalAlternative( Component<T> component, T constant, boolean settable )
    {
-      return components.addInstance( new ComponentGlobal<T>( component.id, component.name, constant, settable ) );
+      return registerComponent( false, components.addInstance( new ComponentGlobal<T>( component.id, component.name, constant, settable ) ) );
    }
 
    public static <T> Component<T> newComponentAlias( Component<T> component, Component<T> alias )
    {
-      return components.addInstance( new ComponentAlias<T>( alias.id, alias.name, component.id ) );
+      return registerComponent( false, components.addInstance( new ComponentAlias<T>( alias.id, alias.name, component.id ) ) );
    }
 
    public static <T> Component<T> newComponentCustom( Component<T> custom )
    {
-      return components.addDefinition( custom );
+      return registerComponent( true, components.addDefinition( custom ) );
    }
 
    public static <T> Component<T> newComponentCustomAlternative( Component<T> custom )
    {
-      return components.addInstance( custom );
+      return registerComponent( false, components.addInstance( custom ) );
+   }
+
+   private static <T> Component<T> registerComponent( boolean definition, Component<T> component )
+   {
+      if (listener != null)
+      {
+         listener.onComponentAdd( component, definition );
+      }
+
+      return component;
    }
 
    public static IdContainer<Component<?>> getComponents()
@@ -189,7 +224,7 @@ public class EntityCore
 
    public static Template newTemplate( String name, Components componentSet, Controllers controllerSet, View view )
    {
-      return templates.addDefinition( new Template( templates.nextId(), name, null, componentSet, controllerSet, view ) );
+      return registerTemplate( templates.addDefinition( new Template( templates.nextId(), name, null, componentSet, controllerSet, view ) ) );
    }
 
    public static Template newTemplate( String name, Components componentSet, Controllers controllerSet )
@@ -226,7 +261,7 @@ public class EntityCore
          t.setView( view );
       }
 
-      return t;
+      return registerTemplate( t );
    }
 
    public static Template newTemplate( Template base, String name, Components componentSet, Controllers controllerSet )
@@ -253,7 +288,17 @@ public class EntityCore
          t.merge( templatesToMerge[i], overwrite );
       }
 
-      return t;
+      return registerTemplate( t );
+   }
+
+   private static Template registerTemplate( Template template )
+   {
+      if (listener != null)
+      {
+         listener.onTemplateAdd( template );
+      }
+
+      return template;
    }
 
    public static IdContainer<Template> getTemplates()
@@ -263,10 +308,16 @@ public class EntityCore
 
    public static void clear()
    {
+      if (listener != null)
+      {
+         listener.onCoreClear();
+      }
+
       views.clear();
       controllers.clear();
       components.clear();
       templates.clear();
+      indices.clear();
    }
 
 }

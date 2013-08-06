@@ -12,6 +12,7 @@ import org.magnos.entity.Components;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 import org.magnos.entity.EntityList;
 import org.magnos.entity.Template;
 import org.magnos.entity.filters.AndFilter;
@@ -53,25 +54,25 @@ public class TestEntityFilter
    @Test
    public void testDefaultFilter()
    {
-      testFilter( new DefaultFilter(), 0, 1, 2, 3, 4 );
+      testFilter( DefaultFilter.INSTANCE, 0, 1, 2, 3, 4 );
    }
 
    @Test
    public void testVisible()
    {
-      testFilter( new VisibleFilter(), 0, 1, 3, 4 );
+      testFilter( VisibleFilter.INSTANCE, 0, 1, 3, 4 );
    }
 
    @Test
    public void testEnabled()
    {
-      testFilter( new EnabledFilter(), 0, 1, 2, 3 );
+      testFilter( EnabledFilter.INSTANCE, 0, 1, 2, 3 );
    }
 
    @Test
    public void testCustom()
    {
-      testFilter( new CustomFilter(), 0, 3 );
+      testFilter( CustomFilter.INSTANCE, 0, 3 );
    }
 
    @Test
@@ -79,16 +80,16 @@ public class TestEntityFilter
    {
       NotFilter filter = new NotFilter();
 
-      filter.reset( new DefaultFilter() );
+      filter.set( DefaultFilter.INSTANCE );
       testFilter( filter /* nothing */);
 
-      filter.reset( new VisibleFilter() );
+      filter.set( VisibleFilter.INSTANCE );
       testFilter( filter, 2 );
 
-      filter.reset( new EnabledFilter() );
+      filter.set( EnabledFilter.INSTANCE );
       testFilter( filter, 4 );
 
-      filter.reset( new CustomFilter() );
+      filter.set( CustomFilter.INSTANCE );
       testFilter( filter, 1, 2, 4 );
    }
 
@@ -97,7 +98,7 @@ public class TestEntityFilter
    {
       AndFilter filter = new AndFilter();
 
-      filter.reset( new CustomFilter(), new VisibleFilter() );
+      filter.set( CustomFilter.INSTANCE, VisibleFilter.INSTANCE );
       testFilter( filter, 0, 3 );
    }
 
@@ -106,7 +107,7 @@ public class TestEntityFilter
    {
       OrFilter filter = new OrFilter();
 
-      filter.reset( new EnabledFilter(), new VisibleFilter() );
+      filter.set( EnabledFilter.INSTANCE, VisibleFilter.INSTANCE );
       testFilter( filter, 0, 1, 2, 3, 4 );
    }
 
@@ -115,7 +116,7 @@ public class TestEntityFilter
    {
       XorFilter filter = new XorFilter();
 
-      filter.reset( new EnabledFilter(), new CustomFilter() );
+      filter.set( EnabledFilter.INSTANCE, CustomFilter.INSTANCE );
       testFilter( filter, 1, 2 );
    }
 
@@ -124,7 +125,7 @@ public class TestEntityFilter
    {
       TemplateExactFilter filter = new TemplateExactFilter();
 
-      filter.reset( BASIC_OBJECT );
+      filter.set( BASIC_OBJECT );
       testFilter( filter, 1, 2, 4 );
    }
 
@@ -133,7 +134,7 @@ public class TestEntityFilter
    {
       TemplateRelativeFilter filter = new TemplateRelativeFilter();
 
-      filter.reset( BASIC_OBJECT );
+      filter.set( BASIC_OBJECT );
       testFilter( filter, 1, 2, 3, 4 );
    }
    
@@ -142,7 +143,7 @@ public class TestEntityFilter
    {
       TemplateContainsFilter filter = new TemplateContainsFilter();
       
-      filter.reset( BASICER_OBJECT );
+      filter.set( BASICER_OBJECT );
       testFilter( filter, 1, 2, 3, 4 );
    }
 
@@ -151,10 +152,10 @@ public class TestEntityFilter
    {
       ValueFilter filter = new ValueFilter();
 
-      filter.reset( POSITION, new Vector( 5.0f, 3.0f ) );
+      filter.set( POSITION, new Vector( 5.0f, 3.0f ) );
       testFilter( filter, 4 );
 
-      filter.reset( VELOCITY, new Vector( 0.0f, 0.0f ) );
+      filter.set( VELOCITY, new Vector( 0.0f, 0.0f ) );
       testFilter( filter, 1, 2, 3, 4 );
    }
 
@@ -163,10 +164,10 @@ public class TestEntityFilter
    {
       ClassFilter filter = new ClassFilter();
 
-      filter.reset( EntityList.class );
+      filter.set( EntityList.class );
       testFilter( filter, 0 );
 
-      filter.reset( Entity.class );
+      filter.set( Entity.class );
       testFilter( filter, 1, 2, 3, 4 );
    }
 
@@ -175,13 +176,13 @@ public class TestEntityFilter
    {
       ComponentFilter filter = new ComponentFilter();
 
-      filter.reset( NAME, POSITION );
+      filter.set( NAME, POSITION );
       testFilter( filter, 1, 2, 3, 4 );
 
-      filter.reset( NAME );
+      filter.set( NAME );
       testFilter( filter, 0, 1, 2, 3, 4 );
 
-      filter.reset( SCALE );
+      filter.set( SCALE );
       testFilter( filter, 3 );
    }
 
@@ -214,7 +215,9 @@ public class TestEntityFilter
 
       int count = 0;
 
-      for (Entity entity : filter.reset( e0 ))
+      EntityIterator iterator = new EntityIterator( filter );
+      
+      for (Entity entity : iterator.iterate( e0 ))
       {
          assertSame( entity, entities[valid[count++]] );
       }

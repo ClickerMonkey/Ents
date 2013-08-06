@@ -17,9 +17,8 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 import org.magnos.entity.Template;
 
 
@@ -30,30 +29,28 @@ import org.magnos.entity.Template;
  * parent templates.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class TemplateRelativeFilter extends EntityFilter
+public class TemplateRelativeFilter implements EntityFilter
 {
 
    protected Template template;
 
    /**
-    * Resets the TemplateRelativeFilter specifying the root entity and the
-    * template the Entities must be a relative to.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param template
-    *        The template the Entities filtered must be a relative to.
-    * @return The {@link Iterable} filtered by
-    *         {@link Template#isRelative(Template)}.
     */
-   public EntityFilter reset( Entity root, Template template )
+   public TemplateRelativeFilter()
    {
-      return reset( template ).reset( root );
+   }
+
+   /**
+    * 
+    * @param template
+    */
+   public TemplateRelativeFilter( Template template )
+   {
+      set( template );
    }
 
    /**
@@ -65,7 +62,7 @@ public class TemplateRelativeFilter extends EntityFilter
     * @return The {@link Iterable} filtered by
     *         {@link Template#isRelative(Template)}.
     */
-   public EntityFilter reset( Template template )
+   public TemplateRelativeFilter set( Template template )
    {
       this.template = template;
 

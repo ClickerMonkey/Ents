@@ -18,18 +18,25 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that only returns Entities that are expired.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class ExpiredFilter extends EntityFilter
+public class ExpiredFilter implements EntityFilter
 {
 
+   public static final ExpiredFilter INSTANCE = new ExpiredFilter();
+   
+   private ExpiredFilter()
+   {
+   }
+   
    @Override
    public boolean isValid( Entity e )
    {

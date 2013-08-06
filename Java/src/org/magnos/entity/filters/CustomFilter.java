@@ -18,6 +18,7 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 
 
 /**
@@ -26,12 +27,18 @@ import org.magnos.entity.EntityFilter;
  * component, controller, or view added/set directly to it.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class CustomFilter extends EntityFilter
+public class CustomFilter implements EntityFilter
 {
+   
+   public static final CustomFilter INSTANCE = new CustomFilter();
 
+   private CustomFilter()
+   {
+   }
+   
    @Override
    public boolean isValid( Entity e )
    {

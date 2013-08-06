@@ -17,9 +17,8 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 import org.magnos.entity.Template;
 
 
@@ -28,32 +27,31 @@ import org.magnos.entity.Template;
  * controllers, and view of the given filtering template.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class TemplateContainsFilter extends EntityFilter
+public class TemplateContainsFilter implements EntityFilter
 {
 
    protected Template template;
 
    /**
-    * Resets the TemplateContainsFilter specifying the root entity and the
-    * template used to check for containment.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param template
-    *        The filtering template used.
-    * @return The {@link Iterable} filtered by
-    *         {@link Template#contains(Template)}.
     */
-   public EntityFilter reset( Entity root, Template template )
+   public TemplateContainsFilter()
    {
-      return reset( template ).reset( root );
+      
    }
-
+   
+   /**
+    * 
+    * @param template
+    */
+   public TemplateContainsFilter(Template template)
+   {
+      set( template );
+   }
+   
    /**
     * Resets the TemplateContainsFilter specifying the template used to check
     * for containment.
@@ -63,7 +61,7 @@ public class TemplateContainsFilter extends EntityFilter
     * @return The {@link Iterable} filtered by
     *         {@link Template#contains(Template)}.
     */
-   public EntityFilter reset( Template template )
+   public TemplateContainsFilter set( Template template )
    {
       this.template = template;
 

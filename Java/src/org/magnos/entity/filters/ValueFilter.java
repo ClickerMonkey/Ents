@@ -18,9 +18,8 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Component;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
-import org.magnos.entity.EntityList;
+import org.magnos.entity.EntityIterator;
 import org.magnos.entity.util.EntityUtility;
 
 
@@ -29,32 +28,30 @@ import org.magnos.entity.util.EntityUtility;
  * component has a specific value.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class ValueFilter extends EntityFilter
+public class ValueFilter implements EntityFilter
 {
 
    protected Object value;
    protected Component<?> component;
 
    /**
-    * Resets the ComponentFilter specifying the root entity and the component
-    * and value to filter by.
     * 
-    * @param root
-    *        The root entity to filter. This entity is typically an
-    *        {@link EntityChain} or {@link EntityList} which both can contain
-    *        any number of entities.
-    * @param component
-    *        The component the entity must have.
-    * @param value
-    *        The value of the given component the entity must have.
-    * @return The {@link Iterable} filtered by component value.
     */
-   public <T> EntityFilter reset( Entity root, Component<T> component, T value )
+   public ValueFilter()
    {
-      return reset( component, value ).reset( root );
+   }
+
+   /**
+    * 
+    * @param component
+    * @param value
+    */
+   public <T> ValueFilter( Component<T> component, T value )
+   {
+      set( component, value );
    }
 
    /**
@@ -67,7 +64,7 @@ public class ValueFilter extends EntityFilter
     *        The value of the given component the entity must have.
     * @return The {@link Iterable} filtered by component value.
     */
-   public <T> EntityFilter reset( Component<T> component, T value )
+   public <T> ValueFilter set( Component<T> component, T value )
    {
       this.component = component;
       this.value = value;

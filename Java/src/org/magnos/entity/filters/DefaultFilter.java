@@ -18,18 +18,25 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that returns all Entities.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class DefaultFilter extends EntityFilter
+public class DefaultFilter implements EntityFilter
 {
 
+   public static final DefaultFilter INSTANCE = new DefaultFilter();
+   
+   private DefaultFilter()
+   {
+   }
+   
    @Override
    public boolean isValid( Entity e )
    {

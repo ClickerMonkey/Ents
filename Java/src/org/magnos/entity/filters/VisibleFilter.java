@@ -18,18 +18,25 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that only returns Entities that are visible.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class VisibleFilter extends EntityFilter
+public class VisibleFilter implements EntityFilter
 {
 
+   public static final VisibleFilter INSTANCE = new VisibleFilter();
+   
+   private VisibleFilter()
+   {
+   }
+   
    @Override
    public boolean isValid( Entity e )
    {

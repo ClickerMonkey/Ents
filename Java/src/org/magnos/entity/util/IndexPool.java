@@ -44,8 +44,7 @@ public class IndexPool
    public IndexPool( int initialCapacity )
    {
       ints = new int[initialCapacity];
-      size = 0;
-      previousIndex = -1;
+      clear();
    }
 
    /**
@@ -91,6 +90,15 @@ public class IndexPool
       }
       
       return shrank;
+   }
+
+   /**
+    * Clears the IndexPool of all indices and resets the next index to 0.
+    */
+   public void clear()
+   {
+      size = 0;
+      previousIndex = -1;
    }
 
    /**

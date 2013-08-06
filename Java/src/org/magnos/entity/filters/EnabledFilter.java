@@ -18,18 +18,25 @@ package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
+import org.magnos.entity.EntityIterator;
 
 
 /**
  * A filter that only returns Entities that are enabled.
  * 
  * @author Philip Diffenderfer
- * @see EntityFilter
+ * @see EntityIterator
  * 
  */
-public class EnabledFilter extends EntityFilter
+public class EnabledFilter implements EntityFilter
 {
 
+   public static final EnabledFilter INSTANCE = new EnabledFilter();
+   
+   private EnabledFilter()
+   {
+   }
+   
    @Override
    public boolean isValid( Entity e )
    {
