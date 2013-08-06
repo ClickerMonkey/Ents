@@ -392,7 +392,7 @@ public class Template extends Id
 
    protected Template getCustomTarget()
    {
-      return isCustom() && instances == 1 ? this : extend( CUSTOM, CUSTOM_NAME );
+      return isCustom() && instances <= 1 ? this : extend( CUSTOM, CUSTOM_NAME );
    }
 
 }

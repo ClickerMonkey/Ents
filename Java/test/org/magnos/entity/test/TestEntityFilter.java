@@ -4,6 +4,7 @@ package org.magnos.entity.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
@@ -35,6 +36,12 @@ import org.magnos.entity.vals.FloatVal;
 public class TestEntityFilter
 {
 
+   @AfterClass
+   public static void afterTest()
+   {
+      EntityCore.clear();
+   }
+
    static Component<String> NAME = EntityCore.newComponent( "name", new ComponentFactoryNull<String>() );
    static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector( 0f, 0f ) );
    static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector( 0f, 0f ) );
@@ -48,12 +55,6 @@ public class TestEntityFilter
    public void testDefaultFilter()
    {
       testFilter( new DefaultFilter(), 0, 1, 2, 3, 4 );
-   }
-
-   @Test
-   public void testExpired()
-   {
-      //      testFilter( new ExpiredFilter(), 1 );
    }
 
    @Test

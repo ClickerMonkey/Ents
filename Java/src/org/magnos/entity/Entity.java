@@ -103,10 +103,9 @@ public class Entity
    protected Entity( Template template, Object[] values, Renderer renderer )
    {
       this.setTemplate( template );
-      this.values = values;
       this.setRenderer( renderer );
-      this.controllerEnabled = new BitSet( template.controllers.length );
-      this.setControllerEnabledAll( true );
+      this.values = values;
+      this.controllerEnabled = new BitSet( template.controllers.length, true );
    }
 
    /**
@@ -130,6 +129,13 @@ public class Entity
             template.removeInstance( this );
          }
 
+         template = newTemplate;
+         
+         if (template != null)
+         {
+            
+         }
+         
          (template = newTemplate).newInstance( this );
       }
 
@@ -680,7 +686,7 @@ public class Entity
    {
       if (setTemplate( template.setCustomView( view ) ))
       {
-         renderer = template.createRenderer();
+         setRenderer( template.createRenderer() );
       }
    }
 

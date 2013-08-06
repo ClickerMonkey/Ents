@@ -41,10 +41,17 @@ public class BitSet extends java.util.BitSet
     * 
     * @param size
     *        The initial size of the BitSet in bits.
+    * @param enabled
+    *        True if all bits should be set, otherwise false.
     */
-   public BitSet( int size )
+   public BitSet( int size, boolean enabled )
    {
       super( size );
+      
+      if (enabled)
+      {
+         set( 0, size, enabled );
+      }
    }
 
    /**

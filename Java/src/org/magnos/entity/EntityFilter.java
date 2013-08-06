@@ -108,7 +108,7 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
       stack[0] = root;
 
       prev = null;
-      curr = isValid( root ) ? root : findNext();
+      curr = findNext();
 
       return this;
    }
@@ -165,16 +165,10 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
          current = stack[depth];
          int size = current.getEntitySize();
          int skip = current.getEntityIndex();
-         int id = offset[depth] + 1;
-
-         // Search through current entity's children for a valid entity.
-         while (id < size && (id == skip || !isValid( current.getEntity( id ) )))
-         {
-            id++;
-         }
+         int index = ++offset[depth];
 
          // If the end of the entity has been reached, pop the previous entity off the stack.
-         if (id == size)
+         if (index == size)
          {
             depth--;
 
@@ -187,12 +181,10 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
          }
          else
          {
-            // Update offset in current entity, and grab it.
-            offset[depth] = id;
-            current = current.getEntity( id );
+            current = current.getEntity( index );
 
             // Only traverse entities that contain other entities.
-            if (current.getEntitySize() > 1)
+            if (current.getEntitySize() > 1 && index != skip)
             {
                depth++;
 
@@ -207,8 +199,10 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
                stack[depth] = current;
                offset[depth] = -1;
             }
-
-            found = true;
+            else if (isValid(current))
+            {
+               found = true;
+            }
          }
       }
 

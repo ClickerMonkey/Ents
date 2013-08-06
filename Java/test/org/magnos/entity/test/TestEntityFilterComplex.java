@@ -4,6 +4,7 @@ package org.magnos.entity.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
@@ -36,6 +37,12 @@ import org.magnos.entity.vals.FloatVal;
 public class TestEntityFilterComplex
 {
 
+   @AfterClass
+   public static void afterTest()
+   {
+      EntityCore.clear();
+   }
+
    static Component<String> NAME = EntityCore.newComponent( "name", new ComponentFactoryNull<String>() );
    static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector( 0f, 0f ) );
    static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector( 0f, 0f ) );
@@ -44,17 +51,11 @@ public class TestEntityFilterComplex
 
    static Template BASIC_OBJECT = EntityCore.newTemplate( "basic", new Components( NAME, POSITION, VELOCITY, RADIUS ), new Controllers(), null );
    static Template BASICER_OBJECT = EntityCore.newTemplate( "basic'er", new Components( POSITION, VELOCITY ), new Controllers(), null );
-   
+
    @Test
    public void testDefaultFilter()
    {
       testFilter( new DefaultFilter(), 0, 1, 2, 3, 4, 5 );
-   }
-
-   @Test
-   public void testExpired()
-   {
-      //      testFilter( new ExpiredFilter(), 1 );
    }
 
    @Test
@@ -99,7 +100,7 @@ public class TestEntityFilterComplex
       AndFilter filter = new AndFilter();
 
       filter.reset( new CustomFilter(), new VisibleFilter() );
-      testFilter( filter, 0, 3 );
+      testFilter( filter, 0, 4 );
    }
 
    @Test
@@ -108,7 +109,7 @@ public class TestEntityFilterComplex
       OrFilter filter = new OrFilter();
 
       filter.reset( new EnabledFilter(), new VisibleFilter() );
-      testFilter( filter, 0, 1, 2, 3, 4 );
+      testFilter( filter, 0, 1, 2, 3, 4, 5 );
    }
 
    @Test
@@ -117,7 +118,7 @@ public class TestEntityFilterComplex
       XorFilter filter = new XorFilter();
 
       filter.reset( new EnabledFilter(), new CustomFilter() );
-      testFilter( filter, 1, 2 );
+      testFilter( filter, 1, 2, 3 );
    }
 
    @Test
@@ -126,7 +127,7 @@ public class TestEntityFilterComplex
       TemplateExactFilter filter = new TemplateExactFilter();
 
       filter.reset( BASIC_OBJECT );
-      testFilter( filter, 1, 2, 4 );
+      testFilter( filter, 1, 2, 3, 5 );
    }
 
    @Test
@@ -135,16 +136,16 @@ public class TestEntityFilterComplex
       TemplateRelativeFilter filter = new TemplateRelativeFilter();
 
       filter.reset( BASIC_OBJECT );
-      testFilter( filter, 1, 2, 3, 4 );
+      testFilter( filter, 1, 2, 3, 4, 5 );
    }
-   
+
    @Test
    public void testContains()
    {
       TemplateContainsFilter filter = new TemplateContainsFilter();
-      
+
       filter.reset( BASICER_OBJECT );
-      testFilter( filter, 1, 2, 3, 4 );
+      testFilter( filter, 1, 2, 3, 4, 5 );
    }
 
    @Test
@@ -153,10 +154,10 @@ public class TestEntityFilterComplex
       ValueFilter filter = new ValueFilter();
 
       filter.reset( POSITION, new Vector( 5.0f, 3.0f ) );
-      testFilter( filter, 4 );
+      testFilter( filter, 5 );
 
       filter.reset( VELOCITY, new Vector( 0.0f, 0.0f ) );
-      testFilter( filter, 1, 2, 3, 4 );
+      testFilter( filter, 1, 2, 3, 4, 5 );
    }
 
    @Test
@@ -168,7 +169,10 @@ public class TestEntityFilterComplex
       testFilter( filter, 0 );
 
       filter.reset( Entity.class );
-      testFilter( filter, 1, 2, 3, 4 );
+      testFilter( filter, 1, 3, 4, 5 );
+
+      filter.reset( EntityChain.class );
+      testFilter( filter, 2 );
    }
 
    @Test
@@ -177,13 +181,13 @@ public class TestEntityFilterComplex
       ComponentFilter filter = new ComponentFilter();
 
       filter.reset( NAME, POSITION );
-      testFilter( filter, 1, 2, 3, 4 );
+      testFilter( filter, 1, 2, 3, 4, 5 );
 
       filter.reset( NAME );
-      testFilter( filter, 0, 1, 2, 3, 4 );
+      testFilter( filter, 0, 1, 2, 3, 4, 5 );
 
       filter.reset( SCALE );
-      testFilter( filter, 3 );
+      testFilter( filter, 4 );
    }
 
    private void testFilter( EntityFilter filter, int... valid )
@@ -191,25 +195,25 @@ public class TestEntityFilterComplex
       EntityList e0 = new EntityList();         // entirely custom
       e0.put( NAME, "e0" );
 
-      Entity e1 = new Entity( BASIC_OBJECT );    // expired
+      Entity e1 = new Entity( BASIC_OBJECT );
       e1.set( NAME, "e1" );
-      //    e1.expire();
 
       Entity e3 = new Entity( BASIC_OBJECT );    // invisible
-      e3.set( NAME, "e2" );
+      e3.set( NAME, "e3" );
       e3.hide();
 
       Entity e4 = new Entity( BASIC_OBJECT );    // custom from BASIC_OBJET
-      e4.set( NAME, "e3" );
+      e4.set( NAME, "e4" );
       e4.grab( SCALE ).v = 4.0f;
 
       Entity e5 = new Entity( BASIC_OBJECT );    // disabled
-      e5.set( NAME, "e4" );
+      e5.set( NAME, "e5" );
       e5.get( POSITION ).set( 5.0f, 3.0f );
       e5.disable();
-      
+
       Entity e2 = new EntityChain( BASIC_OBJECT, e1, e3, true, true );
-      
+      e2.set( NAME, "e2" );
+
       e0.add( e2, e4, e5 );
 
       // Filter entities
