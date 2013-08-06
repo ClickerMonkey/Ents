@@ -21,23 +21,9 @@ import java.util.Iterator;
 
 
 /**
- * An EntityFilter is an {@link Iterable} object that accumulates all Entities
- * that the implementation deems valid into an array which can easily be
- * traversed through an {@link Iterator} or manually through {@link #size()} and
- * {@link #get(int)}.
- * 
- * To populate a filter the reset method needs to be called of the implementing
- * class. This will query the root Entity to add an internal Entities it may
- * have into the filter.
- * 
- * The only current problem with this filtering technique is storing all the
- * valid entities in an internal array (temporarily). That means if there are
- * 10,000 entities and a filter finds all of them valid, it will have an
- * internal array >= 10,000. To get around this problem the stop() method should
- * be used to stop iteration or after iteration to clean up entities referenced
- * in the internal array AND you should also avoid allocating these filters
- * during game play, rather create them in the beginning and reuse them as much
- * as possible.
+ * An EntityFilter is an {@link Iterable} object that iterate over all nested
+ * entities from a root entity. A nested entity is an entity which exists in
+ * another.
  * 
  * @author Philip Diffenderfer
  * 
@@ -55,7 +41,7 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    private int depth;
 
    /**
-    * 
+    * Instantiates a new EntityFilter.
     */
    public EntityFilter()
    {
@@ -66,6 +52,10 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
     * Instantiates a new EntityFilter.
     * 
     * @param defaultMaxDepth
+    *        An EntityFilter works by popping Entities on a stack that have
+    *        sub-entities and iterating through them. The defaultMaxDepth
+    *        indicates the initial capacity of that stack before the stack
+    *        needs to resize.
     */
    public EntityFilter( int defaultMaxDepth )
    {
@@ -74,9 +64,7 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    }
 
    /**
-    * Determines whether the given Entity is valid. If true this Entity is added
-    * to the internal array and may be iterated over with the
-    * {@link #iterator()} method.
+    * Determines whether the given Entity is valid.
     * 
     * @param e
     *        The entity to validate.
@@ -85,8 +73,7 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    public abstract boolean isValid( Entity e );
 
    /**
-    * Stops the filter by clearing the internal array and setting the size and
-    * iteration cursor to zero.
+    * Stops the filter, making the next call to {@link #hasNext()} return false.
     */
    public void stop()
    {
