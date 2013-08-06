@@ -98,4 +98,10 @@ public class Vector implements ComponentFactory<Vector>
       return true;
    }
 
+   @Override
+   public String toString()
+   {
+      return "Vector [x=" + x + ", y=" + y + "]";
+   }
+
 }

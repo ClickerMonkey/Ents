@@ -35,14 +35,6 @@ public class ClassFilter extends EntityFilter
    protected Class<? extends Entity> entityClass;
 
    /**
-    * Instantiates a new ClassFilter.
-    */
-   public ClassFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
-   /**
     * Resets the ClassFilter specifying the root entity and the Entity class.
     * 
     * @param root
@@ -55,9 +47,21 @@ public class ClassFilter extends EntityFilter
     */
    public EntityFilter reset( Entity root, Class<? extends Entity> entityClass )
    {
+      return reset( entityClass ).reset( root );
+   }
+
+   /**
+    * Resets the ClassFilter specifying the Entity class.
+    * 
+    * @param entityClass
+    *        The class to filter entities by.
+    * @return The {@link Iterable} filtered by class.
+    */
+   public EntityFilter reset( Class<? extends Entity> entityClass )
+   {
       this.entityClass = entityClass;
 
-      return super.reset( root );
+      return this;
    }
 
    @Override

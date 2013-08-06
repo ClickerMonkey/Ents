@@ -278,7 +278,7 @@ public class Entity
     */
    public void disable()
    {
-      enabled = true;
+      enabled = false;
    }
 
    /**
@@ -657,6 +657,18 @@ public class Entity
       return missing;
    }
 
+   public <T> T grab( Component<T> component )
+   {
+      boolean missing = !template.has( component );
+
+      if (missing)
+      {
+         add( component );
+      }
+
+      return get( component );
+   }
+
    public void add( Controller controller )
    {
       setTemplate( template.addCustomController( controller ) );
@@ -798,16 +810,23 @@ public class Entity
 
       sb.append( '[' );
 
-      for (Component<?> c : template.components)
+      if (template != null)
       {
-         if (sb.length() > 1)
+         for (Component<?> c : template.components)
          {
-            sb.append( ',' );
-         }
+            if (sb.length() > 1)
+            {
+               sb.append( ',' );
+            }
 
-         sb.append( c.name );
-         sb.append( '=' );
-         sb.append( get( c ) );
+            sb.append( c.name );
+            sb.append( '=' );
+            sb.append( get( c ) );
+         }
+      }
+      else
+      {
+         sb.append( "EXPIRED" );
       }
 
       sb.append( ']' );

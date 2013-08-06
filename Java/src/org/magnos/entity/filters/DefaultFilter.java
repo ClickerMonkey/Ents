@@ -30,19 +30,6 @@ import org.magnos.entity.EntityFilter;
 public class DefaultFilter extends EntityFilter
 {
 
-   /**
-    * Instantiates a new DefaultFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public DefaultFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
    @Override
    public boolean isValid( Entity e )
    {

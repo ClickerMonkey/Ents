@@ -36,19 +36,6 @@ public class OrFilter extends EntityFilter
    protected EntityFilter second;
 
    /**
-    * Instantiates a new OrFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public OrFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
-   /**
     * Resets the OrFilter specifying the root entity and the filters to combine.
     * 
     * @param root
@@ -63,10 +50,24 @@ public class OrFilter extends EntityFilter
     */
    public EntityFilter reset( Entity root, EntityFilter first, EntityFilter second )
    {
+      return reset( first, second ).reset( root );
+   }
+   
+   /**
+    * Resets the OrFilter specifying the filters to combine.
+    * 
+    * @param first
+    *        The first filter to check for valid entities.
+    * @param second
+    *        The second filter to check for valid entities.
+    * @return The {@link Iterable} filtered by both filters.
+    */
+   public EntityFilter reset( EntityFilter first, EntityFilter second )
+   {
       this.first = first;
       this.second = second;
 
-      return super.reset( root );
+      return this;
    }
 
    @Override

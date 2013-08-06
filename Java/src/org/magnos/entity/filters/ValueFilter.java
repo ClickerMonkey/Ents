@@ -31,27 +31,12 @@ import org.magnos.entity.EntityUtility;
  * @author Philip Diffenderfer
  * @see EntityFilter
  * 
- * @param <T>
- *        The component value type.
  */
-public class ValueFilter<T> extends EntityFilter
+public class ValueFilter extends EntityFilter
 {
 
-   protected T value;
-   protected Component<T> component;
-
-   /**
-    * Instantiates a new ValueFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public ValueFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
+   protected Object value;
+   protected Component<?> component;
 
    /**
     * Resets the ComponentFilter specifying the root entity and the component
@@ -67,18 +52,33 @@ public class ValueFilter<T> extends EntityFilter
     *        The value of the given component the entity must have.
     * @return The {@link Iterable} filtered by component value.
     */
-   public EntityFilter reset( Entity root, Component<T> component, T value )
+   public <T> EntityFilter reset( Entity root, Component<T> component, T value )
+   {
+      return reset( component, value ).reset( root );
+   }
+
+   /**
+    * Resets the ComponentFilter specifying the component and value to filter
+    * by.
+    * 
+    * @param component
+    *        The component the entity must have.
+    * @param value
+    *        The value of the given component the entity must have.
+    * @return The {@link Iterable} filtered by component value.
+    */
+   public <T> EntityFilter reset( Component<T> component, T value )
    {
       this.component = component;
       this.value = value;
 
-      return super.reset( root );
+      return this;
    }
 
    @Override
    public boolean isValid( Entity e )
    {
-      T entityValue = e.gets( component );
+      Object entityValue = e.gets( component );
 
       return EntityUtility.equals( entityValue, value );
    }

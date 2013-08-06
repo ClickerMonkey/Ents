@@ -38,19 +38,6 @@ public class TemplateExactFilter extends EntityFilter
    protected Template template;
 
    /**
-    * Instantiates a new TemplateExactFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public TemplateExactFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
-   /**
     * Resets the ComponentFilter specifying the root entity and the template the
     * Entities must have.
     * 
@@ -64,9 +51,21 @@ public class TemplateExactFilter extends EntityFilter
     */
    public EntityFilter reset( Entity root, Template template )
    {
+      return reset( template ).reset( root );
+   }
+
+   /**
+    * Resets the ComponentFilter specifying the template the Entities must have.
+    * 
+    * @param template
+    *        The template the Entities filtered must have.
+    * @return The {@link Iterable} filtered by Template.
+    */
+   public EntityFilter reset( Template template )
+   {
       this.template = template;
 
-      return reset( root );
+      return this;
    }
 
    @Override

@@ -16,6 +16,7 @@
 
 package org.magnos.entity;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 
@@ -48,7 +49,8 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
 
    private Entity root;
    private Entity[] stack;
-   private Entity previous;
+   private Entity curr;
+   private Entity prev;
    private int[] offset;
    private int depth;
 
@@ -114,8 +116,12 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
     */
    public EntityFilter reset()
    {
-      this.depth = 0;
-      this.offset[0] = -1;
+      depth = 0;
+      offset[0] = -1;
+      stack[0] = root;
+
+      prev = null;
+      curr = isValid( root ) ? root : findNext();
 
       return this;
    }
@@ -138,9 +144,9 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    @Override
    public Entity next()
    {
-      Entity e = previous;
-      previous = findNext();
-      return e;
+      prev = curr;
+      curr = findNext();
+      return prev;
    }
 
    /**
@@ -149,9 +155,14 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
    @Override
    public void remove()
    {
-      previous.expire();
+      prev.expire();
    }
 
+   /**
+    * Finds the next valid entity, returns null if there are no valid entities.
+    * 
+    * @return The reference to the next valid entity, otherwise false.
+    */
    private Entity findNext()
    {
       if (offset[0] == root.getEntitySize())
@@ -159,15 +170,62 @@ public abstract class EntityFilter implements Iterator<Entity>, Iterable<Entity>
          return null;
       }
 
-      Entity current = previous;
+      Entity current = null;
       boolean found = false;
 
-      if (current.getEntitySize() == 1)
+      while (!found)
       {
-         current = stack[--depth];
+         current = stack[depth];
+         int size = current.getEntitySize();
+         int skip = current.getEntityIndex();
+         int id = offset[depth] + 1;
+
+         // Search through current entity's children for a valid entity.
+         while (id < size && (id == skip || !isValid( current.getEntity( id ) )))
+         {
+            id++;
+         }
+
+         // If the end of the entity has been reached, pop the previous entity off the stack.
+         if (id == size)
+         {
+            depth--;
+
+            // If it's -1 then stop searching.
+            if (depth == -1)
+            {
+               current = null;
+               found = true;
+            }
+         }
+         else
+         {
+            // Update offset in current entity, and grab it.
+            offset[depth] = id;
+            current = current.getEntity( id );
+
+            // Only traverse entities that contain other entities.
+            if (current.getEntitySize() > 1)
+            {
+               depth++;
+
+               // If next depth has max'd out the stack, increase it.
+               if (depth == stack.length)
+               {
+                  stack = Arrays.copyOf( stack, depth + DEFAULT_MAX_DEPTH );
+                  offset = Arrays.copyOf( offset, depth + DEFAULT_MAX_DEPTH );
+               }
+
+               // Push entity on stack for traversal
+               stack[depth] = current;
+               offset[depth] = -1;
+            }
+
+            found = true;
+         }
       }
 
-      return null;
+      return current;
    }
 
 }

@@ -35,19 +35,6 @@ public class NotFilter extends EntityFilter
    protected EntityFilter filter;
 
    /**
-    * Instantiates a new NotFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public NotFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
-   /**
     * Resets the NotFilter specifying the root entity and the filter to
     * return the negation (opposite) of.
     * 
@@ -61,9 +48,22 @@ public class NotFilter extends EntityFilter
     */
    public EntityFilter reset( Entity root, EntityFilter filter )
    {
+      return reset( filter ).reset( root );
+   }
+
+   /**
+    * Resets the NotFilter specifying the filter to return the negation
+    * (opposite) of.
+    * 
+    * @param filter
+    *        The filter to return the negation (opposite) of.
+    * @return The {@link Iterable} negation of the given filter.
+    */
+   public EntityFilter reset( EntityFilter filter )
+   {
       this.filter = filter;
 
-      return super.reset( root );
+      return this;
    }
 
    @Override

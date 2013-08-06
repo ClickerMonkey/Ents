@@ -37,19 +37,6 @@ public class ControllerFilter extends EntityFilter
    protected BitSet controllers;
 
    /**
-    * Instantiates a new ControllerFilter.
-    * 
-    * @param defaultFilterCapacity
-    *        The default capacity of this filter. The filter works by filling an
-    *        array of entities that meet the filtering criteria. If the array is
-    *        not large enough it resizes to 150% it's previous size.
-    */
-   public ControllerFilter( int defaultFilterCapacity )
-   {
-      super( defaultFilterCapacity );
-   }
-
-   /**
     * Resets the ControllerFilter specifying the root entity and the set of
     * controllers to filter by.
     * 
@@ -64,9 +51,23 @@ public class ControllerFilter extends EntityFilter
     */
    public EntityFilter reset( Entity root, Controller... controllers )
    {
+      return reset( controllers ).reset( root );
+   }
+
+   /**
+    * Resets the ControllerFilter specifying the set of controllers to filter
+    * by.
+    * 
+    * @param components
+    *        The set of controllers each entity returned by the filter will
+    *        have.
+    * @return The {@link Iterable} filter by controllers.
+    */
+   public EntityFilter reset( Controller... controllers )
+   {
       this.controllers = new BitSet( controllers );
 
-      return reset( root );
+      return this;
    }
 
    @Override
