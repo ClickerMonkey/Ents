@@ -14,9 +14,11 @@
  * 				Open Software License (OSL 3.0)
  */
 
-package org.magnos.entity;
+package org.magnos.entity.util;
 
 import java.util.Arrays;
+
+import org.magnos.entity.Id;
 
 
 public class EntityUtility

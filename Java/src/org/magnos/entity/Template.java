@@ -18,6 +18,9 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
+import org.magnos.entity.util.BitSet;
+import org.magnos.entity.util.EntityUtility;
+
 
 public class Template extends Id
 {

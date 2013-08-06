@@ -18,6 +18,8 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
+import org.magnos.entity.util.EntityUtility;
+
 
 /**
  * A component that adds a value directly to the Entity, so that every entity

@@ -14,7 +14,9 @@
  * 				Open Software License (OSL 3.0)
  */
 
-package org.magnos.entity;
+package org.magnos.entity.util;
+
+import org.magnos.entity.Id;
 
 /**
  * An extension to {@link java.util.BitSet} adding new constructors for

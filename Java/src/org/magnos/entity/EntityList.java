@@ -176,6 +176,20 @@ public class EntityList extends Entity
          entities[--entityCount] = null;
       }
    }
+   
+   @Override
+   public void expire()
+   {
+      if (!expired)
+      {
+         for (int i = 0 ; i < entityCount; i++)
+         {
+            entities[i].expire();
+         }
+         
+         super.expire();
+      }
+   }
 
    @Override
    public void draw( Object drawState )

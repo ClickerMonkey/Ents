@@ -18,6 +18,9 @@ package org.magnos.entity;
 
 import java.util.Arrays;
 
+import org.magnos.entity.util.BitSet;
+import org.magnos.entity.util.EntityUtility;
+
 
 /**
  * An Entity is a game object that may be drawn, may be updated, has a set of
@@ -40,6 +43,8 @@ import java.util.Arrays;
 public class Entity
 {
 
+   public final int id;
+   
    protected Template template;
 
    protected Object[] values;
@@ -106,6 +111,9 @@ public class Entity
       this.setRenderer( renderer );
       this.values = values;
       this.controllerEnabled = new BitSet( template.controllers.length, true );
+      this.id = EntityCore.popId();
+      
+      EntityCore.register( this );
    }
 
    /**
@@ -161,6 +169,9 @@ public class Entity
    {
       if (!expired)
       {
+         EntityCore.pushId( id );
+         EntityCore.unregister( this );
+         
          template.removeInstance( this );
 
          if (renderer != null)

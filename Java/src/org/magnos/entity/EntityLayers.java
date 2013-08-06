@@ -59,6 +59,20 @@ public class EntityLayers extends Entity
       }
    }
    
+   @Override
+   public void expire()
+   {
+      if (!expired)
+      {
+         for (int i = 0; i < layers.length; i++)
+         {
+            layers[i].expire();
+         }
+         
+         super.expire();
+      }
+   }
+   
    public EntityList layer(int index)
    {
       return layers[index];

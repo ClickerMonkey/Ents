@@ -16,12 +16,12 @@
 
 package org.magnos.entity.filters;
 
-import org.magnos.entity.BitSet;
 import org.magnos.entity.Component;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityList;
+import org.magnos.entity.util.BitSet;
 
 
 /**

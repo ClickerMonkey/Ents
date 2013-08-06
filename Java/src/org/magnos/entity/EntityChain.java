@@ -54,6 +54,25 @@ public class EntityChain extends Entity
    {
       super( template, values, renderer );
    }
+   
+   @Override
+   public void expire()
+   {
+      if (!expired)
+      {
+         if (validateFirst())
+         {
+            first.expire();
+         }
+         
+         if (validateLast())
+         {
+            last.expire();
+         }
+         
+         super.expire();
+      }
+   }
 
    @Override
    public void draw( Object drawState )

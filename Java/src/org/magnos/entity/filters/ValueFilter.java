@@ -21,7 +21,7 @@ import org.magnos.entity.Entity;
 import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityList;
-import org.magnos.entity.EntityUtility;
+import org.magnos.entity.util.EntityUtility;
 
 
 /**
