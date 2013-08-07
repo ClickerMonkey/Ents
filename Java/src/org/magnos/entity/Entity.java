@@ -44,7 +44,7 @@ public class Entity
 {
 
    public final int id;
-   
+
    protected Template template;
 
    protected Object[] values;
@@ -66,6 +66,21 @@ public class Entity
    public Entity()
    {
       this( EntityCore.newTemplate() );
+   }
+
+   public Entity( Component<?>... components )
+   {
+      this( new Components( components ), Controllers.NONE, View.NONE );
+   }
+
+   public Entity( Components componentSet, Controllers controllerSet )
+   {
+      this( componentSet, controllerSet, View.NONE );
+   }
+
+   public Entity( Components componentSet, Controllers controllerSet, View view )
+   {
+      this( new Template( componentSet, controllerSet, view ) );
    }
 
    /**
@@ -112,7 +127,7 @@ public class Entity
       this.values = values;
       this.controllerEnabled = new BitSet( template.controllers.length, true );
       this.id = EntityCore.popId();
-      
+
       EntityCore.register( this );
    }
 
@@ -138,12 +153,12 @@ public class Entity
          }
 
          template = newTemplate;
-         
+
          if (template != null)
          {
-            
+
          }
-         
+
          (template = newTemplate).newInstance( this );
       }
 
@@ -171,7 +186,7 @@ public class Entity
       {
          EntityCore.pushId( id );
          EntityCore.unregister( this );
-         
+
          template.removeInstance( this );
 
          if (renderer != null)
@@ -263,6 +278,21 @@ public class Entity
    {
       return template.hasView();
    }
+   
+   public boolean hasRenderer()
+   {
+      return renderer != null;
+   }
+   
+   public Renderer getRenderer()
+   {
+      return renderer;
+   }
+   
+   public View getView()
+   {
+      return template.getView();
+   }
 
    /**
     * Sets whether this entity is enabled or not. An enabled entity (true) will
@@ -324,7 +354,7 @@ public class Entity
          {
             final Controller c = controllers[i];
 
-            if (controllerEnabled.get( template.indexOf( c ) ))
+            if (controllerEnabled.get( template.indexOf( c ) ) )
             {
                c.control.control( this, updateState );
             }
@@ -366,6 +396,11 @@ public class Entity
    public boolean has( Controller controller )
    {
       return template.has( controller );
+   }
+
+   public boolean has( Controller... controllers )
+   {
+      return template.has( controllers );
    }
 
    public boolean hasControllers( BitSet controllers )
@@ -415,7 +450,7 @@ public class Entity
     * @return True if this entity has all of the components specified in the
     *         BitSet, otherwise false.
     */
-   public boolean has( BitSet components )
+   public boolean hasComponents( BitSet components )
    {
       return template.componentBitSet.contains( components );
    }
@@ -690,7 +725,7 @@ public class Entity
    {
       setTemplate( template.addCustomController( controller ) );
 
-      controllerEnabled.set( controller.id );
+      controllerEnabled.set( template.indexOf( controller ) );
    }
 
    public void setView( View view )

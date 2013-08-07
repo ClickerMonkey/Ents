@@ -1,30 +1,19 @@
-/* 
- * NOTICE OF LICENSE
- * 
- * This source file is subject to the Open Software License (OSL 3.0) that is 
- * bundled with this package in the file LICENSE.txt. It is also available 
- * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to obtain it 
- * through the world-wide-web, please send an email to magnos.software@gmail.com 
- * so we can send you a copy immediately. If you use any of this software please
- * notify me via our website or email, your feedback is much appreciated. 
- * 
- * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
- * @license     http://opensource.org/licenses/osl-3.0.php
- * 				Open Software License (OSL 3.0)
- */
 
 package org.magnos.entity.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
-import org.magnos.entity.ComponentFactoryNull;
 import org.magnos.entity.Components;
 import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
@@ -32,15 +21,17 @@ import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
+import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
-import org.magnos.entity.test.helper.Bounds;
-import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.vals.FloatVal;
 import org.magnos.entity.vals.IntVal;
 
 
 public class TestEntity
 {
+
+   public static final float EPSILON = 0.000001f;
 
    @AfterClass
    public static void afterTest()
@@ -48,105 +39,530 @@ public class TestEntity
       EntityCore.clear();
    }
 
-   static class TestComponents
+   // @formatter:off
+   static DynamicValue<FloatVal> DYNAMIC_CENTER = new DynamicValue<FloatVal>() {
+      public FloatVal get( Entity e ) {
+         return take( e, new FloatVal() );
+      }
+      public void set( Entity e, FloatVal value ) {
+         FloatVal r = e.get( RIGHT );
+         FloatVal l = e.get( LEFT );
+         float halfwidth = (r.v - l.v) * 0.5f;
+         r.v = value.v + halfwidth;
+         l.v = value.v - halfwidth;
+      }
+      public FloatVal take( Entity e, FloatVal target ) {
+         FloatVal r = e.get( RIGHT );
+         FloatVal l = e.get( LEFT );
+         target.v = (l.v + r.v) * 0.5f;
+         return target;
+      }
+   };
+
+   static Control CONTROL_MOTION = new Control() {
+      public void control( Entity e, Object updateState ) {
+         float dt = (Float)updateState;
+         float dist = e.get( SPEED ).v * dt;
+         e.get( LEFT ).v += dist;
+         e.get( RIGHT ).v += dist;
+      }
+   };
+   
+   static Control CONTROL_UPDATES = new Control() {
+      public void control( Entity e, Object updateState ) {
+         e.get( UPDATE_COUNT ).v++;
+      }
+   };
+   
+   static Renderer RENDERER_EXTENT = new Renderer() {
+      public void draw( Entity e, Object drawState ) {
+         String graphics = drawState.toString();
+         System.out.println( "Drawing extent at {" + e.get( LEFT ) + "->" + e.get( RIGHT ) + "} with " + graphics );
+      }
+      public void destroy( Entity e ) { }
+      public Renderer create( Entity e ) { return this; }
+   };
+   
+   static Renderer RENDERER_DRAWS = new Renderer() {
+      public void draw( Entity e, Object drawState ) {
+         e.get( DRAW_COUNT ).v++;
+      }
+      public void destroy( Entity e ) { }
+      public Renderer create( Entity e ) { return this; }
+   };
+   
+   static Component<FloatVal>   LEFT            = EntityCore.newComponent( "left", new FloatVal() );
+   static Component<FloatVal>   RIGHT           = EntityCore.newComponent( "right", new FloatVal() );
+   static Component<FloatVal>   SPEED           = EntityCore.newComponent( "speed", new FloatVal() );
+   static Component<FloatVal>   CENTER          = EntityCore.newComponentDynamic( "center", DYNAMIC_CENTER );
+   static Controller            MOTION          = EntityCore.newController( "motion", CONTROL_MOTION );
+   static Controller            NETWORKING      = EntityCore.newController( "networking" );
+   static View                  EXTENT_VIEW     = EntityCore.newView( "extent-view", RENDERER_EXTENT );
+   static Template              EXTENT          = EntityCore.newTemplate( "extent", new Components(LEFT, RIGHT, CENTER), new Controllers(MOTION), EXTENT_VIEW );
+   
+   static Component<IntVal>     DRAW_COUNT      = EntityCore.newComponent( "draw-count", new IntVal() );
+   static View                  DRAWS_VIEW      = EntityCore.newView( "draws-view", RENDERER_DRAWS );
+   static Template              DRAWS           = EntityCore.newTemplate( "draws", new Components(DRAW_COUNT), Controllers.NONE, DRAWS_VIEW );
+   
+   static Component<IntVal>     UPDATE_COUNT    = EntityCore.newComponent( "update-count", new IntVal() );
+   static Controller            UPDATES_CONTROL = EntityCore.newController( "updates-control", CONTROL_UPDATES );
+   static Template              UPDATES         = EntityCore.newTemplate( "updates", new Components(UPDATE_COUNT), new Controllers(UPDATES_CONTROL) );
+   
+   // @formatter:on
+
+   @Test
+   public void testConstructor()
    {
+      Entity e = new Entity( EXTENT );
 
-      public static Component<String> NAME = EntityCore.newComponent( "name", new ComponentFactoryNull<String>() );
-      public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-      public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
-      public static Component<IntVal> ID = EntityCore.newComponent( "id", new IntVal() );
-      public static Component<Vector> SPATIAL_POSITION = EntityCore.newComponent( "spatial position", new Vector() );
-      public static Component<Vector> SPATIAL_VELOCITY = EntityCore.newComponent( "spatial velocity", new Vector() );
-      public static Component<Vector> SPATIAL_POSITION_ALIAS = EntityCore.newComponentAlias( POSITION, SPATIAL_POSITION );
-      public static Component<Vector> SPATIAL_VELOCITY_ALIAS = EntityCore.newComponentAlias( VELOCITY, SPATIAL_VELOCITY );
-      public static Component<Vector> SIZE = EntityCore.newComponent( "size", new Vector() );
-      public static Component<Bounds> BOUNDS = EntityCore.newComponentDynamic( "bounds", new DynamicValue<Bounds>() {
+      assertTrue( e.isVisible() );
+      assertTrue( e.isEnabled() );
+      assertFalse( e.isExpired() );
+      assertFalse( e.isCustom() );
 
-         public void set( Entity e, Bounds value )
-         {
-            Vector p = e.get( POSITION );
-            Vector s = e.get( SIZE );
-            p.x = (value.left + value.right) * 0.5f;
-            p.y = (value.top + value.bottom) * 0.5f;
-            s.x = (value.right - value.left);
-            s.y = (value.bottom - value.top);
-         }
+      assertTrue( e.has( LEFT ) );
+      assertTrue( e.has( RIGHT ) );
+      assertTrue( e.has( CENTER ) );
+      assertFalse( e.has( SPEED ) );
+      assertTrue( e.has( MOTION ) );
+      assertTrue( e.has( EXTENT_VIEW ) );
 
-         public Bounds get( Entity e )
-         {
-            return take( e, new Bounds() );
-         }
-
-         public Bounds take( Entity e, Bounds target )
-         {
-            Vector p = e.get( POSITION );
-            Vector s = e.get( SIZE );
-            target.left = p.x - s.x * 0.5f;
-            target.right = p.x + s.x * 0.5f;
-            target.top = p.y - s.y * 0.5f;
-            target.bottom = p.y + s.y * 0.5f;
-            return target;
-         }
-      } );
-
-   }
-
-   static class TestViews
-   {
-
-      public static View SPRITE = EntityCore.newView( "sprite" );
-   }
-
-   static class TestControllers
-   {
-
-      public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
-
-         public void control( Entity e, Object updateState )
-         {
-            e.get( TestComponents.POSITION ).addsi( e.get( TestComponents.VELOCITY ), (Float)updateState );
-         }
-      } );
-   }
-
-   static class TestTemplates
-   {
-
-      public static Template SPRITE = EntityCore.newTemplate( "sprite",
-         /*  components */ new Components( TestComponents.NAME, TestComponents.POSITION, TestComponents.VELOCITY, TestComponents.SIZE, TestComponents.SPATIAL_POSITION_ALIAS, TestComponents.SPATIAL_VELOCITY_ALIAS, TestComponents.BOUNDS ),
-         /* controllers */ new Controllers( TestControllers.PHYSICS ),
-         /*    view     */ TestViews.SPRITE
-         );
+      e.expire();
    }
 
    @Test
-   public void testBasic()
+   public void testCustomEntity()
    {
-      Entity e = new Entity( TestTemplates.SPRITE );
-      e.set( TestComponents.NAME, "Philip Diffenderfer" );
-      e.get( TestComponents.POSITION ).set( 5, 10 );
-      e.get( TestComponents.VELOCITY ).set( 0, 0 );
-      e.get( TestComponents.SIZE ).set( 6, 4 );
+      Entity e = new Entity();
 
-      assertEquals( "Philip Diffenderfer", e.get( TestComponents.NAME ) );
-      assertFalse( e.has( TestComponents.ID ) );
+      assertTrue( e.isCustom() );
+      assertFalse( e.has( LEFT ) );
 
-      e.add( TestComponents.ID );
+      e.add( LEFT );
 
-      assertTrue( e.has( TestComponents.ID ) );
+      assertTrue( e.has( LEFT ) );
 
-      e.get( TestComponents.ID ).v = 345;
+      e.get( LEFT ).v = 3.0f;
 
-      assertEquals( 345, e.get( TestComponents.ID ).v );
+      assertEquals( 3.0f, e.get( LEFT ).v, EPSILON );
 
-      assertEquals( new Vector( 5, 10 ), e.get( TestComponents.SPATIAL_POSITION ) );
-      assertSame( e.get( TestComponents.POSITION ), e.get( TestComponents.SPATIAL_POSITION ) );
+      e.expire();
+   }
 
-      Bounds bounds = e.get( TestComponents.BOUNDS );
-      assertEquals( 2, bounds.left, 0.00001 );
-      assertEquals( 8, bounds.top, 0.00001 );
-      assertEquals( 8, bounds.right, 0.00001 );
-      assertEquals( 12, bounds.bottom, 0.00001 );
+   @Test
+   public void testCustomEntityDefined()
+   {
+      Entity e = new Entity( LEFT );
+
+      assertTrue( e.has( LEFT ) );
+      assertFalse( e.has( RIGHT ) );
+      assertFalse( e.has( MOTION ) );
+
+      e.expire();
+   }
+
+   @Test
+   public void testToString()
+   {
+      // Non-custom
+      Entity e0 = new Entity( EXTENT );
+      e0.get( LEFT ).v = 3.0f;
+      e0.get( RIGHT ).v = 5.5f;
+      assertEquals( "[left=3.0,right=5.5,center=4.25]", e0.toString() );
+
+      // Custom empty
+      Entity e1 = new Entity();
+      assertEquals( "[]", e1.toString() );
+
+      // Custom non-empty
+      Entity e2 = new Entity( LEFT );
+      e2.get( LEFT ).v = 2.0f;
+      assertEquals( "[left=2.0]", e2.toString() );
+
+      // Custom from template
+      Entity e3 = new Entity( EXTENT );
+      e3.get( LEFT ).v = 3.0f;
+      e3.get( RIGHT ).v = 5.5f;
+      e3.grab( SPEED ).v = -1.0f;
+      assertEquals( "[left=3.0,right=5.5,center=4.25,speed=-1.0]", e3.toString() );
+
+      e0.expire();
+      e1.expire();
+      e2.expire();
+      e3.expire();
+   }
+
+   @Test
+   public void testGet()
+   {
+      Entity e = new Entity( EXTENT );
+
+      FloatVal left = e.get( LEFT );
+      FloatVal right = e.get( RIGHT );
+
+      left.v = 3.0f;
+      right.v = 5.5f;
+
+      assertSame( left, e.get( LEFT ) );
+      assertSame( right, e.get( RIGHT ) );
+      assertEquals( 3.0f, e.get( LEFT ).v, EPSILON );
+      assertEquals( 5.5f, e.get( RIGHT ).v, EPSILON );
+
+      e.expire();
+   }
+
+   @Test
+   public void testDynamic()
+   {
+      Entity e = new Entity( EXTENT );
+
+      e.get( LEFT ).v = 2.0f;
+      e.get( RIGHT ).v = 3.0f;
+
+      FloatVal center = e.get( CENTER );
+
+      assertEquals( 2.5f, center.v, EPSILON );
+
+      e.expire();
+   }
+
+   @Test
+   public void testGetSafe()
+   {
+      Entity e = new Entity( EXTENT );
+
+      assertFalse( e.has( SPEED ) );
+
+      FloatVal speed0 = e.gets( SPEED );
+
+      assertNull( speed0 );
+
+      FloatVal speed1 = e.gets( SPEED, new FloatVal( Float.NaN ) );
+
+      assertNotNull( speed1 );
+      assertTrue( Float.isNaN( speed1.v ) );
+
+      e.expire();
+   }
+
+   @Test
+   public void testTake()
+   {
+      final FloatVal left = new FloatVal( 0.0f );
+      final FloatVal right = new FloatVal( 0.0f );
+
+      Entity e = new Entity( LEFT );
+
+      e.get( LEFT ).v = 2.0f;
+
+      FloatVal leftTaken = e.takes( LEFT, left );
+      assertSame( left, leftTaken );
+      assertNotSame( left, e.gets( LEFT ) );
+      assertEquals( 2.0f, left.v, EPSILON );
+
+      FloatVal rightTaken = e.takes( RIGHT, right );
+      assertNull( rightTaken );
+      assertNotSame( right, e.gets( RIGHT ) );
+      assertEquals( 0.0f, right.v, EPSILON );
+
+      e.expire();
+   }
+
+   @Test
+   public void testHasComponents()
+   {
+      Entity e = new Entity( EXTENT );
+
+      assertTrue( e.has( LEFT ) );
+      assertTrue( e.has( RIGHT ) );
+      assertTrue( e.has( CENTER ) );
+      assertFalse( e.has( SPEED ) );
+      assertTrue( e.has( LEFT, RIGHT, CENTER ) );
+      assertFalse( e.has( LEFT, RIGHT, CENTER, SPEED ) );
+
+      e.expire();
+   }
+
+   @Test
+   public void testHasController()
+   {
+      Entity e = new Entity( EXTENT );
+
+      assertTrue( e.has( MOTION ) );
+      assertFalse( e.has( NETWORKING ) );
+      assertFalse( e.has( MOTION, NETWORKING ) );
+
+      e.expire();
+   }
+
+   @Test
+   public void testAdd()
+   {
+      Entity e = new Entity( new Components( LEFT ), new Controllers( MOTION ) );
+
+      assertTrue( e.has( LEFT ) );
+      assertFalse( e.has( RIGHT ) );
+
+      e.get( LEFT ).v = 2.0f;
+
+      assertTrue( e.add( RIGHT ) );
+      assertTrue( e.has( RIGHT ) );
+
+      e.get( RIGHT ).v = 3.4f;
+
+      assertEquals( 2.0f, e.get( LEFT ).v, EPSILON );
+      assertEquals( 3.4f, e.get( RIGHT ).v, EPSILON );
+      assertTrue( e.isCustom() );
+
+      assertFalse( e.add( LEFT ) );
+      assertFalse( e.add( RIGHT ) );
+      assertTrue( e.add( SPEED ) );
+
+      e.get( SPEED ).v = 3.0f;
+
+      assertEquals( 3.0f, e.get( SPEED ).v, EPSILON );
+
+      e.expire();
+   }
+
+   @Test
+   public void testExpire()
+   {
+      assertEquals( 0, EXTENT.getInstances() );
+
+      Entity e = new Entity( EXTENT );
+
+      assertEquals( 1, EXTENT.getInstances() );
+
+      assertFalse( e.isExpired() );
+      assertNotNull( e.getTemplate() );
+      assertNotNull( e.getRenderer() );
+
+      e.expire();
+
+      assertTrue( e.isExpired() );
+      assertNull( e.getTemplate() );
+      assertNull( e.getRenderer() );
+
+      assertEquals( 0, EXTENT.getInstances() );
+
+      e.expire();
+
+      assertTrue( e.isExpired() );
+      assertNull( e.getTemplate() );
+      assertNull( e.getRenderer() );
+
+      assertEquals( 0, EXTENT.getInstances() );
+   }
+
+   @Test
+   public void testVisible()
+   {
+      Entity e = new Entity( EXTENT );
+
+      assertTrue( e.isVisible() );
+
+      e.hide();
+
+      assertFalse( e.isVisible() );
+
+      e.show();
+
+      assertTrue( e.isVisible() );
+
+      e.expire();
+   }
+
+   @Test
+   public void testVisibleDraw()
+   {
+      Entity e = new Entity( DRAWS );
+
+      assertEquals( 0, e.get( DRAW_COUNT ).v );
+
+      e.draw( null );
+
+      assertEquals( 1, e.get( DRAW_COUNT ).v );
+
+      e.hide();
+      e.draw( null );
+
+      assertEquals( 1, e.get( DRAW_COUNT ).v );
+
+      e.show();
+      e.draw( null );
+
+      assertEquals( 2, e.get( DRAW_COUNT ).v );
+
+      e.expire();
+   }
+
+   @Test
+   public void testSetView()
+   {
+      Entity e = new Entity( DRAWS );
+
+      assertTrue( e.hasView() );
+      assertTrue( e.hasRenderer() );
+      assertSame( DRAWS_VIEW, e.getView() );
+      assertFalse( e.isCustom() );
+
+      e.setView( null );
+
+      assertTrue( e.isCustom() );
+      assertFalse( e.hasView() );
+      assertFalse( e.hasRenderer() );
+      assertNull( e.getView() );
+      assertNull( e.getRenderer() );
+
+      e.expire();
+   }
+
+   @Test
+   public void testSetRenderer()
+   {
+      Entity e = new Entity();
+
+      assertTrue( e.isCustom() );
+      assertFalse( e.hasRenderer() );
+      assertNull( e.getRenderer() );
+
+      final AtomicBoolean flagCreated = new AtomicBoolean( false );
+      final AtomicBoolean flagDestroyed = new AtomicBoolean( false );
+
+      e.setRenderer( new Renderer() {
+
+         public Renderer create( Entity e )
+         {
+            flagCreated.set( true );
+            return this;
+         }
+
+         public void draw( Entity e, Object drawState )
+         {
+
+         }
+
+         public void destroy( Entity e )
+         {
+            flagDestroyed.set( true );
+         }
+      } );
+
+      assertTrue( flagCreated.get() );
+      assertFalse( flagDestroyed.get() );
+
+      assertTrue( e.hasRenderer() );
+
+      e.setRenderer( null );
+
+      assertFalse( e.hasRenderer() );
+      assertNull( e.getRenderer() );
+      assertTrue( flagDestroyed.get() );
+
+      e.expire();
+   }
+
+   @Test
+   public void testEnabled()
+   {
+      Entity e = new Entity( EXTENT );
+
+      assertTrue( e.isEnabled() );
+
+      e.disable();
+
+      assertFalse( e.isEnabled() );
+
+      e.enable();
+
+      assertTrue( e.isEnabled() );
+
+      e.expire();
+   }
+
+   @Test
+   public void testEnabledUpdate()
+   {
+      Entity e = new Entity( UPDATES );
+
+      assertEquals( 0, e.get( UPDATE_COUNT ).v );
+
+      e.update( null );
+
+      assertEquals( 1, e.get( UPDATE_COUNT ).v );
+
+      e.disable();
+      e.update( null );
+
+      assertEquals( 1, e.get( UPDATE_COUNT ).v );
+
+      e.enable();
+      e.update( null );
+
+      assertEquals( 2, e.get( UPDATE_COUNT ).v );
+
+      e.expire();
+   }
+
+   @Test
+   public void testControllerEnabled()
+   {
+      Entity e = new Entity( UPDATES );
+
+      assertEquals( 0, e.get( UPDATE_COUNT ).v );
+
+      assertTrue( e.isControllerEnabled( UPDATES_CONTROL ) );
+
+      e.update( null );
+
+      assertEquals( 1, e.get( UPDATE_COUNT ).v );
+
+      e.disable( UPDATES_CONTROL );
+      assertFalse( e.isControllerEnabled( UPDATES_CONTROL ) );
+
+      e.update( null );
+
+      assertEquals( 1, e.get( UPDATE_COUNT ).v );
+
+      e.enable( UPDATES_CONTROL );
+      e.update( null );
+
+      assertTrue( e.isControllerEnabled( UPDATES_CONTROL ) );
+
+      assertEquals( 2, e.get( UPDATE_COUNT ).v );
+
+      e.expire();
+   }
+
+   @Test
+   public void testAddController()
+   {
+      Entity e = new Entity( UPDATE_COUNT );
+
+      assertFalse( e.has( UPDATES_CONTROL ) );
+      assertEquals( 0, e.get( UPDATE_COUNT ).v );
+      
+      e.update( null );
+      
+      assertEquals( 0, e.get( UPDATE_COUNT ).v );
+      
+      e.add( UPDATES_CONTROL );
+
+      assertTrue( e.has( UPDATES_CONTROL ) );
+      assertTrue( e.isControllerEnabled( UPDATES_CONTROL ) );
+      
+      e.update( null );
+      
+      assertEquals( 1, e.get( UPDATE_COUNT ).v );
+      
+      e.expire();
+   }
+   
+   @Test
+   public void testClone()
+   {
+      
    }
 
 }

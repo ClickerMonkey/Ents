@@ -68,7 +68,7 @@ public class ComponentFilter implements EntityFilter
    @Override
    public boolean isValid( Entity e )
    {
-      return e.has( components );
+      return e.hasComponents( components );
    }
 
 }

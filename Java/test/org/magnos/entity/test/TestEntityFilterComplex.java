@@ -8,7 +8,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
-import org.magnos.entity.Components;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityCore;
@@ -49,8 +48,8 @@ public class TestEntityFilterComplex
    static Component<FloatVal> RADIUS = EntityCore.newComponent( "radius", new FloatVal( 0f ) );
    static Component<FloatVal> SCALE = EntityCore.newComponent( "scale", new FloatVal( 0f ) );
 
-   static Template BASIC_OBJECT = EntityCore.newTemplate( "basic", new Components( NAME, POSITION, VELOCITY, RADIUS ) );
-   static Template BASICER_OBJECT = EntityCore.newTemplate( "basic'er", new Components( POSITION, VELOCITY ) );
+   static Template BASIC_OBJECT = EntityCore.newTemplate( "basic", NAME, POSITION, VELOCITY, RADIUS );
+   static Template BASICER_OBJECT = EntityCore.newTemplate( "basic'er", POSITION, VELOCITY );
 
    @Test
    public void testDefaultFilter()

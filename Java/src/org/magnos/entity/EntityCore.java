@@ -22,12 +22,6 @@ import org.magnos.entity.util.IndexPool;
 public class EntityCore
 {
 
-   private static final Controllers CONTROLLERS_NONE = new Controllers();
-
-   private static final Components COMPONENTS_NONE = new Components();
-
-   private static final View VIEW_NONE = null;
-
    protected static final int DEFAULT_INITIAL_CAPACITY = 64;
 
    protected static IdContainer<View> views = new IdContainer<View>( DEFAULT_INITIAL_CAPACITY );
@@ -229,17 +223,17 @@ public class EntityCore
 
    public static Template newTemplate( String name, Components componentSet, Controllers controllerSet )
    {
-      return newTemplate( name, componentSet, controllerSet, VIEW_NONE );
+      return newTemplate( name, componentSet, controllerSet, View.NONE );
    }
 
-   public static Template newTemplate( String name, Components componentSet )
+   public static Template newTemplate( String name, Component<?>... components )
    {
-      return newTemplate( name, componentSet, CONTROLLERS_NONE, VIEW_NONE );
+      return newTemplate( name, new Components( components ), Controllers.NONE, View.NONE );
    }
 
    public static Template newTemplate( String name )
    {
-      return newTemplate( name, COMPONENTS_NONE, CONTROLLERS_NONE, VIEW_NONE );
+      return newTemplate( name, Components.NONE, Controllers.NONE, View.NONE );
    }
 
    public static Template newTemplate( Template base, String name, Components componentSet, Controllers controllerSet, View view )
@@ -266,17 +260,17 @@ public class EntityCore
 
    public static Template newTemplate( Template base, String name, Components componentSet, Controllers controllerSet )
    {
-      return newTemplate( base, name, componentSet, controllerSet, VIEW_NONE );
+      return newTemplate( base, name, componentSet, controllerSet, View.NONE );
    }
 
-   public static Template newTemplate( Template base, String name, Components componentSet )
+   public static Template newTemplate( Template base, String name, Component<?> ... components )
    {
-      return newTemplate( base, name, componentSet, CONTROLLERS_NONE, VIEW_NONE );
+      return newTemplate( base, name, new Components( components ), Controllers.NONE, View.NONE );
    }
 
    public static Template newTemplate( Template base, String name )
    {
-      return newTemplate( base, name, COMPONENTS_NONE, CONTROLLERS_NONE, VIEW_NONE );
+      return newTemplate( base, name, Components.NONE, Controllers.NONE, View.NONE );
    }
 
    public static Template newTemplate( String name, boolean overwrite, Template... templatesToMerge )
@@ -311,6 +305,7 @@ public class EntityCore
       if (listener != null)
       {
          listener.onCoreClear();
+         listener = null;
       }
 
       views.clear();

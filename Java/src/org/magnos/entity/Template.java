@@ -27,6 +27,7 @@ public class Template extends Id
 
    public static final int CUSTOM = Integer.MAX_VALUE;
    public static final String CUSTOM_NAME = "custom";
+   public static final Template PARENT_NONE = null;
 
    protected final Template parent;
 
@@ -46,7 +47,12 @@ public class Template extends Id
 
    protected Template()
    {
-      this( CUSTOM, CUSTOM_NAME, null, new Components(), new Controllers(), null );
+      this( CUSTOM, CUSTOM_NAME, PARENT_NONE, Components.NONE, Controllers.NONE, View.NONE );
+   }
+
+   protected Template( Components componentSet, Controllers controllerSet, View view )
+   {
+      this( CUSTOM, CUSTOM_NAME, PARENT_NONE, componentSet, controllerSet, view );
    }
 
    protected Template( int id, String name, Template parent, Components componentSet, Controllers controllerSet, View view )
@@ -65,16 +71,11 @@ public class Template extends Id
 
       this.view = view;
 
-      ensureFit( EntityUtility.getMaxId( components ) );
+      ensureComponentFit( EntityUtility.getMaxId( components ) );
 
       for (int i = 0; i < components.length; i++)
       {
          final Component<?> c = components[i];
-
-         if (has( c ))
-         {
-            throw new RuntimeException( "A template cannot have the same component more than once!" );
-         }
 
          handlers[c.id] = c.add( this );
       }
@@ -166,6 +167,11 @@ public class Template extends Id
       instances--;
    }
 
+   public int getInstances()
+   {
+      return instances;
+   }
+
    @SuppressWarnings ("unchecked" )
    public <T> TemplateComponent<T> getTemplateComponent( Component<T> component )
    {
@@ -174,7 +180,12 @@ public class Template extends Id
 
    public <T> boolean has( Component<T> component )
    {
-      return component.id < handlers.length && handlers[component.id] != null;
+      return componentBitSet.get( component.id );
+   }
+
+   public boolean hasComponents( BitSet components )
+   {
+      return componentBitSet.contains( components );
    }
 
    public <T> boolean hasExact( Component<T> component )
@@ -203,7 +214,7 @@ public class Template extends Id
 
    public <T> void add( Component<T> component )
    {
-      ensureFit( component.id );
+      ensureComponentFit( component.id );
 
       int i = indexOf( component );
 
@@ -215,7 +226,7 @@ public class Template extends Id
       else
       {
          i = components.length;
-         componentBitSet.set( i );
+         componentBitSet.set( component.id );
          components = EntityUtility.append( components, component );
       }
 
@@ -225,10 +236,11 @@ public class Template extends Id
 
    public <T> void alias( Component<T> component, Component<T> alias )
    {
-      ensureFit( alias.id );
+      ensureComponentFit( alias.id );
 
       handlers[alias.id] = handlers[component.id];
       componentMap[alias.id] = componentMap[component.id];
+      componentBitSet.set( alias.id );
    }
 
    public boolean has( Controller controller )
@@ -255,6 +267,11 @@ public class Template extends Id
       return true;
    }
 
+   public boolean hasControllers( BitSet controllers )
+   {
+      return controllerBitSet.contains( controllers );
+   }
+
    protected int indexOf( Controller controller )
    {
       return controller.id >= controllerMap.length ? -1 : controllerMap[controller.id];
@@ -264,7 +281,9 @@ public class Template extends Id
    {
       if (!has( controller ))
       {
-         controllerBitSet.set( controllers.length );
+         ensureControllerFit( controller.id );
+         controllerMap[controller.id] = controllers.length;
+         controllerBitSet.set( controller.id );
          controllers = EntityUtility.append( controllers, controller );
       }
       else
@@ -276,6 +295,11 @@ public class Template extends Id
    public boolean hasView()
    {
       return (view != null);
+   }
+
+   public View getView()
+   {
+      return view;
    }
 
    public boolean has( View v )
@@ -293,7 +317,7 @@ public class Template extends Id
       this.view = view;
    }
 
-   private void ensureFit( int id )
+   private void ensureComponentFit( int id )
    {
       if (handlers.length <= id)
       {
@@ -305,6 +329,21 @@ public class Template extends Id
          for (int i = componentMapSize; i <= id; i++)
          {
             componentMap[i] = -1;
+         }
+      }
+   }
+
+   private void ensureControllerFit( int id )
+   {
+      if (controllerMap.length <= id)
+      {
+         int controllerMapSize = controllerMap.length;
+
+         controllerMap = Arrays.copyOf( controllerMap, id + 1 );
+
+         for (int i = controllerMapSize; i <= id; i++)
+         {
+            controllerMap[i] = -1;
          }
       }
    }

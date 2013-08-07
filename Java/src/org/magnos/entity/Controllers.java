@@ -27,6 +27,8 @@ package org.magnos.entity;
 public class Controllers
 {
 
+   public static final Controllers NONE = new Controllers();
+   
    /**
     * The controllers passed into the constructor.
     */

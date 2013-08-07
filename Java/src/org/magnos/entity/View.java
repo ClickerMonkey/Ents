@@ -19,6 +19,8 @@ package org.magnos.entity;
 public class View extends Id
 {
 
+   public static final View NONE = null;
+
    public Renderer renderer;
 
    public View( int id, String name, Renderer renderer )

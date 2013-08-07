@@ -28,6 +28,8 @@ package org.magnos.entity;
 public class Components
 {
 
+   public static final Components NONE = new Components();
+   
    /**
     * The components passed into the constructor.
     */
