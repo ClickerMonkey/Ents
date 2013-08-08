@@ -91,4 +91,29 @@ An EntityIterator takes an Entity (typically a container) and traverses all chil
 | ClassFilter            | are a specific class (Entity, EntityChain, EntityList, etc) |
 | ViewFilter             | have a specific view |
 
+##### Example
+
+(in Java)
+```java
+EntityFilter filter = new AndFilter(new ComponentFilter(POSITION, VELOCITY), EnabledFilter.INSTANCE);
+EntityIterator iterator = new EntityIterator(filter);
+
+Entity root = ...
+for (Entity e : iterator.iterate(root)) {
+   Vector p = e.get( POSITION );
+   Vector v = e.get( VELOCITY );
+   p.add(v, elapsedTime);
+}
+```
+
+(in C++)
+```cpp
+EntityFilter filter = AndFilter(ComponentFilter(POSITION, VELOCITY), EnabledFilter);
+EntityIterator iterator(filter);
+
+Entity root = ...
+for (auto const &e : iterator.iterate(root)) {
+   e.get( POSITION ) += e.get( VELOCITY ) * elapsedTime;
+}
+```
 
