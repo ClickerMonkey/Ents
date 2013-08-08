@@ -33,13 +33,15 @@ Controllers are invoked on an Entity that has them when the Entity.update method
 
 Components are values on an Entity. Components in EntityCore can be one of many types:  
 
-| Type       | Definition                        |
+| Type       | Definition (where the component value is store) |
 |:---------- |:--------------------------------- |
 | Distinct   | On the entity, each entity has it's own value for the given component |
 | Shared     | On the entity's template, therefore entities of the same type point to the same component. (think a collision callback that gets invoked when two things collide, so you can have a different algorithm for ships and asteroids while NOT wasting space storing the callback on each entity) |
 | Constant   | Shared between all entities |
 | Dynamic    | Generated upon request (like the visual bounds of the entity) |
 | Alias      | A component that actually takes value from another (useful when you need to have a "center" component but you already store the center as the "position" component) |
+| Pooled     | On the entity, when an entity is deleted it caches it's value for use by the next entity to be created |
+| Tracker    | Defined by the wrapped component, this merely keeps track of entities with the given component |
 
 ##### Alternatives
 
@@ -66,24 +68,27 @@ Containers are Entities that can contain one or more child Entities. The contain
 
 #### Filters <a name=filters/>
 
-A filter takes an Entity (typically a container) and traverses all child Entities and returns a set that match the filtering criteria. You can create your own filter but there are existing implementations:
+A filter is given to an EntityIterator to iterate over entities that pass a certain test.
+An EntityIterator takes an Entity (typically a container) and traverses all child Entities and returns a set that match the filtering criteria. You can create your own filter but there are existing implementations:
 
-| Filter                 | Definition                        |
+| Filter                 | Definition "A filter that returns enitities that ..." |
 |:---------------------- |:--------------------------------- |
-| ComponentFilter        | A filter that returns all entities that have a set of components |
-| ControllerFilter       | A filter that returns all entities that have a ser of controllers |
-| CustomFilter           | A filter that returns all entities which are custoly created (had components, controllers, and views dynamically added to them) |
-| DefaultFilter          | A filter that returns all entities |
-| EnabledFilter          | A filter that returns all enabled entities (entities that can be updated) |
-| ExpiredFilter          | A filter that returns all entities that have expired (are ready for removal) |
-| TemplateContainsFilter | A filter that returns all entities that have a given set of components, controllers, and optionally a view |
-| TemplateExactFilter    | A filter that returns all entities that exactly have a given Template and have not had any components, controllers, or views dynamically added |
-| TemplateRelativeFilter | A filter that returns all entities that have a given template or have one of it's parent templates |
-| ValueFilter            | A filter that returns all entities that have a specific component value |
-| VisibleFilter          | A filter that returns all visible entities (entities that can be drawn) |
-| NotFilter              | A filter that returns the opposite of a given filter |
-| AndFilter              | A filter that returns the entities that are valid for filter A and filter B |
-| OrFilter               | A filter that returns the entities that are valid for filter A or filter B |
-| XorFilter              | A filter that returns the entities that are valid for filter A xor filter B |
+| ComponentFilter        | have a set of components |
+| ControllerFilter       | have a ser of controllers |
+| CustomFilter           | are customly created (had components, controllers, and views dynamically added to them) |
+| DefaultFilter          | *all entities* |
+| EnabledFilter          | are enabled (entities that can be updated) |
+| ExpiredFilter          | have expired (are ready for removal) |
+| TemplateContainsFilter | have a given set of components, controllers, and optionally a view |
+| TemplateExactFilter    | exactly have a given Template and not an extension |
+| TemplateRelativeFilter | have a given template or have one of it's parent templates |
+| ValueFilter            | have a specific component value |
+| VisibleFilter          | are visible (entities that can be drawn) |
+| NotFilter              | do not match a given filter |
+| AndFilter              | are valid for filter A and filter B |
+| OrFilter               | are valid for filter A or filter B |
+| XorFilter              | are valid for filter A or filter B but not both |
+| ClassFilter            | are a specific class (Entity, EntityChain, EntityList, etc) |
+| ViewFilter             | have a specific view |
 
 
