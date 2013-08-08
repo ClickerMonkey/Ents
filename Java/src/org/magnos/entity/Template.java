@@ -41,7 +41,7 @@ public class Template extends Id
    protected int[] controllerMap;
 
    protected TemplateComponent<?>[] handlers = {};
-   protected ComponentFactory<?>[] factories = {};
+   protected ComponentValueFactory<?>[] factories = {};
 
    protected View view;
    protected int instances;
@@ -147,7 +147,7 @@ public class Template extends Id
       {
          for (int i = 0; i < valueCount; i++)
          {
-            ComponentFactory<Object> factory = (ComponentFactory<Object>)factories[i];
+            ComponentValueFactory<Object> factory = (ComponentValueFactory<Object>)factories[i];
             clonedValues[i] = factory.clone( values[i] );
          }
       }
@@ -224,12 +224,17 @@ public class Template extends Id
       }
       return true;
    }
+   
+   protected TemplateComponent<?> getTemplateComponentSafe( Component<?> c )
+   {
+      return ( c.id >= handlers.length ? null : handlers[c.id] );
+   }
 
    protected int indexOf( Component<?> component )
    {
       return component.id >= componentMap.length ? -1 : componentMap[component.id];
    }
-
+   
    public <T> void add( Component<T> component )
    {
       ensureComponentFit( component.id );
@@ -238,7 +243,7 @@ public class Template extends Id
 
       if (i != -1)
       {
-         handlers[i].remove( this );
+         handlers[component.id].remove( this );
          components[i] = component;
       }
       else
@@ -250,6 +255,37 @@ public class Template extends Id
 
       handlers[component.id] = component.add( this );
       componentMap[component.id] = i;
+   }
+
+   public <T> void addForEntity( Component<T> component, Entity e )
+   {
+      final int componentId = component.id;
+      
+      TemplateComponent<?> handler = null;
+      
+      ensureComponentFit( componentId );
+
+      int i = indexOf( component );
+
+      if (i != -1)
+      {
+         handler = handlers[componentId];
+         handler.preRemove( e );
+         handler.remove( this );
+         components[i] = component;
+      }
+      else
+      {
+         i = components.length;
+         componentBitSet.set( componentId );
+         components = EntityUtility.append( components, component );
+      }
+
+      handler = component.add( this );
+      handlers[componentId] = handler;
+      componentMap[componentId] = i;
+      component.postCustomAdd( e, this, handler );
+      handler.postAdd( e );
    }
 
    public <T> void alias( Component<T> component, Component<T> alias )
@@ -383,7 +419,7 @@ public class Template extends Id
          has( template.view );
    }
 
-   protected <T> Template addCustomComponent( Component<T> component )
+   protected <T> Template addCustomComponent( Component<T> component, Entity e )
    {
       if (hasExact( component ))
       {
@@ -391,7 +427,7 @@ public class Template extends Id
       }
 
       Template t = getCustomTarget();
-      t.add( component );
+      t.addForEntity( component, e );
 
       return t;
    }

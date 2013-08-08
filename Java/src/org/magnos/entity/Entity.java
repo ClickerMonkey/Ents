@@ -674,30 +674,15 @@ public class Entity
     * Dynamic Functions
     */
 
-   public <T> boolean add( Component<T> component )
+   public <T> void add( Component<T> component )
    {
-      boolean newComponent = !template.hasExact( component );
-
-      setTemplate( template.addCustomComponent( component ) );
-
-      if (newComponent)
-      {
-         component.postCustomAdd( this );
-      }
-
-      return newComponent;
+      setTemplate( template.addCustomComponent( component, this ) );
    }
 
-   public <T> boolean add( Component<T> component, T defaultValue )
+   public <T> void add( Component<T> component, T defaultValue )
    {
-      boolean added = add( component );
-
-      if (added)
-      {
-         set( component, defaultValue );
-      }
-
-      return added;
+      add( component );
+      set( component, defaultValue );
    }
 
    public <T> boolean put( Component<T> component, T value )

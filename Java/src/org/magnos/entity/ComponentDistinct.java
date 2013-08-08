@@ -40,7 +40,7 @@ class ComponentDistinct<T> extends Component<T>
     * The factory that creates the default value on the entity and also handles
     * cloning values from Entity to cloned Entity.
     */
-   private final ComponentFactory<T> factory;
+   private final ComponentValueFactory<T> factory;
 
    /**
     * Instantiates a ComponentDistinct.
@@ -52,7 +52,7 @@ class ComponentDistinct<T> extends Component<T>
     * @param factory
     *        The factory used to create and clone values.
     */
-   protected ComponentDistinct( int id, String name, ComponentFactory<T> factory )
+   protected ComponentDistinct( int id, String name, ComponentValueFactory<T> factory )
    {
       super( id, name );
 
@@ -60,9 +60,9 @@ class ComponentDistinct<T> extends Component<T>
    }
 
    @Override
-   protected void postCustomAdd( Entity e )
+   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
    {
-      ComponentValuedHandler handler = (ComponentValuedHandler)e.template.handlers[id];
+      ComponentValuedHandler handler = (ComponentValuedHandler)templateComponent;
 
       if (handler.componentIndex >= e.values.length)
       {
@@ -75,7 +75,7 @@ class ComponentDistinct<T> extends Component<T>
    @Override
    protected TemplateComponent<T> add( Template template )
    {
-      final ComponentFactory<?>[] factories = template.factories;
+      final ComponentValueFactory<?>[] factories = template.factories;
 
       int factoryIndex = EntityUtility.indexOfSame( factories, null );
 

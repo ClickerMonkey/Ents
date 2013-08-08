@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
-import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.ComponentValueFactory;
 import org.magnos.entity.Components;
 import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
@@ -51,7 +51,7 @@ public class TestNewDesign
       void handleCollision( Entity a, Entity b, float time );
    }
 
-   public static class Shape implements ComponentFactory<Shape>
+   public static class Shape implements ComponentValueFactory<Shape>
    {
 
       public Shape create()
@@ -71,7 +71,7 @@ public class TestNewDesign
       }
    }
 
-   public static class CollisionHandlerDefault implements CollisionHandler, ComponentFactory<CollisionHandler>
+   public static class CollisionHandlerDefault implements CollisionHandler, ComponentValueFactory<CollisionHandler>
    {
 
       public CollisionHandler create()

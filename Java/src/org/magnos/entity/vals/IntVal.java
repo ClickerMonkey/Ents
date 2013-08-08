@@ -16,7 +16,7 @@
 
 package org.magnos.entity.vals;
 
-import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.ComponentValueFactory;
 
 
 /**
@@ -28,7 +28,7 @@ import org.magnos.entity.ComponentFactory;
  * @author Philip Diffenderfer
  * 
  */
-public class IntVal implements ComponentFactory<IntVal>
+public class IntVal implements ComponentValueFactory<IntVal>
 {
 
    public int v;

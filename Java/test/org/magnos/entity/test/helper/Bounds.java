@@ -16,10 +16,10 @@
 
 package org.magnos.entity.test.helper;
 
-import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.ComponentValueFactory;
 
 
-public class Bounds implements ComponentFactory<Bounds>
+public class Bounds implements ComponentValueFactory<Bounds>
 {
 
    public float left, top, right, bottom;

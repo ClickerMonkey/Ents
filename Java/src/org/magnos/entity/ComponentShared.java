@@ -33,7 +33,7 @@ class ComponentShared<T> extends Component<T>
    /**
     * The factory that creates the default value on the template.
     */
-   private final ComponentFactory<T> factory;
+   private final ComponentValueFactory<T> factory;
 
    /**
     * Instantiates a new ComponentShared.
@@ -45,7 +45,7 @@ class ComponentShared<T> extends Component<T>
     * @param factory
     *        The factory implementation responsible for creating default values.
     */
-   protected ComponentShared( int id, String name, ComponentFactory<T> factory )
+   protected ComponentShared( int id, String name, ComponentValueFactory<T> factory )
    {
       super( id, name );
 
@@ -53,7 +53,7 @@ class ComponentShared<T> extends Component<T>
    }
 
    @Override
-   protected void postCustomAdd( Entity e )
+   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
    {
 
    }

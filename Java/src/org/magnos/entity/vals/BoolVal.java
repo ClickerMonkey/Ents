@@ -16,7 +16,7 @@
 
 package org.magnos.entity.vals;
 
-import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.ComponentValueFactory;
 
 
 /**
@@ -28,7 +28,7 @@ import org.magnos.entity.ComponentFactory;
  * @author Philip Diffenderfer
  * 
  */
-public class BoolVal implements ComponentFactory<BoolVal>
+public class BoolVal implements ComponentValueFactory<BoolVal>
 {
 
    public boolean v;

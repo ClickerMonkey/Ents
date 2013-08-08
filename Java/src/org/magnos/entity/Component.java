@@ -64,7 +64,11 @@ public abstract class Component<T> extends Id
     * 
     * @param e
     *        The entity that has just had this component added to it.
+    * @param template
+    *        The template adding this component to the given entity.
+    * @param templateComponent
+    *        The TemplateComponent created by the {@link #add(Template)} method.
     */
-   protected abstract void postCustomAdd( Entity e );
+   protected abstract void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent );
 
 }

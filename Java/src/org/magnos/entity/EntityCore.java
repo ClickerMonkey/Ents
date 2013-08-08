@@ -137,24 +137,34 @@ public class EntityCore
       return registerComponent( true, components.addDefinition( new ComponentUndefined<T>( components.nextId(), name ) ) );
    }
 
-   public static <T> Component<T> newComponent( String name, ComponentFactory<T> factory )
+   public static <T> Component<T> newComponent( String name, ComponentValueFactory<T> factory )
    {
       return registerComponent( true, components.addDefinition( new ComponentDistinct<T>( components.nextId(), name, factory ) ) );
    }
 
-   public static <T> Component<T> newComponentAlternative( Component<T> component, ComponentFactory<T> factory )
+   public static <T> Component<T> newComponentAlternative( Component<T> component, ComponentValueFactory<T> factory )
    {
       return registerComponent( false, components.addInstance( new ComponentDistinct<T>( component.id, component.name, factory ) ) );
    }
 
-   public static <T> Component<T> newComponentShared( String name, ComponentFactory<T> factory )
+   public static <T> Component<T> newComponentShared( String name, ComponentValueFactory<T> factory )
    {
       return registerComponent( true, components.addDefinition( new ComponentShared<T>( components.nextId(), name, factory ) ) );
    }
 
-   public static <T> Component<T> newComponentSharedAlternative( Component<T> component, ComponentFactory<T> factory )
+   public static <T> Component<T> newComponentSharedAlternative( Component<T> component, ComponentValueFactory<T> factory )
    {
       return registerComponent( false, components.addInstance( new ComponentShared<T>( component.id, component.name, factory ) ) );
+   }
+
+   public static <T> Component<T> newComponentPooled( String name, ComponentValueFactory<T> factory )
+   {
+      return registerComponent( true, components.addDefinition( new ComponentPooled<T>( components.nextId(), name, factory ) ) );
+   }
+
+   public static <T> Component<T> newComponentPooledAlternative( Component<T> component, ComponentValueFactory<T> factory )
+   {
+      return registerComponent( false, components.addInstance( new ComponentPooled<T>( component.id, component.name, factory ) ) );
    }
 
    public static <T> Component<T> newComponentDynamic( String name, DynamicValue<T> dynamic )
@@ -190,6 +200,16 @@ public class EntityCore
    public static <T> Component<T> newComponentCustomAlternative( Component<T> custom )
    {
       return registerComponent( false, components.addInstance( custom ) );
+   }
+   
+   public static <T> Component<T> newComponentCustom( String name, ComponentFactory<T> factory )
+   {
+      return registerComponent( true, components.addDefinition( factory.create( components.nextId(), name ) ) );
+   }
+   
+   public static <T> Component<T> newComponentCustomAlternative( String name, ComponentFactory<T> factory )
+   {
+      return registerComponent( false, components.addInstance( factory.create( components.nextId(), name ) ) );
    }
 
    private static <T> Component<T> registerComponent( boolean definition, Component<T> component )

@@ -16,10 +16,10 @@
 
 package org.magnos.entity.test.helper;
 
-import org.magnos.entity.ComponentFactory;
+import org.magnos.entity.ComponentValueFactory;
 
 
-public class Vector implements ComponentFactory<Vector>
+public class Vector implements ComponentValueFactory<Vector>
 {
 
    public float x, y;

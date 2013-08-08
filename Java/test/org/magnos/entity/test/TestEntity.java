@@ -305,7 +305,7 @@ public class TestEntity
 
       e.get( LEFT ).v = 2.0f;
 
-      assertTrue( e.add( RIGHT ) );
+      e.add( RIGHT );
       assertTrue( e.has( RIGHT ) );
 
       e.get( RIGHT ).v = 3.4f;
@@ -314,9 +314,9 @@ public class TestEntity
       assertEquals( 3.4f, e.get( RIGHT ).v, EPSILON );
       assertTrue( e.isCustom() );
 
-      assertFalse( e.add( LEFT ) );
-      assertFalse( e.add( RIGHT ) );
-      assertTrue( e.add( SPEED ) );
+      e.add( LEFT );
+      e.add( RIGHT );
+      e.add( SPEED );
 
       e.get( SPEED ).v = 3.0f;
 

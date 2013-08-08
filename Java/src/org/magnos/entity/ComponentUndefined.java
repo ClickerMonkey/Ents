@@ -45,7 +45,7 @@ class ComponentUndefined<T> extends Component<T>
    }
 
    @Override
-   protected void postCustomAdd( Entity e )
+   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
    {
 
    }
