@@ -40,26 +40,22 @@ public class EntityCore
    {
    }
 
-   protected static int popId()
+   protected static int register( Entity e )
    {
-      return indices.pop();
-   }
-
-   protected static void pushId( int id )
-   {
-      indices.push( id );
-   }
-
-   protected static void register( Entity e )
-   {
+      int id = indices.pop();
+      
       if (listener != null)
       {
-         listener.onEntityAdd( e );
+         listener.onEntityAdd( e, id );
       }
+      
+      return id;
    }
 
    protected static void unregister( Entity e )
    {
+      indices.push( e.id );
+      
       if (listener != null)
       {
          listener.onEntityRemove( e );

@@ -4,7 +4,7 @@ package org.magnos.entity;
 public interface EntityListener
 {
 
-   public void onEntityAdd( Entity e );
+   public void onEntityAdd( Entity e, int id );
 
    public void onEntityRemove( Entity e );
    

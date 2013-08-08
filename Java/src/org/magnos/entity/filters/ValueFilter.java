@@ -55,7 +55,7 @@ public class ValueFilter implements EntityFilter
    }
 
    /**
-    * Resets the ComponentFilter specifying the component and value to filter
+    * Resets the ValueFilter specifying the component and value to filter
     * by.
     * 
     * @param component

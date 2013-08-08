@@ -127,7 +127,7 @@ public class TestEntity
       assertTrue( e.has( MOTION ) );
       assertTrue( e.has( EXTENT_VIEW ) );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -146,7 +146,7 @@ public class TestEntity
 
       assertEquals( 3.0f, e.get( LEFT ).v, EPSILON );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -158,7 +158,7 @@ public class TestEntity
       assertFalse( e.has( RIGHT ) );
       assertFalse( e.has( MOTION ) );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -186,10 +186,10 @@ public class TestEntity
       e3.grab( SPEED ).v = -1.0f;
       assertEquals( "[left=3.0,right=5.5,center=4.25,speed=-1.0]", e3.toString() );
 
-      e0.expire();
-      e1.expire();
-      e2.expire();
-      e3.expire();
+      e0.delete();
+      e1.delete();
+      e2.delete();
+      e3.delete();
    }
 
    @Test
@@ -208,7 +208,7 @@ public class TestEntity
       assertEquals( 3.0f, e.get( LEFT ).v, EPSILON );
       assertEquals( 5.5f, e.get( RIGHT ).v, EPSILON );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -223,7 +223,7 @@ public class TestEntity
 
       assertEquals( 2.5f, center.v, EPSILON );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -242,7 +242,7 @@ public class TestEntity
       assertNotNull( speed1 );
       assertTrue( Float.isNaN( speed1.v ) );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -265,7 +265,7 @@ public class TestEntity
       assertNotSame( right, e.gets( RIGHT ) );
       assertEquals( 0.0f, right.v, EPSILON );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -280,7 +280,7 @@ public class TestEntity
       assertTrue( e.has( LEFT, RIGHT, CENTER ) );
       assertFalse( e.has( LEFT, RIGHT, CENTER, SPEED ) );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -292,7 +292,7 @@ public class TestEntity
       assertFalse( e.has( NETWORKING ) );
       assertFalse( e.has( MOTION, NETWORKING ) );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -322,11 +322,11 @@ public class TestEntity
 
       assertEquals( 3.0f, e.get( SPEED ).v, EPSILON );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
-   public void testExpire()
+   public void testExpireAndDelete()
    {
       assertEquals( 0, EXTENT.getInstances() );
 
@@ -341,12 +341,18 @@ public class TestEntity
       e.expire();
 
       assertTrue( e.isExpired() );
+      
+      assertNotNull( e.getTemplate() );
+      assertNotNull( e.getRenderer() );
+      
+      e.delete();
+      
       assertNull( e.getTemplate() );
       assertNull( e.getRenderer() );
 
       assertEquals( 0, EXTENT.getInstances() );
 
-      e.expire();
+      e.delete();
 
       assertTrue( e.isExpired() );
       assertNull( e.getTemplate() );
@@ -370,7 +376,7 @@ public class TestEntity
 
       assertTrue( e.isVisible() );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -394,7 +400,7 @@ public class TestEntity
 
       assertEquals( 2, e.get( DRAW_COUNT ).v );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -415,7 +421,7 @@ public class TestEntity
       assertNull( e.getView() );
       assertNull( e.getRenderer() );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -460,7 +466,7 @@ public class TestEntity
       assertNull( e.getRenderer() );
       assertTrue( flagDestroyed.get() );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -478,7 +484,7 @@ public class TestEntity
 
       assertTrue( e.isEnabled() );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -502,7 +508,7 @@ public class TestEntity
 
       assertEquals( 2, e.get( UPDATE_COUNT ).v );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -532,7 +538,7 @@ public class TestEntity
 
       assertEquals( 2, e.get( UPDATE_COUNT ).v );
 
-      e.expire();
+      e.delete();
    }
 
    @Test
@@ -556,13 +562,53 @@ public class TestEntity
       
       assertEquals( 1, e.get( UPDATE_COUNT ).v );
       
-      e.expire();
+      e.delete();
    }
    
    @Test
-   public void testClone()
+   public void testCloneDeep()
    {
+      Entity e0 = new Entity( EXTENT );
+      e0.get( LEFT ).v = 2.0f;
+      e0.get( RIGHT ).v = 3.7f;
+      e0.hide();
       
+      Entity e1 = e0.clone( true );
+      
+      assertSame( e0.getTemplate(), e1.getTemplate() );
+      assertNotSame( e0.get( LEFT ), e1.get( LEFT ) );
+      assertNotSame( e0.get( RIGHT ), e1.get( RIGHT ) );
+      assertFalse( e1.isVisible() );
+      
+      assertEquals( 2.0f, e1.get( LEFT ).v, EPSILON );
+      assertEquals( 3.7f, e1.get( RIGHT ).v, EPSILON );
+      assertEquals( e0, e1 );
+      
+      e1.delete();
+      e0.delete();
    }
 
+   @Test
+   public void testCloneShallow()
+   {
+      Entity e0 = new Entity( EXTENT );
+      e0.get( LEFT ).v = 2.0f;
+      e0.get( RIGHT ).v = 3.7f;
+      e0.hide();
+      
+      Entity e1 = e0.clone( false );
+      
+      assertSame( e0.getTemplate(), e1.getTemplate() );
+      assertSame( e0.get( LEFT ), e1.get( LEFT ) );
+      assertSame( e0.get( RIGHT ), e1.get( RIGHT ) );
+      assertFalse( e1.isVisible() );
+      
+      assertEquals( 2.0f, e1.get( LEFT ).v, EPSILON );
+      assertEquals( 3.7f, e1.get( RIGHT ).v, EPSILON );
+      assertEquals( e0, e1 );
+      
+      e1.delete();
+      e0.delete();
+   }
+   
 }

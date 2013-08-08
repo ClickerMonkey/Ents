@@ -16,52 +16,53 @@
 
 package org.magnos.entity.filters;
 
-import org.magnos.entity.Component;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityIterator;
-import org.magnos.entity.util.BitSet;
+import org.magnos.entity.View;
 
 
 /**
- * A filter that only returns entities that have given components.
+ * A filter that only returns entities that have a given view.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
  * 
  */
-public class ComponentFilter implements EntityFilter
+public class ViewFilter implements EntityFilter
 {
 
-   protected final BitSet components = new BitSet();
+   protected View view;
 
    /**
     * 
     */
-   public ComponentFilter()
+   public ViewFilter()
    {
+
    }
 
    /**
     * 
-    * @param components
+    * @param controllers
     */
-   public ComponentFilter( Component<?>... components )
+   public ViewFilter( View view )
    {
-      set( components );
+      set( view );
    }
 
    /**
-    * Resets the ComponentFilter specifying the set of components to filter by.
+    * Resets the ControllerFilter specifying the set of controllers to filter
+    * by.
     * 
     * @param components
-    *        The set of components each entity returned by the filter will have.
-    * @return The {@link Iterable} filter by components.
+    *        The set of controllers each entity returned by the filter will
+    *        have.
+    * @return The {@link Iterable} filter by controllers.
     */
-   public ComponentFilter set( Component<?>... components )
+   public ViewFilter set( View view )
    {
-      this.components.clear();
-      this.components.setFromIds( components );
+      this.view = view;
 
       return this;
    }
@@ -69,7 +70,7 @@ public class ComponentFilter implements EntityFilter
    @Override
    public boolean isValid( Entity e )
    {
-      return e.hasComponents( components );
+      return e.has( view );
    }
 
 }

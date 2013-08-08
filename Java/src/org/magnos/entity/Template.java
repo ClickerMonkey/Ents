@@ -30,6 +30,7 @@ public class Template extends Id
    public static final Template PARENT_NONE = null;
 
    protected final Template parent;
+   protected final BitSet extensionBitSet;
 
    protected Component<?>[] components;
    protected BitSet componentBitSet;
@@ -60,6 +61,7 @@ public class Template extends Id
       super( id, name );
 
       this.parent = parent;
+      this.extensionBitSet = getExtensionBitSet( this );
 
       this.components = componentSet.values;
       this.componentMap = EntityUtility.createMap( components );
@@ -165,6 +167,22 @@ public class Template extends Id
    protected void removeInstance( Entity e )
    {
       instances--;
+   }
+
+   protected void addtoComponents( Entity e )
+   {
+      for (int i = 0; i < components.length; i++)
+      {
+         handlers[components[i].id].postAdd( e );
+      }
+   }
+
+   protected void removeFromComponents( Entity e )
+   {
+      for (int i = 0; i < components.length; i++)
+      {
+         handlers[components[i].id].preRemove( e );
+      }
    }
 
    public int getInstances()
@@ -355,19 +373,7 @@ public class Template extends Id
 
    public boolean isRelative( Template template )
    {
-      Template curr = this;
-
-      while (curr != null)
-      {
-         if (curr == template)
-         {
-            return true;
-         }
-
-         curr = curr.parent;
-      }
-
-      return false;
+      return template.id != CUSTOM && extensionBitSet.get( template.id );
    }
 
    public boolean contains( Template template )
@@ -435,6 +441,23 @@ public class Template extends Id
    protected Template getCustomTarget()
    {
       return isCustom() && instances <= 1 ? this : extend( CUSTOM, CUSTOM_NAME );
+   }
+
+   protected static BitSet getExtensionBitSet( Template t )
+   {
+      BitSet extensions = new BitSet();
+
+      while (t != null)
+      {
+         if (t.id != CUSTOM)
+         {
+            extensions.set( t.id );
+         }
+
+         t = t.parent;
+      }
+
+      return extensions;
    }
 
 }

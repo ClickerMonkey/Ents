@@ -126,9 +126,9 @@ public class Entity
       this.setRenderer( renderer );
       this.values = values;
       this.controllerEnabled = new BitSet( template.controllers.length, true );
-      this.id = EntityCore.popId();
+      this.id = EntityCore.register( this );
 
-      EntityCore.register( this );
+      template.addtoComponents( this );
    }
 
    /**
@@ -152,13 +152,6 @@ public class Entity
             template.removeInstance( this );
          }
 
-         template = newTemplate;
-
-         if (template != null)
-         {
-
-         }
-
          (template = newTemplate).newInstance( this );
       }
 
@@ -175,18 +168,28 @@ public class Entity
 
    /**
     * Expires the entity, setting off the flag that let's any container know
-    * that this Entity should no longer be held (or drawn and updated). This
-    * also removes this Entity from the Template and destroys the Entity's
-    * Renderer. Once this method is called, this Entity should not by used,
-    * all methods will most likely result in a {@link NullPointerException}.
+    * that this Entity should no longer be held (or drawn and updated) and
+    * {@link #delete()} should be invoked.
     */
    public void expire()
    {
-      if (!expired)
+      expired = true;
+   }
+
+   /**
+    * This removes this Entity from the Template and destroys the Entity's
+    * Renderer. Once this method is called, this Entity should not by used,
+    * all methods will most likely result in a {@link NullPointerException}.
+    */
+   public boolean delete()
+   {
+      boolean deletable = (template != null);
+
+      if (deletable)
       {
-         EntityCore.pushId( id );
          EntityCore.unregister( this );
 
+         template.removeFromComponents( this );
          template.removeInstance( this );
 
          if (renderer != null)
@@ -198,6 +201,8 @@ public class Entity
          renderer = null;
          expired = true;
       }
+
+      return deletable;
    }
 
    /**
@@ -278,17 +283,17 @@ public class Entity
    {
       return template.hasView();
    }
-   
+
    public boolean hasRenderer()
    {
       return renderer != null;
    }
-   
+
    public Renderer getRenderer()
    {
       return renderer;
    }
-   
+
    public View getView()
    {
       return template.getView();
@@ -354,7 +359,7 @@ public class Entity
          {
             final Controller c = controllers[i];
 
-            if (controllerEnabled.get( template.indexOf( c ) ) )
+            if (controllerEnabled.get( template.indexOf( c ) ))
             {
                c.control.control( this, updateState );
             }
@@ -760,15 +765,17 @@ public class Entity
 
    public Entity clone( boolean deep )
    {
-      Entity clone = new Entity( template, template.createClonedValues( values, deep ), renderer );
+      return cloneState( new Entity( template, template.createClonedValues( values, deep ), renderer ) );
+   }
 
-      clone.controllerEnabled.clear();
-      clone.controllerEnabled.or( controllerEnabled );
-      clone.enabled = enabled;
-      clone.expired = expired;
-      clone.visible = visible;
+   protected <E extends Entity> E cloneState( E e )
+   {
+      e.controllerEnabled.clear();
+      e.controllerEnabled.or( controllerEnabled );
+      e.enabled = enabled;
+      e.visible = visible;
 
-      return clone;
+      return e;
    }
 
    public Entity merge( Entity entity, boolean overwrite )

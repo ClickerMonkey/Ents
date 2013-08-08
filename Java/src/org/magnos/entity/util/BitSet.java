@@ -18,6 +18,7 @@ package org.magnos.entity.util;
 
 import org.magnos.entity.Id;
 
+
 /**
  * An extension to {@link java.util.BitSet} adding new constructors for
  * EntityCore as well as a containment method that doesn't require needless
@@ -49,7 +50,7 @@ public class BitSet extends java.util.BitSet
    public BitSet( int size, boolean enabled )
    {
       super( size );
-      
+
       if (enabled)
       {
          set( 0, size, enabled );
@@ -66,10 +67,7 @@ public class BitSet extends java.util.BitSet
    {
       super( indices.length );
 
-      for (int i = 0; i < indices.length; i++)
-      {
-         set( indices[i] );
-      }
+      setFromIndices( indices );
    }
 
    /**
@@ -83,6 +81,31 @@ public class BitSet extends java.util.BitSet
    {
       super( ids.length );
 
+      setFromIds( ids );
+   }
+
+   /**
+    * Sets bits at the indices given to true.
+    * 
+    * @param indices
+    *        The indices to set to true.
+    */
+   public void setFromIndices( int... indices )
+   {
+      for (int i = 0; i < indices.length; i++)
+      {
+         set( indices[i] );
+      }
+   }
+
+   /**
+    * Sets bits at the indices defined by {@link Id#id} to true.
+    * 
+    * @param ids
+    *        The array of Id.
+    */
+   public void setFromIds( Id... ids )
+   {
       for (int i = 0; i < ids.length; i++)
       {
          set( ids[i].id );

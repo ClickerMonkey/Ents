@@ -17,8 +17,11 @@
 package org.magnos.entity.filters;
 
 import org.magnos.entity.Entity;
+import org.magnos.entity.EntityChain;
 import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityIterator;
+import org.magnos.entity.EntityLayers;
+import org.magnos.entity.EntityList;
 
 
 /**
@@ -34,27 +37,38 @@ public class ClassFilter implements EntityFilter
    protected Class<? extends Entity> entityClass;
 
    /**
-    * 
+    * Instantiates a ClassFilter with a class. The {@link #set(Class)} method
+    * needs to be called, otherwise the filter will find no entities valid.
     */
    public ClassFilter()
    {
    }
-   
+
    /**
+    * Instantiates a new ClassFilter.
     * 
     * @param entityClass
+    *       The class of the entities to return. 
+    * @see Entity
+    * @see EntityChain
+    * @see EntityList
+    * @see EntityLayers
     */
-   public ClassFilter(Class<? extends Entity> entityClass)
+   public ClassFilter( Class<? extends Entity> entityClass )
    {
       set( entityClass );
    }
-   
+
    /**
     * Resets the ClassFilter specifying the Entity class.
     * 
     * @param entityClass
-    *        The class to filter entities by.
-    * @return The {@link Iterable} filtered by class.
+    *        The class of the entities to return.
+    * @return The reference to this filter. 
+    * @see Entity
+    * @see EntityChain
+    * @see EntityList
+    * @see EntityLayers
     */
    public ClassFilter set( Class<? extends Entity> entityClass )
    {

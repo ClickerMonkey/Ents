@@ -164,6 +164,8 @@ public class EntityList extends Entity
          if (e.isExpired())
          {
             onEntityRemove( e, i );
+            
+            e.delete();
          }
          else
          {
@@ -178,17 +180,19 @@ public class EntityList extends Entity
    }
    
    @Override
-   public void expire()
+   public boolean delete()
    {
-      if (!expired)
+      boolean deletable = super.delete();
+      
+      if (deletable)
       {
          for (int i = 0 ; i < entityCount; i++)
          {
-            entities[i].expire();
+            entities[i].delete();
          }
-         
-         super.expire();
       }
+      
+      return deletable;
    }
 
    @Override
@@ -271,31 +275,17 @@ public class EntityList extends Entity
    @Override
    public EntityList clone( boolean deep )
    {
-      EntityList clone = new EntityList( template, template.createClonedValues( values, deep ), renderer );
+      EntityList clone = cloneState( new EntityList( template, template.createClonedValues( values, deep ), renderer ) );
 
-      clone.controllerEnabled.clear();
-      clone.controllerEnabled.or( controllerEnabled );
-      clone.enabled = enabled;
-      clone.expired = expired;
       clone.inheritEnabled = inheritEnabled;
       clone.inheritVisible = inheritVisible;
-      clone.visible = visible;
       clone.pad( entityCount );
 
-      if (deep)
+      for (int i = 0; i < entityCount; i++)
       {
-         for (int i = 0; i < entityCount; i++)
-         {
-            clone.internalAdd( entities[i].clone( deep ) );
-         }
+         clone.internalAdd( entities[i].clone( deep ) );
       }
-      else
-      {
-         System.arraycopy( entities, 0, clone.entities, 0, entityCount );
-
-         clone.entityCount = entityCount;
-      }
-
+      
       return clone;
    }
    

@@ -147,6 +147,8 @@ public class TestEntityBasic
       assertEquals( 8, bounds.top, 0.00001 );
       assertEquals( 8, bounds.right, 0.00001 );
       assertEquals( 12, bounds.bottom, 0.00001 );
+      
+      e.delete();
    }
 
 }

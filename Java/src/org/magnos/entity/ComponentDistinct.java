@@ -126,6 +126,18 @@ class ComponentDistinct<T> extends Component<T>
       {
          template.factories[componentIndex] = null;
       }
+
+      @Override
+      public void postAdd( Entity e )
+      {
+         
+      }
+      
+      @Override
+      public void preRemove( Entity e )
+      {
+         
+      }
    }
 
 }

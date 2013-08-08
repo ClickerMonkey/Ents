@@ -60,17 +60,19 @@ public class EntityLayers extends Entity
    }
    
    @Override
-   public void expire()
+   public boolean delete()
    {
-      if (!expired)
+      boolean deletable = super.delete();
+      
+      if (deletable)
       {
          for (int i = 0; i < layers.length; i++)
          {
-            layers[i].expire();
+            layers[i].delete();
          }
-         
-         super.expire();
       }
+      
+      return deletable;
    }
    
    public EntityList layer(int index)
@@ -134,6 +136,10 @@ public class EntityLayers extends Entity
          {
             list.update( updateState );
          }
+         else
+         {
+            list.delete();
+         }
       }
    }
 
@@ -152,13 +158,7 @@ public class EntityLayers extends Entity
    @Override
    public EntityLayers clone( boolean deep )
    {
-      EntityLayers clone = new EntityLayers( template, template.createClonedValues( layers, deep ), renderer, layers.length );
-      
-      clone.controllerEnabled.clear();
-      clone.controllerEnabled.or( controllerEnabled );
-      clone.enabled = enabled;
-      clone.expired = expired;
-      clone.visible = visible;
+      EntityLayers clone = cloneState( new EntityLayers( template, template.createClonedValues( layers, deep ), renderer, layers.length ) );
       
       if (deep)
       {

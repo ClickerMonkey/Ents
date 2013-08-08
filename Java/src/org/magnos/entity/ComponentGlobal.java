@@ -111,7 +111,18 @@ class ComponentGlobal<T> extends Component<T>
       {
 
       }
-
+      
+      @Override
+      public void postAdd( Entity e )
+      {
+         
+      }
+      
+      @Override
+      public void preRemove( Entity e )
+      {
+         
+      }
    }
 
 }

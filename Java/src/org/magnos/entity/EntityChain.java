@@ -56,24 +56,26 @@ public class EntityChain extends Entity
    }
    
    @Override
-   public void expire()
+   public boolean delete()
    {
-      if (!expired)
+      boolean deletable = super.delete();
+      
+      if (deletable)
       {
          if (validateFirst())
          {
-            first.expire();
+            first.delete();
          }
          
          if (validateLast())
          {
-            last.expire();
+            last.delete();
          }
-         
-         super.expire();
       }
+      
+      return deletable;
    }
-
+   
    @Override
    public void draw( Object drawState )
    {
@@ -149,15 +151,10 @@ public class EntityChain extends Entity
    @Override
    public EntityChain clone( boolean deep )
    {
-      EntityChain clone = new EntityChain( template, template.createClonedValues( values, deep ), renderer );
+      EntityChain clone = cloneState( new EntityChain( template, template.createClonedValues( values, deep ), renderer ) );
 
-      clone.controllerEnabled.clear();
-      clone.controllerEnabled.or( controllerEnabled );
-      clone.enabled = enabled;
-      clone.expired = expired;
       clone.inheritEnabled = inheritEnabled;
       clone.inheritVisible = inheritVisible;
-      clone.visible = visible;
       
       if (first != null)
       {
@@ -175,6 +172,7 @@ public class EntityChain extends Entity
    {
       if (first != null && first.isExpired())
       {
+         first.delete();
          first = null;
       }
 
@@ -185,6 +183,7 @@ public class EntityChain extends Entity
    {
       if (last != null && last.isExpired())
       {
+         last.delete();
          last = null;
       }
 
