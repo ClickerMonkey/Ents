@@ -79,6 +79,8 @@ public class TestEntity
          String graphics = drawState.toString();
          System.out.println( "Drawing extent at {" + e.get( LEFT ) + "->" + e.get( RIGHT ) + "} with " + graphics );
       }
+      public void drawStart(Entity e, Object drawState) {}
+      public void drawEnd(Entity e, Object drawState) {}
       public void destroy( Entity e ) { }
       public Renderer create( Entity e ) { return this; }
    };
@@ -87,6 +89,8 @@ public class TestEntity
       public void draw( Entity e, Object drawState ) {
          e.get( DRAW_COUNT ).v++;
       }
+      public void drawStart(Entity e, Object drawState) {}
+      public void drawEnd(Entity e, Object drawState) {}
       public void destroy( Entity e ) { }
       public Renderer create( Entity e ) { return this; }
    };
@@ -444,15 +448,14 @@ public class TestEntity
             return this;
          }
 
-         public void draw( Entity e, Object drawState )
-         {
-
-         }
-
          public void destroy( Entity e )
          {
             flagDestroyed.set( true );
          }
+
+         public void drawStart(Entity e, Object drawState) {}
+         public void draw( Entity e, Object drawState ) {}
+         public void drawEnd(Entity e, Object drawState) {}
       } );
 
       assertTrue( flagCreated.get() );

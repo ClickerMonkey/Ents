@@ -110,7 +110,13 @@ public class EntityLayers extends Entity
    @Override
    public void draw( Object drawState )
    {
-      super.draw( drawState );
+      final boolean draw = (visible && renderer != null);
+      
+      if (draw)
+      {
+         renderer.drawStart( this, drawState );
+         renderer.draw( this, drawState );
+      }
       
       for (int i = 0; i < layers.length; i++)
       {
@@ -120,6 +126,11 @@ public class EntityLayers extends Entity
          {
             list.draw( drawState );
          }
+      }
+      
+      if (draw)
+      {
+         renderer.drawEnd( this, drawState );
       }
    }
 

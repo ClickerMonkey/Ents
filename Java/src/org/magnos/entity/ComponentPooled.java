@@ -33,7 +33,7 @@ public class ComponentPooled<T> extends Component<T>
     * pool from having the same value (by reference) in it and it keeps user
     * created values from entering the pool.
     */
-   private BitSet recycled = new BitSet();
+   private final BitSet recycled = new BitSet();
 
    /**
     * Instantiates a ComponentPooled.

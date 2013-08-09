@@ -16,7 +16,6 @@
 
 package org.magnos.entity;
 
-
 public class EntityChain extends Entity
 {
 
@@ -54,43 +53,58 @@ public class EntityChain extends Entity
    {
       super( template, values, renderer );
    }
-   
+
    @Override
    public boolean delete()
    {
       boolean deletable = super.delete();
-      
+
       if (deletable)
       {
          if (validateFirst())
          {
             first.delete();
          }
-         
+
          if (validateLast())
          {
             last.delete();
          }
       }
-      
+
       return deletable;
    }
-   
+
    @Override
    public void draw( Object drawState )
    {
       if (visible || !inheritVisible)
       {
+         final boolean draw = (visible && renderer != null);
+
+         if (draw)
+         {
+            renderer.drawStart( this, drawState );
+         }
+
          if (validateFirst())
          {
             first.draw( drawState );
          }
 
-         super.draw( drawState );
+         if (draw)
+         {
+            renderer.draw( this, drawState );
+         }
 
          if (validateLast())
          {
             last.draw( drawState );
+         }
+
+         if (draw)
+         {
+            renderer.drawEnd( this, drawState );
          }
       }
    }
@@ -119,7 +133,7 @@ public class EntityChain extends Entity
    {
       final boolean f = (first != null);
       final boolean l = (last != null);
-      
+
       return (f & l ? 3 : (f | l ? 2 : 1));
    }
 
@@ -127,8 +141,9 @@ public class EntityChain extends Entity
    protected Entity getEntity( int index )
    {
       final boolean f = (first != null);
-      
-      switch (index) {
+
+      switch (index)
+      {
       case 0:
          return (f ? first : this);
       case 1:
@@ -136,7 +151,7 @@ public class EntityChain extends Entity
       case 2:
          return last;
       }
-      
+
       return this;
    }
 
@@ -144,10 +159,10 @@ public class EntityChain extends Entity
    protected int getEntityIndex()
    {
       final boolean f = (first != null);
-      
+
       return (f ? 1 : 0);
    }
-   
+
    @Override
    public EntityChain clone( boolean deep )
    {
@@ -155,7 +170,7 @@ public class EntityChain extends Entity
 
       clone.inheritEnabled = inheritEnabled;
       clone.inheritVisible = inheritVisible;
-      
+
       if (first != null)
       {
          clone.first = deep ? first.clone( deep ) : first;

@@ -60,10 +60,9 @@ public class TestView
          {
             return this;
          }
-         public void destroy( Entity e )
-         {
-            
-         }
+         public void destroy( Entity e ) {}
+         public void drawStart(Entity e, Object drawState) {}
+         public void drawEnd(Entity e, Object drawState) {}
       } );
 
       Entity e = new Entity( SPRITE );

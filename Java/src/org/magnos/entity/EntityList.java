@@ -200,7 +200,13 @@ public class EntityList extends Entity
    {
       if (visible || !inheritVisible)
       {
-         super.draw( drawState );
+         final boolean draw = (visible && renderer != null);
+         
+         if (draw)
+         {
+            renderer.drawStart( this, drawState );
+            renderer.draw( this, drawState );  
+         }
          
          for (int i = 0; i < entityCount; i++)
          {
@@ -210,7 +216,12 @@ public class EntityList extends Entity
             {
                entities[i].draw( drawState );   
             }
-         }   
+         }
+         
+         if (draw)
+         {
+            renderer.drawEnd( this, drawState );   
+         }
       }
    }
 

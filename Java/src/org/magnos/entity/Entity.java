@@ -16,8 +16,6 @@
 
 package org.magnos.entity;
 
-import java.util.Arrays;
-
 import org.magnos.entity.util.BitSet;
 import org.magnos.entity.util.EntityUtility;
 
@@ -256,7 +254,9 @@ public class Entity
    {
       if (visible && renderer != null)
       {
+         renderer.drawStart( this, drawState );
          renderer.draw( this, drawState );
+         renderer.drawEnd( this, drawState );
       }
    }
 
@@ -870,7 +870,7 @@ public class Entity
       }
       else
       {
-         sb.append( "EXPIRED" );
+         sb.append( "DELETED" );
       }
 
       sb.append( ']' );
@@ -883,15 +883,21 @@ public class Entity
    {
       final int prime = 31;
       int result = 1;
-      result = prime * result + Arrays.hashCode( values );
-      result = prime * result + ((template == null) ? 0 : template.hashCode());
+      
+      for (Component<?> c : template.components)
+      {
+         Object v = get( c );
+         
+         result = prime * result + (v == null ? 0 : v.hashCode());
+      }
+      
       return result;
    }
 
    @Override
    public boolean equals( Object obj )
    {
-      if (obj == null)
+      if (obj == null || !(obj instanceof Entity))
       {
          return false;
       }
@@ -899,15 +905,23 @@ public class Entity
       {
          return true;
       }
-      if (!(obj instanceof Entity))
+
+      Entity e = (Entity)obj;
+
+      if (!template.componentBitSet.equals( e.template.componentBitSet ))
       {
          return false;
       }
 
-      Entity e = (Entity)obj;
+      for (Component<?> c : template.components)
+      {
+         if (!EntityUtility.equals( get( c ), e.get( c ) ))
+         {
+            return false;
+         }
+      }
 
-      return EntityUtility.equals( template, e.template ) &&
-         EntityUtility.equals( values, e.values );
+      return true;
    }
 
 }

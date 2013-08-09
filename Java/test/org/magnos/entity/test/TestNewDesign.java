@@ -97,9 +97,20 @@ public class TestNewDesign
 
    public static class ViewDefault implements Renderer
    {
+
+      public void drawStart(Entity e, Object drawState)
+      {
+         
+      }
+      
       public void draw( Entity e, Object drawState )
       {
 
+      }
+      
+      public void drawEnd(Entity e, Object drawState) 
+      {
+         
       }
 
       public Renderer create( Entity e )
