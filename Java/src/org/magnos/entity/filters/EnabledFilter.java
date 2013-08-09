@@ -31,6 +31,9 @@ import org.magnos.entity.EntityIterator;
 public class EnabledFilter implements EntityFilter
 {
 
+   /**
+    * A single instance to a EnabledFilter.
+    */
    public static final EnabledFilter INSTANCE = new EnabledFilter();
    
    private EnabledFilter()

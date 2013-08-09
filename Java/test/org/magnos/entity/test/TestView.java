@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
-import org.magnos.entity.Components;
-import org.magnos.entity.Controllers;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
 import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 
 
 public class TestView
@@ -44,7 +44,7 @@ public class TestView
 
    public static final Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
    public static final View SPRITE_VIEW = EntityCore.newView( "sprite-view" );
-   public static final Template SPRITE = EntityCore.newTemplate( "sprite", new Components( POSITION ), new Controllers(), SPRITE_VIEW );
+   public static final Template SPRITE = EntityCore.newTemplate( "sprite", new ComponentSet( POSITION ), new ControllerSet(), SPRITE_VIEW );
 
    @Test
    public void testDraw()
@@ -52,7 +52,7 @@ public class TestView
       final AtomicInteger DRAW_COUNTER = new AtomicInteger();
 
       EntityCore.setViewDefault( SPRITE_VIEW, new Renderer() {
-         public void draw( Entity entity, Object drawState )
+         public void begin( Entity entity, Object drawState )
          {
             DRAW_COUNTER.incrementAndGet();
          }
@@ -61,8 +61,7 @@ public class TestView
             return this;
          }
          public void destroy( Entity e ) {}
-         public void drawStart(Entity e, Object drawState) {}
-         public void drawEnd(Entity e, Object drawState) {}
+         public void end(Entity e, Object drawState) {}
       } );
 
       Entity e = new Entity( SPRITE );

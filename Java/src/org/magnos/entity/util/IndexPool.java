@@ -1,3 +1,18 @@
+/* 
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the Open Software License (OSL 3.0) that is 
+ * bundled with this package in the file LICENSE.txt. It is also available 
+ * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to obtain it 
+ * through the world-wide-web, please send an email to magnos.software@gmail.com 
+ * so we can send you a copy immediately. If you use any of this software please
+ * notify me via our website or email, your feedback is much appreciated. 
+ * 
+ * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
+ * @license     http://opensource.org/licenses/osl-3.0.php
+ *              Open Software License (OSL 3.0)
+ */
 
 package org.magnos.entity.util;
 
@@ -5,14 +20,18 @@ import java.util.Arrays;
 
 
 /**
- * A utility classes that returns indices (consecutive number of integers
+ * A utility class that returns indices (consecutive number of integers
  * starting at zero) through a {@link #pop()} method. Once an index is done
  * being used it is passed to {@link #push(int)} so it can be recycled and
  * reused the next time {@link #pop()} is called. When the last index
  * {@link #pop()}'d is {@link #push(int)}'d it causes the pool to shrink by
  * removing all previous consecutive indices from the recycled index list and
  * updates the maximum index that can be returned (accessible via
- * {@link #maxIndex()}).
+ * {@link #maxIndex()}). This keeps the range of indices returnable as
+ * small as possible. If an object with a large index holds onto to it for a
+ * long time it will never be released and there could be a waste of space. It's
+ * best to {@link #pop()} indices for long lived objects first and then short
+ * lived objects last.
  * 
  * @author Philip Diffenderfer
  * 
@@ -66,13 +85,14 @@ public class IndexPool
     * @param index
     *        The index to push back on the pool.
     * @return True if the pool has shrunk and reusable indices have been removed
-    *         from the pool to keep the values returned by {@link #pop()} at their
+    *         from the pool to keep the values returned by {@link #pop()} at
+    *         their
     *         smallest possible values, otherwise false.
     */
    public boolean push( int index )
    {
       boolean shrank = (index == previousIndex);
-      
+
       // Last index popped? Try shrinking the pool.
       if (shrank)
       {
@@ -88,7 +108,7 @@ public class IndexPool
 
          ints[size++] = index;
       }
-      
+
       return shrank;
    }
 

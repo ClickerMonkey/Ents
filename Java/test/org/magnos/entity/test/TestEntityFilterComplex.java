@@ -4,6 +4,8 @@ package org.magnos.entity.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import static org.magnos.entity.filters.Filters.*;
+
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
@@ -15,20 +17,6 @@ import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityIterator;
 import org.magnos.entity.EntityList;
 import org.magnos.entity.Template;
-import org.magnos.entity.filters.AndFilter;
-import org.magnos.entity.filters.ClassFilter;
-import org.magnos.entity.filters.ComponentFilter;
-import org.magnos.entity.filters.CustomFilter;
-import org.magnos.entity.filters.DefaultFilter;
-import org.magnos.entity.filters.EnabledFilter;
-import org.magnos.entity.filters.NotFilter;
-import org.magnos.entity.filters.OrFilter;
-import org.magnos.entity.filters.TemplateContainsFilter;
-import org.magnos.entity.filters.TemplateExactFilter;
-import org.magnos.entity.filters.TemplateRelativeFilter;
-import org.magnos.entity.filters.ValueFilter;
-import org.magnos.entity.filters.VisibleFilter;
-import org.magnos.entity.filters.XorFilter;
 import org.magnos.entity.test.helper.Vector;
 import org.magnos.entity.vals.FloatVal;
 
@@ -54,139 +42,93 @@ public class TestEntityFilterComplex
    @Test
    public void testDefaultFilter()
    {
-      testFilter( DefaultFilter.INSTANCE, 0, 1, 2, 3, 4, 5 );
+      testFilter( all(), 0, 1, 2, 3, 4, 5 );
    }
 
    @Test
    public void testVisible()
    {
-      testFilter( VisibleFilter.INSTANCE, 0, 1, 2, 4, 5 );
+      testFilter( visible(), 0, 1, 2, 4, 5 );
    }
 
    @Test
    public void testEnabled()
    {
-      testFilter( EnabledFilter.INSTANCE, 0, 1, 2, 3, 4 );
+      testFilter( enabled(), 0, 1, 2, 3, 4 );
    }
 
    @Test
    public void testCustom()
    {
-      testFilter( CustomFilter.INSTANCE, 0, 4 );
+      testFilter( custom(), 0, 4 );
    }
 
    @Test
    public void testNot()
    {
-      NotFilter filter = new NotFilter();
-
-      filter.set( DefaultFilter.INSTANCE );
-      testFilter( filter /* nothing */);
-
-      filter.set( VisibleFilter.INSTANCE );
-      testFilter( filter, 3 );
-
-      filter.set( EnabledFilter.INSTANCE );
-      testFilter( filter, 5 );
-
-      filter.set( CustomFilter.INSTANCE );
-      testFilter( filter, 1, 2, 3, 5 );
+      testFilter( not( all() ) /* nothing */);
+      testFilter( not( visible() ), 3 );
+      testFilter( not( enabled() ), 5 );
+      testFilter( not( custom() ), 1, 2, 3, 5 );
    }
 
    @Test
    public void testAnd()
    {
-      AndFilter filter = new AndFilter();
-
-      filter.set( CustomFilter.INSTANCE, VisibleFilter.INSTANCE );
-      testFilter( filter, 0, 4 );
+      testFilter( and( custom(), visible() ), 0, 4 );
    }
 
    @Test
    public void testOr()
    {
-      OrFilter filter = new OrFilter();
-
-      filter.set( EnabledFilter.INSTANCE, VisibleFilter.INSTANCE );
-      testFilter( filter, 0, 1, 2, 3, 4, 5 );
+      testFilter( or( enabled(), visible() ), 0, 1, 2, 3, 4, 5 );
    }
 
    @Test
    public void testXor()
    {
-      XorFilter filter = new XorFilter();
-
-      filter.set( EnabledFilter.INSTANCE, CustomFilter.INSTANCE );
-      testFilter( filter, 1, 2, 3 );
+      testFilter( xor( enabled(), custom() ), 1, 2, 3 );
    }
 
    @Test
    public void testTemplateExact()
    {
-      TemplateExactFilter filter = new TemplateExactFilter();
-
-      filter.set( BASIC_OBJECT );
-      testFilter( filter, 1, 2, 3, 5 );
+      testFilter( template( BASIC_OBJECT ), 1, 2, 3, 5 );
    }
 
    @Test
    public void testTemplateRelative()
    {
-      TemplateRelativeFilter filter = new TemplateRelativeFilter();
-
-      filter.set( BASIC_OBJECT );
-      testFilter( filter, 1, 2, 3, 4, 5 );
+      testFilter( relative( BASIC_OBJECT ), 1, 2, 3, 4, 5 );
    }
 
    @Test
    public void testContains()
    {
-      TemplateContainsFilter filter = new TemplateContainsFilter();
-
-      filter.set( BASICER_OBJECT );
-      testFilter( filter, 1, 2, 3, 4, 5 );
+      testFilter( contains( BASICER_OBJECT ), 1, 2, 3, 4, 5 );
    }
 
    @Test
    public void testValue()
    {
-      ValueFilter filter = new ValueFilter();
-
-      filter.set( POSITION, new Vector( 5.0f, 3.0f ) );
-      testFilter( filter, 5 );
-
-      filter.set( VELOCITY, new Vector( 0.0f, 0.0f ) );
-      testFilter( filter, 1, 2, 3, 4, 5 );
+      testFilter( value( POSITION, new Vector( 5.0f, 3.0f ) ), 5 );
+      testFilter( value( VELOCITY, new Vector( 0.0f, 0.0f ) ), 1, 2, 3, 4, 5 );
    }
 
    @Test
    public void testClass()
    {
-      ClassFilter filter = new ClassFilter();
-
-      filter.set( EntityList.class );
-      testFilter( filter, 0 );
-
-      filter.set( Entity.class );
-      testFilter( filter, 1, 3, 4, 5 );
-
-      filter.set( EntityChain.class );
-      testFilter( filter, 2 );
+      testFilter( clazz( EntityList.class ), 0 );
+      testFilter( clazz( Entity.class ), 1, 3, 4, 5 );
+      testFilter( clazz( EntityChain.class ), 2 );
    }
 
    @Test
    public void testComponent()
    {
-      ComponentFilter filter = new ComponentFilter();
-
-      filter.set( NAME, POSITION );
-      testFilter( filter, 1, 2, 3, 4, 5 );
-
-      filter.set( NAME );
-      testFilter( filter, 0, 1, 2, 3, 4, 5 );
-
-      filter.set( SCALE );
-      testFilter( filter, 4 );
+      testFilter( components( NAME, POSITION ), 1, 2, 3, 4, 5 );
+      testFilter( components( NAME ), 0, 1, 2, 3, 4, 5 );
+      testFilter( components( SCALE ), 4 );
    }
 
    private void testFilter( EntityFilter filter, int... valid )
@@ -221,7 +163,7 @@ public class TestEntityFilterComplex
       int count = 0;
 
       EntityIterator iterator = new EntityIterator( filter );
-      
+
       for (Entity entity : iterator.iterate( e0 ))
       {
          assertSame( entity, entities[valid[count++]] );

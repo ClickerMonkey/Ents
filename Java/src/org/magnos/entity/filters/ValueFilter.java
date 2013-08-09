@@ -38,16 +38,21 @@ public class ValueFilter implements EntityFilter
    protected Component<?> component;
 
    /**
-    * 
+    * Instantiates a ValueFilter without a component and value. The
+    * {@link #set(Component, Object)} method needs to be called, otherwise a
+    * {@link NullPointerException} will be thrown.
     */
    public ValueFilter()
    {
    }
 
    /**
+    * Instantiates a ValueFilter.
     * 
     * @param component
+    *        The component the entity must have.
     * @param value
+    *        The value of the given component the entity must have.
     */
    public <T> ValueFilter( Component<T> component, T value )
    {
@@ -55,14 +60,14 @@ public class ValueFilter implements EntityFilter
    }
 
    /**
-    * Resets the ValueFilter specifying the component and value to filter
-    * by.
+    * Resets and returns this filter by specifying the component and value to
+    * filter by.
     * 
     * @param component
     *        The component the entity must have.
     * @param value
     *        The value of the given component the entity must have.
-    * @return The {@link Iterable} filtered by component value.
+    * @return The reference to this filter.
     */
    public <T> ValueFilter set( Component<T> component, T value )
    {

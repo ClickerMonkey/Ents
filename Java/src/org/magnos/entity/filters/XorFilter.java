@@ -22,7 +22,8 @@ import org.magnos.entity.EntityIterator;
 
 
 /**
- * A filter that combines two filters with XOR logic.
+ * A filter that combines two filters with XOR logic. An entity is valid if it
+ * is valid for one of the two filters, but not both.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -35,16 +36,21 @@ public class XorFilter implements EntityFilter
    protected EntityFilter second;
 
    /**
-    * 
+    * Instantiates an XorFilter without two filters. The
+    * {@link #set(EntityFilter,EntityFilter)} method needs to be called,
+    * otherwise a {@link NullPointerException} will be thrown.
     */
    public XorFilter()
    {
    }
 
    /**
+    * Instantiates an XorFilter.
     * 
     * @param first
+    *        The first filter to check for valid entities.
     * @param second
+    *        The second filter to check for valid entities.
     */
    public XorFilter( EntityFilter first, EntityFilter second )
    {
@@ -52,13 +58,13 @@ public class XorFilter implements EntityFilter
    }
 
    /**
-    * Resets the XorFilter specifying the filters to combine.
+    * Resets and returns this filter by specifying the filters to combine.
     * 
     * @param first
     *        The first filter to check for valid entities.
     * @param second
     *        The second filter to check for valid entities.
-    * @return The {@link Iterable} filtered by both filters.
+    * @return The reference to this filter.
     */
    public XorFilter set( EntityFilter first, EntityFilter second )
    {

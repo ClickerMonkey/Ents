@@ -35,25 +35,35 @@ public class OrFilter implements EntityFilter
    protected EntityFilter second;
 
    /**
-    * 
+    * Instantiates an OrFilter without two filters. The
+    * {@link #set(EntityFilter,EntityFilter)} method needs to be called,
+    * otherwise a {@link NullPointerException} will be thrown.
     */
    public OrFilter()
    {
    }
 
+   /**
+    * Instantiates an OrFilter.
+    * 
+    * @param first
+    *        The first filter to check for valid entities.
+    * @param second
+    *        The second filter to check for valid entities.
+    */
    public OrFilter( EntityFilter first, EntityFilter second )
    {
       set( first, second );
    }
 
    /**
-    * Resets the OrFilter specifying the filters to combine.
+    * Resets and returns this filter by specifying the filters to combine.
     * 
     * @param first
     *        The first filter to check for valid entities.
     * @param second
     *        The second filter to check for valid entities.
-    * @return The {@link Iterable} filtered by both filters.
+    * @return The reference to this filter.
     */
    public OrFilter set( EntityFilter first, EntityFilter second )
    {

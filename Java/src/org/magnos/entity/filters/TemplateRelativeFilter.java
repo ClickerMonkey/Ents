@@ -38,15 +38,19 @@ public class TemplateRelativeFilter implements EntityFilter
    protected Template template;
 
    /**
-    * 
+    * Instantiates a TemplateRelativeFilter without a template. The
+    * {@link #set(Template)} method needs to be called, otherwise a
+    * {@link NullPointerException} will be thrown.
     */
    public TemplateRelativeFilter()
    {
    }
 
    /**
+    * Instantiates a TemplateRelativeFilter
     * 
     * @param template
+    *        The template the Entities filtered must be a relative to.
     */
    public TemplateRelativeFilter( Template template )
    {
@@ -54,13 +58,12 @@ public class TemplateRelativeFilter implements EntityFilter
    }
 
    /**
-    * Resets the TemplateRelativeFilter specifying the template the Entities
+    * Resets and returns this filter by specifying the template the Entities
     * must be a relative to.
     * 
     * @param template
     *        The template the Entities filtered must be a relative to.
-    * @return The {@link Iterable} filtered by
-    *         {@link Template#isRelative(Template)}.
+    * @return The reference to this filter.
     */
    public TemplateRelativeFilter set( Template template )
    {

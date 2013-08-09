@@ -24,7 +24,7 @@ import org.magnos.entity.Template;
 
 /**
  * A filter that returns all Entities that at least have all components,
- * controllers, and view of the given filtering template.
+ * controllers, and view of a given template.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -36,30 +36,35 @@ public class TemplateContainsFilter implements EntityFilter
    protected Template template;
 
    /**
-    * 
+    * Instantiates a TemplateContainsFilter without a template. The
+    * {@link #set(Template)} method needs to be called,
+    * otherwise a {@link NullPointerException} will be thrown.
     */
    public TemplateContainsFilter()
    {
-      
+
    }
-   
+
    /**
+    * Instantiates a TemplateContainsFilter.
     * 
     * @param template
+    *        The template to use which has the components, controllers, and view
+    *        the entities returned will have.
     */
-   public TemplateContainsFilter(Template template)
+   public TemplateContainsFilter( Template template )
    {
       set( template );
    }
-   
+
    /**
-    * Resets the TemplateContainsFilter specifying the template used to check
+    * Resets and returns this filter by specifying the template used to check
     * for containment.
     * 
     * @param template
-    *        The filtering template used.
-    * @return The {@link Iterable} filtered by
-    *         {@link Template#contains(Template)}.
+    *        The template to use which has the components, controllers, and view
+    *        the entities returned will have.
+    * @return The reference to this filter.
     */
    public TemplateContainsFilter set( Template template )
    {

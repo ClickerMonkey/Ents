@@ -19,18 +19,28 @@ package org.magnos.entity;
 import java.util.Arrays;
 
 import org.magnos.entity.util.BitSet;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 import org.magnos.entity.util.EntityUtility;
 
-
+/**
+ * Do not modify a Template directly, this should only be done before any
+ * Entity is created with it. A problem arises when a distinct component is
+ * added to a Template that already has Entity instances... the instances
+ * created with the template will appear to have the component but the
+ * entities will not actually have the component value.
+ * 
+ * @author pdiffenderfer
+ *
+ */
 public class Template extends Id
 {
 
    public static final int CUSTOM = Integer.MAX_VALUE;
    public static final String CUSTOM_NAME = "custom";
-   public static final Template PARENT_NONE = null;
+   public static final BitSet PARENT_NONE = new BitSet();
 
-   protected final Template parent;
-   protected final BitSet extensionBitSet;
+   protected final BitSet extendedIds;
 
    protected Component<?>[] components;
    protected BitSet componentBitSet;
@@ -48,21 +58,20 @@ public class Template extends Id
 
    protected Template()
    {
-      this( CUSTOM, CUSTOM_NAME, PARENT_NONE, Components.NONE, Controllers.NONE, View.NONE );
+      this( CUSTOM, CUSTOM_NAME, PARENT_NONE, ComponentSet.NONE, ControllerSet.NONE, View.NONE );
    }
 
-   protected Template( Components componentSet, Controllers controllerSet, View view )
+   protected Template( ComponentSet componentSet, ControllerSet controllerSet, View view )
    {
       this( CUSTOM, CUSTOM_NAME, PARENT_NONE, componentSet, controllerSet, view );
    }
 
-   protected Template( int id, String name, Template parent, Components componentSet, Controllers controllerSet, View view )
+   protected Template( int id, String name, BitSet parentIds, ComponentSet componentSet, ControllerSet controllerSet, View view )
    {
       super( id, name );
 
-      this.parent = parent;
-      this.extensionBitSet = getExtensionBitSet( this );
-
+      this.extendedIds = getExtendedIds( parentIds, id );
+      
       this.components = componentSet.values;
       this.componentMap = EntityUtility.createMap( components );
       this.componentBitSet = new BitSet( components );
@@ -116,7 +125,7 @@ public class Template extends Id
 
    protected Template extend( int id, String name )
    {
-      return new Template( id, name, this, new Components( components ), new Controllers( controllers ), view );
+      return new Template( id, name, extendedIds, new ComponentSet( components ), new ControllerSet( controllers ), view );
    }
 
    protected Object[] createDefaultValues()
@@ -224,17 +233,17 @@ public class Template extends Id
       }
       return true;
    }
-   
+
    protected TemplateComponent<?> getTemplateComponentSafe( Component<?> c )
    {
-      return ( c.id >= handlers.length ? null : handlers[c.id] );
+      return (c.id >= handlers.length ? null : handlers[c.id]);
    }
 
    protected int indexOf( Component<?> component )
    {
       return component.id >= componentMap.length ? -1 : componentMap[component.id];
    }
-   
+
    public <T> void add( Component<T> component )
    {
       ensureComponentFit( component.id );
@@ -260,9 +269,9 @@ public class Template extends Id
    public <T> void addForEntity( Component<T> component, Entity e )
    {
       final int componentId = component.id;
-      
+
       TemplateComponent<?> handler = null;
-      
+
       ensureComponentFit( componentId );
 
       int i = indexOf( component );
@@ -302,6 +311,11 @@ public class Template extends Id
       return controllerBitSet.get( controller.id );
    }
 
+   public boolean hasControllers( BitSet controllers )
+   {
+      return controllerBitSet.contains( controllers );
+   }
+
    public boolean hasExact( Controller controller )
    {
       int i = indexOf( controller );
@@ -319,11 +333,6 @@ public class Template extends Id
          }
       }
       return true;
-   }
-
-   public boolean hasControllers( BitSet controllers )
-   {
-      return controllerBitSet.contains( controllers );
    }
 
    protected int indexOf( Controller controller )
@@ -409,7 +418,7 @@ public class Template extends Id
 
    public boolean isRelative( Template template )
    {
-      return template.id != CUSTOM && extensionBitSet.get( template.id );
+      return template.id != CUSTOM && extendedIds.get( template.id );
    }
 
    public boolean contains( Template template )
@@ -479,21 +488,16 @@ public class Template extends Id
       return isCustom() && instances <= 1 ? this : extend( CUSTOM, CUSTOM_NAME );
    }
 
-   protected static BitSet getExtensionBitSet( Template t )
+   protected static BitSet getExtendedIds( BitSet parentIds, int id )
    {
-      BitSet extensions = new BitSet();
+      BitSet extendedIds = new BitSet( parentIds );
 
-      while (t != null)
+      if (id != CUSTOM)
       {
-         if (t.id != CUSTOM)
-         {
-            extensions.set( t.id );
-         }
-
-         t = t.parent;
+         extendedIds.set( id );
       }
 
-      return extensions;
+      return extendedIds;
    }
 
 }

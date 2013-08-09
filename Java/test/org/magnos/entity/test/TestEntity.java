@@ -14,16 +14,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
-import org.magnos.entity.Components;
 import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
-import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
 import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 import org.magnos.entity.vals.FloatVal;
 import org.magnos.entity.vals.IntVal;
 
@@ -60,7 +60,7 @@ public class TestEntity
    };
 
    static Control CONTROL_MOTION = new Control() {
-      public void control( Entity e, Object updateState ) {
+      public void update( Entity e, Object updateState ) {
          float dt = (Float)updateState;
          float dist = e.get( SPEED ).v * dt;
          e.get( LEFT ).v += dist;
@@ -69,28 +69,26 @@ public class TestEntity
    };
    
    static Control CONTROL_UPDATES = new Control() {
-      public void control( Entity e, Object updateState ) {
+      public void update( Entity e, Object updateState ) {
          e.get( UPDATE_COUNT ).v++;
       }
    };
    
    static Renderer RENDERER_EXTENT = new Renderer() {
-      public void draw( Entity e, Object drawState ) {
+      public void begin( Entity e, Object drawState ) {
          String graphics = drawState.toString();
          System.out.println( "Drawing extent at {" + e.get( LEFT ) + "->" + e.get( RIGHT ) + "} with " + graphics );
       }
-      public void drawStart(Entity e, Object drawState) {}
-      public void drawEnd(Entity e, Object drawState) {}
+      public void end(Entity e, Object drawState) {}
       public void destroy( Entity e ) { }
       public Renderer create( Entity e ) { return this; }
    };
    
    static Renderer RENDERER_DRAWS = new Renderer() {
-      public void draw( Entity e, Object drawState ) {
+      public void begin( Entity e, Object drawState ) {
          e.get( DRAW_COUNT ).v++;
       }
-      public void drawStart(Entity e, Object drawState) {}
-      public void drawEnd(Entity e, Object drawState) {}
+      public void end(Entity e, Object drawState) {}
       public void destroy( Entity e ) { }
       public Renderer create( Entity e ) { return this; }
    };
@@ -102,15 +100,15 @@ public class TestEntity
    static Controller            MOTION          = EntityCore.newController( "motion", CONTROL_MOTION );
    static Controller            NETWORKING      = EntityCore.newController( "networking" );
    static View                  EXTENT_VIEW     = EntityCore.newView( "extent-view", RENDERER_EXTENT );
-   static Template              EXTENT          = EntityCore.newTemplate( "extent", new Components(LEFT, RIGHT, CENTER), new Controllers(MOTION), EXTENT_VIEW );
+   static Template              EXTENT          = EntityCore.newTemplate( "extent", new ComponentSet(LEFT, RIGHT, CENTER), new ControllerSet(MOTION), EXTENT_VIEW );
    
    static Component<IntVal>     DRAW_COUNT      = EntityCore.newComponent( "draw-count", new IntVal() );
    static View                  DRAWS_VIEW      = EntityCore.newView( "draws-view", RENDERER_DRAWS );
-   static Template              DRAWS           = EntityCore.newTemplate( "draws", new Components(DRAW_COUNT), Controllers.NONE, DRAWS_VIEW );
+   static Template              DRAWS           = EntityCore.newTemplate( "draws", new ComponentSet(DRAW_COUNT), ControllerSet.NONE, DRAWS_VIEW );
    
    static Component<IntVal>     UPDATE_COUNT    = EntityCore.newComponent( "update-count", new IntVal() );
    static Controller            UPDATES_CONTROL = EntityCore.newController( "updates-control", CONTROL_UPDATES );
-   static Template              UPDATES         = EntityCore.newTemplate( "updates", new Components(UPDATE_COUNT), new Controllers(UPDATES_CONTROL) );
+   static Template              UPDATES         = EntityCore.newTemplate( "updates", new ComponentSet(UPDATE_COUNT), new ControllerSet(UPDATES_CONTROL) );
    
    // @formatter:on
 
@@ -302,7 +300,7 @@ public class TestEntity
    @Test
    public void testAdd()
    {
-      Entity e = new Entity( new Components( LEFT ), new Controllers( MOTION ) );
+      Entity e = new Entity( new ComponentSet( LEFT ), new ControllerSet( MOTION ) );
 
       assertTrue( e.has( LEFT ) );
       assertFalse( e.has( RIGHT ) );
@@ -453,9 +451,8 @@ public class TestEntity
             flagDestroyed.set( true );
          }
 
-         public void drawStart(Entity e, Object drawState) {}
-         public void draw( Entity e, Object drawState ) {}
-         public void drawEnd(Entity e, Object drawState) {}
+         public void begin(Entity e, Object drawState) {}
+         public void end( Entity e, Object drawState ) {}
       } );
 
       assertTrue( flagCreated.get() );

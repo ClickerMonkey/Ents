@@ -31,6 +31,9 @@ import org.magnos.entity.EntityIterator;
 public class DefaultFilter implements EntityFilter
 {
 
+   /**
+    * A single instance to a DefaultFilter.
+    */
    public static final DefaultFilter INSTANCE = new DefaultFilter();
    
    private DefaultFilter()

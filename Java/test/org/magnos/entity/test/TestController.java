@@ -21,14 +21,14 @@ import static org.junit.Assert.assertEquals;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
-import org.magnos.entity.Components;
 import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
-import org.magnos.entity.Controllers;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
 import org.magnos.entity.Template;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 
 
 public class TestController
@@ -46,7 +46,7 @@ public class TestController
 
    public static Controller PHYSICS_SIMPLE = EntityCore.newController( "physics-simple", new Control() {
 
-      public void control( Entity e, Object updateState )
+      public void update( Entity e, Object updateState )
       {
          float dt = (Float)updateState;
          e.get( POSITION ).addsi( e.get( VELOCITY ), dt );
@@ -55,7 +55,7 @@ public class TestController
 
    public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
 
-      public void control( Entity e, Object updateState )
+      public void update( Entity e, Object updateState )
       {
          float dt = (Float)updateState;
          e.get( POSITION ).addsi( e.get( VELOCITY ), dt );
@@ -63,7 +63,7 @@ public class TestController
       }
    } );
 
-   public static Template SPRITE = EntityCore.newTemplate( "sprite", new Components( POSITION, VELOCITY ), new Controllers( PHYSICS_SIMPLE ), null );
+   public static Template SPRITE = EntityCore.newTemplate( "sprite", new ComponentSet( POSITION, VELOCITY ), new ControllerSet( PHYSICS_SIMPLE ), null );
 
    @Test
    public void testUpdate()

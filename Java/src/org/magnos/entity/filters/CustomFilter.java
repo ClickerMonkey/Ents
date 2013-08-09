@@ -32,13 +32,16 @@ import org.magnos.entity.EntityIterator;
  */
 public class CustomFilter implements EntityFilter
 {
-   
+
+   /**
+    * A single instance to a CustomFilter.
+    */
    public static final CustomFilter INSTANCE = new CustomFilter();
 
    private CustomFilter()
    {
    }
-   
+
    @Override
    public boolean isValid( Entity e )
    {

@@ -114,8 +114,7 @@ public class EntityLayers extends Entity
       
       if (draw)
       {
-         renderer.drawStart( this, drawState );
-         renderer.draw( this, drawState );
+         renderer.begin( this, drawState );
       }
       
       for (int i = 0; i < layers.length; i++)
@@ -130,7 +129,7 @@ public class EntityLayers extends Entity
       
       if (draw)
       {
-         renderer.drawEnd( this, drawState );
+         renderer.end( this, drawState );
       }
    }
 

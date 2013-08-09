@@ -25,10 +25,8 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
-import org.magnos.entity.Components;
 import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
-import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
@@ -36,6 +34,8 @@ import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Bounds;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 import org.magnos.entity.vals.IntVal;
 
 
@@ -102,7 +102,7 @@ public class TestEntityBasic
 
       public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
 
-         public void control( Entity e, Object updateState )
+         public void update( Entity e, Object updateState )
          {
             e.get( TestComponents.POSITION ).addsi( e.get( TestComponents.VELOCITY ), (Float)updateState );
          }
@@ -113,8 +113,8 @@ public class TestEntityBasic
    {
 
       public static Template SPRITE = EntityCore.newTemplate( "sprite",
-         /*  components */ new Components( TestComponents.NAME, TestComponents.POSITION, TestComponents.VELOCITY, TestComponents.SIZE, TestComponents.SPATIAL_POSITION_ALIAS, TestComponents.SPATIAL_VELOCITY_ALIAS, TestComponents.BOUNDS ),
-         /* controllers */ new Controllers( TestControllers.PHYSICS ),
+         /*  components */ new ComponentSet( TestComponents.NAME, TestComponents.POSITION, TestComponents.VELOCITY, TestComponents.SIZE, TestComponents.SPATIAL_POSITION_ALIAS, TestComponents.SPATIAL_VELOCITY_ALIAS, TestComponents.BOUNDS ),
+         /* controllers */ new ControllerSet( TestControllers.PHYSICS ),
          /*    view     */ TestViews.SPRITE
          );
    }

@@ -35,7 +35,9 @@ public class ViewFilter implements EntityFilter
    protected View view;
 
    /**
-    * 
+    * Instantiates a ViewFilter without a view. The {@link #set(View)} method
+    * needs to be called, otherwise a {@link NullPointerException} will be
+    * thrown.
     */
    public ViewFilter()
    {
@@ -43,8 +45,10 @@ public class ViewFilter implements EntityFilter
    }
 
    /**
+    * Instantiates a ViewFilter.
     * 
-    * @param controllers
+    * @param view
+    *        The view each entity returned by the filter will have.
     */
    public ViewFilter( View view )
    {
@@ -52,13 +56,11 @@ public class ViewFilter implements EntityFilter
    }
 
    /**
-    * Resets the ControllerFilter specifying the set of controllers to filter
-    * by.
+    * Resets and returns this filter by specifying the view an entity must have.
     * 
-    * @param components
-    *        The set of controllers each entity returned by the filter will
-    *        have.
-    * @return The {@link Iterable} filter by controllers.
+    * @param view
+    *        The view each entity returned by the filter will have.
+    * @return The reference to this filter.
     */
    public ViewFilter set( View view )
    {

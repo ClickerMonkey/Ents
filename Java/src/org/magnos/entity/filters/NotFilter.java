@@ -34,15 +34,19 @@ public class NotFilter implements EntityFilter
    protected EntityFilter filter;
 
    /**
-    * 
+    * Instantiates a NotFilter without two filters. The
+    * {@link #set(EntityFilter)} method needs to be called, otherwise a
+    * {@link NullPointerException} will be thrown.
     */
    public NotFilter()
    {
    }
 
    /**
+    * Instantiates a NotFilter.
     * 
     * @param filter
+    *        The filter to return the negation (opposite) of.
     */
    public NotFilter( EntityFilter filter )
    {
@@ -50,12 +54,12 @@ public class NotFilter implements EntityFilter
    }
 
    /**
-    * Resets the NotFilter specifying the filter to return the negation
-    * (opposite) of.
+    * Resets and returns this filter by specifying the filter to return the
+    * negation (opposite) of.
     * 
     * @param filter
     *        The filter to return the negation (opposite) of.
-    * @return The {@link Iterable} negation of the given filter.
+    * @return The reference to this filter.
     */
    public NotFilter set( EntityFilter filter )
    {

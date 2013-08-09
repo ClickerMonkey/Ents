@@ -35,17 +35,21 @@ public class AndFilter implements EntityFilter
    protected EntityFilter second;
 
    /**
-    * 
+    * Instantiates an AndFilter without two filters. The
+    * {@link #set(EntityFilter,EntityFilter)} method needs to be called,
+    * otherwise a {@link NullPointerException} will be thrown.
     */
    public AndFilter()
    {
-
    }
 
    /**
+    * Instantiates an AndFilter.
     * 
     * @param first
+    *        The first filter to check for valid entities.
     * @param second
+    *        The second filter to check for valid entities.
     */
    public AndFilter( EntityFilter first, EntityFilter second )
    {
@@ -53,13 +57,13 @@ public class AndFilter implements EntityFilter
    }
 
    /**
-    * Resets the AndFilter specifying the filters to combine.
+    * Resets and returns this filter by specifying the filters to combine.
     * 
     * @param first
     *        The first filter to check for valid entities.
     * @param second
     *        The second filter to check for valid entities.
-    * @return The {@link Iterable} filtered by both filters.
+    * @return The reference to this filter.
     */
    public AndFilter set( EntityFilter first, EntityFilter second )
    {

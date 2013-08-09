@@ -85,6 +85,22 @@ public class BitSet extends java.util.BitSet
    }
 
    /**
+    * Instantiates a new BitSet with the same value as another.
+    * 
+    * @param bits
+    *        The BitSet to copy.
+    */
+   public BitSet( BitSet bits )
+   {
+      super( bits != null ? bits.size() : 0 );
+
+      if (bits != null)
+      {
+         this.or( bits );
+      }
+   }
+
+   /**
     * Sets bits at the indices given to true.
     * 
     * @param indices

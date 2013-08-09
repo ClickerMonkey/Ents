@@ -37,15 +37,19 @@ public class TemplateExactFilter implements EntityFilter
    protected Template template;
 
    /**
-    * 
+    * Instantiates a TemplateExactFilter without a template. The
+    * {@link #set(Template)} method needs to be called, otherwise a
+    * {@link NullPointerException} will be thrown.
     */
    public TemplateExactFilter()
    {
    }
 
    /**
+    * Instantiates a TemplateExactFilter.
     * 
     * @param template
+    *        The template the Entities filtered must have.
     */
    public TemplateExactFilter( Template template )
    {
@@ -53,11 +57,12 @@ public class TemplateExactFilter implements EntityFilter
    }
 
    /**
-    * Resets the ComponentFilter specifying the template the Entities must have.
+    * Resets and returns this filter by specifying the template the Entities
+    * must have.
     * 
     * @param template
     *        The template the Entities filtered must have.
-    * @return The {@link Iterable} filtered by Template.
+    * @return The reference to this filter.
     */
    public TemplateExactFilter set( Template template )
    {

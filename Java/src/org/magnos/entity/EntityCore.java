@@ -16,6 +16,8 @@
 
 package org.magnos.entity;
 
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 import org.magnos.entity.util.IndexPool;
 
 
@@ -232,27 +234,27 @@ public class EntityCore
       return new Template();
    }
 
-   public static Template newTemplate( String name, Components componentSet, Controllers controllerSet, View view )
+   public static Template newTemplate( String name, ComponentSet componentSet, ControllerSet controllerSet, View view )
    {
       return registerTemplate( templates.addDefinition( new Template( templates.nextId(), name, null, componentSet, controllerSet, view ) ) );
    }
 
-   public static Template newTemplate( String name, Components componentSet, Controllers controllerSet )
+   public static Template newTemplate( String name, ComponentSet componentSet, ControllerSet controllerSet )
    {
       return newTemplate( name, componentSet, controllerSet, View.NONE );
    }
 
    public static Template newTemplate( String name, Component<?>... components )
    {
-      return newTemplate( name, new Components( components ), Controllers.NONE, View.NONE );
+      return newTemplate( name, new ComponentSet( components ), ControllerSet.NONE, View.NONE );
    }
 
    public static Template newTemplate( String name )
    {
-      return newTemplate( name, Components.NONE, Controllers.NONE, View.NONE );
+      return newTemplate( name, ComponentSet.NONE, ControllerSet.NONE, View.NONE );
    }
 
-   public static Template newTemplate( Template base, String name, Components componentSet, Controllers controllerSet, View view )
+   public static Template newTemplate( Template base, String name, ComponentSet componentSet, ControllerSet controllerSet, View view )
    {
       Template t = templates.addDefinition( base.extend( templates.nextId(), name ) );
 
@@ -274,19 +276,19 @@ public class EntityCore
       return registerTemplate( t );
    }
 
-   public static Template newTemplate( Template base, String name, Components componentSet, Controllers controllerSet )
+   public static Template newTemplate( Template base, String name, ComponentSet componentSet, ControllerSet controllerSet )
    {
       return newTemplate( base, name, componentSet, controllerSet, View.NONE );
    }
 
    public static Template newTemplate( Template base, String name, Component<?> ... components )
    {
-      return newTemplate( base, name, new Components( components ), Controllers.NONE, View.NONE );
+      return newTemplate( base, name, new ComponentSet( components ), ControllerSet.NONE, View.NONE );
    }
 
    public static Template newTemplate( Template base, String name )
    {
-      return newTemplate( base, name, Components.NONE, Controllers.NONE, View.NONE );
+      return newTemplate( base, name, ComponentSet.NONE, ControllerSet.NONE, View.NONE );
    }
 
    public static Template newTemplate( String name, boolean overwrite, Template... templatesToMerge )

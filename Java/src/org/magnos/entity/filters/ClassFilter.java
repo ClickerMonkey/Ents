@@ -37,7 +37,7 @@ public class ClassFilter implements EntityFilter
    protected Class<? extends Entity> entityClass;
 
    /**
-    * Instantiates a ClassFilter with a class. The {@link #set(Class)} method
+    * Instantiates a ClassFilter without a class. The {@link #set(Class)} method
     * needs to be called, otherwise the filter will find no entities valid.
     */
    public ClassFilter()
@@ -48,7 +48,7 @@ public class ClassFilter implements EntityFilter
     * Instantiates a new ClassFilter.
     * 
     * @param entityClass
-    *       The class of the entities to return. 
+    *        The class of the entities to return.
     * @see Entity
     * @see EntityChain
     * @see EntityList
@@ -60,11 +60,11 @@ public class ClassFilter implements EntityFilter
    }
 
    /**
-    * Resets the ClassFilter specifying the Entity class.
+    * Resets and returns this filter by specifying the Entity class.
     * 
     * @param entityClass
     *        The class of the entities to return.
-    * @return The reference to this filter. 
+    * @return The reference to this filter.
     * @see Entity
     * @see EntityChain
     * @see EntityList

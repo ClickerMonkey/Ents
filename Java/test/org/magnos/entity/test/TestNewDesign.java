@@ -23,8 +23,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.ComponentValueFactory;
-import org.magnos.entity.Components;
-import org.magnos.entity.Controllers;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityCore;
@@ -33,6 +31,8 @@ import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Bounds;
 import org.magnos.entity.test.helper.Vector;
+import org.magnos.entity.util.ComponentSet;
+import org.magnos.entity.util.ControllerSet;
 import org.magnos.entity.vals.FloatVal;
 
 
@@ -98,17 +98,12 @@ public class TestNewDesign
    public static class ViewDefault implements Renderer
    {
 
-      public void drawStart(Entity e, Object drawState)
+      public void begin(Entity e, Object drawState)
       {
          
       }
       
-      public void draw( Entity e, Object drawState )
-      {
-
-      }
-      
-      public void drawEnd(Entity e, Object drawState) 
+      public void end(Entity e, Object drawState) 
       {
          
       }
@@ -167,8 +162,8 @@ public class TestNewDesign
       final View SHIP_VIEW = EntityCore.newView( "ship", new ViewDefault() );
       final View ASTEROID_VIEW = EntityCore.newView( "asteroid", new ViewDefault() );
 
-      final Template SHIP = EntityCore.newTemplate( "ship", new Components( POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC ), new Controllers(), SHIP_VIEW );
-      final Template ASTEROID = EntityCore.newTemplate( "asteroid", new Components( POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC ), new Controllers(), ASTEROID_VIEW );
+      final Template SHIP = EntityCore.newTemplate( "ship", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC ), new ControllerSet(), SHIP_VIEW );
+      final Template ASTEROID = EntityCore.newTemplate( "asteroid", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC ), new ControllerSet(), ASTEROID_VIEW );
 
       assertTrue( SHIP.has( SHAPE ) );
       assertTrue( SHIP.has( BOUNDS ) );

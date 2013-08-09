@@ -36,7 +36,9 @@ public class ControllerFilter implements EntityFilter
    protected BitSet controllers;
 
    /**
-    * 
+    * Instantiates a ControllerFilter without controllers. The
+    * {@link #set(Controller...)} method needs to be called, otherwise the
+    * filter will find no entities valid.
     */
    public ControllerFilter()
    {
@@ -44,8 +46,11 @@ public class ControllerFilter implements EntityFilter
    }
 
    /**
+    * Instantiates a ControllerFilter.
     * 
     * @param controllers
+    *        The set of controllers each entity returned by the filter will
+    *        have.
     */
    public ControllerFilter( Controller... controllers )
    {
@@ -53,13 +58,13 @@ public class ControllerFilter implements EntityFilter
    }
 
    /**
-    * Resets the ControllerFilter specifying the set of controllers to filter
-    * by.
+    * Resets and returns this filter by specifying the set of controllers to
+    * filter by.
     * 
     * @param components
     *        The set of controllers each entity returned by the filter will
     *        have.
-    * @return The {@link Iterable} filter by controllers.
+    * @return The reference to this filter.
     */
    public ControllerFilter set( Controller... controllers )
    {

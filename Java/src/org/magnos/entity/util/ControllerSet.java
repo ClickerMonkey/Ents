@@ -14,34 +14,38 @@
  * 				Open Software License (OSL 3.0)
  */
 
-package org.magnos.entity;
+package org.magnos.entity.util;
+
+import org.magnos.entity.Controller;
+import org.magnos.entity.EntityCore;
+import org.magnos.entity.Template;
+
 
 /**
- * A simple collection of {@link Component}s passed to {@link EntityCore} to
- * define what components a {@link Template} should have. The order of
- * components passed in define the order in which they are added to a Template
- * and subsequently any Entity.
+ * A simple collection of {@link ControllerSet}s passed to {@link EntityCore} to
+ * define what controllers a {@link Template} should have. The order of
+ * controllers passed in define the order of controller execution for an Entity.
  * 
  * @author Philip Diffenderfer
  * 
  */
-public class Components
+public class ControllerSet
 {
 
-   public static final Components NONE = new Components();
-   
-   /**
-    * The components passed into the constructor.
-    */
-   public final Component<?>[] values;
+   public static final ControllerSet NONE = new ControllerSet();
 
    /**
-    * Instantiates a new Components.
+    * The controllers passed into the constructor.
+    */
+   public final Controller[] values;
+
+   /**
+    * Instantiates a new Controllers.
     * 
     * @param values
-    *        The components that should be added to a template.
+    *        The controllers that should be added to a template.
     */
-   public Components( Component<?>... values )
+   public ControllerSet( Controller... values )
    {
       this.values = values;
    }

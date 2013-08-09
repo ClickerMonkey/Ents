@@ -80,31 +80,16 @@ public class EntityChain extends Entity
    {
       if (visible || !inheritVisible)
       {
-         final boolean draw = (visible && renderer != null);
-
-         if (draw)
-         {
-            renderer.drawStart( this, drawState );
-         }
-
          if (validateFirst())
          {
             first.draw( drawState );
          }
 
-         if (draw)
-         {
-            renderer.draw( this, drawState );
-         }
-
+         super.draw( drawState );
+         
          if (validateLast())
          {
             last.draw( drawState );
-         }
-
-         if (draw)
-         {
-            renderer.drawEnd( this, drawState );
          }
       }
    }

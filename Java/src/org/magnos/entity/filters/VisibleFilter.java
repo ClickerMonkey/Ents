@@ -31,6 +31,9 @@ import org.magnos.entity.EntityIterator;
 public class VisibleFilter implements EntityFilter
 {
 
+   /**
+    * A single instance to a ViewFilter.
+    */
    public static final VisibleFilter INSTANCE = new VisibleFilter();
    
    private VisibleFilter()
