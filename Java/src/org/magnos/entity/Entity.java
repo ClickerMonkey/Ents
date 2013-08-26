@@ -202,7 +202,16 @@ public class Entity
    /**
     * This removes this Entity from the Template and destroys the Entity's
     * Renderer. Once this method is called, this Entity should not by used,
-    * all methods will most likely result in a {@link NullPointerException}.
+    * all methods will most likely result in a {@link NullPointerException}. <br/>
+    * <br/>
+    * If the entity is added to an Entity collection, delete will be called
+    * whenever the {@link #update(Object)} or {@link EntityList#clean()} is
+    * called and this entity is expired. It will also cause this entity to
+    * removed from its container. <br/>
+    * <br/>
+    * Once an entity is {@link #isDeleted()} most calls to its methods will
+    * result in a {@link NullPointerException} since the template has been set
+    * to null.
     */
    public boolean delete()
    {
@@ -229,8 +238,9 @@ public class Entity
    }
 
    /**
+    * Determines whether this Entity has been deleted.
     * 
-    * @return
+    * @return True if the Entity has been deleted, otherwise false.
     */
    public boolean isDeleted()
    {
@@ -317,16 +327,44 @@ public class Entity
       return template.hasView();
    }
 
+   /**
+    * Determines if this Entity has a non-null renderer. Even if the renderer is
+    * non-null it might not be called if the entity is marked as invisible.
+    * 
+    * @return True if this Entity has a non-null renderer.
+    */
    public boolean hasRenderer()
    {
       return renderer != null;
    }
 
+   /**
+    * Returns the reference to the {@link Renderer} for this Entity. The
+    * {@link Renderer#create(Entity)} and {@link Renderer#destroy(Entity)}
+    * should not be called on the Renderer returned, it may negatively affect
+    * the rendering of this Entity and even the application. <br/>
+    * <br/>
+    * The reference returned was created by invoking
+    * {@link #setRenderer(Renderer)}, or by having a non-null view and causing
+    * {@link Renderer#create(Entity)} to be called and the returned reference be
+    * used.
+    * 
+    * @return The reference to this Entity's renderer, or null.
+    */
    public Renderer getRenderer()
    {
       return renderer;
    }
 
+   /**
+    * Returns the {@link View} associated with this Entity. The view holds the
+    * {@link Renderer} that's responsible for drawing this Entity. Even if the
+    * view is null this Entity can still have a Renderer if the
+    * {@link #setRenderer(Renderer)} method was invoked with a non-null
+    * Renderer.
+    * 
+    * @return The reference to the View for this Entity.
+    */
    public View getView()
    {
       return template.getView();
@@ -352,6 +390,8 @@ public class Entity
    /**
     * Enables this entity, calling any enabled controllers when
     * {@link #update(Object)} is called.
+    * 
+    * @see #setEnabled(boolean)
     */
    public void enable()
    {
@@ -360,6 +400,8 @@ public class Entity
 
    /**
     * Disables this entity, {@link #update(Object)} will have no affect.
+    * 
+    * @see #setEnabled(boolean)
     */
    public void disable()
    {
@@ -368,6 +410,7 @@ public class Entity
 
    /**
     * @return True if the entity is enabled, otherwise false.
+    * @see #setEnabled(boolean)
     */
    public boolean isEnabled()
    {
@@ -401,21 +444,44 @@ public class Entity
    }
 
    /**
-    * 
+    * Determines whether the given {@link Controller} (or an alternative) is
+    * enabled for this Entity. If the controller doesn't exist, an
+    * {@link IndexOutOfBoundsException} will be thrown. To avoid an exception,
+    * {@link #has(Controller)} should be tested first. If this method returns
+    * true, {@link Control#update(Entity, Object)} is called on the controller
+    * if {@link #isEnabled()} is true and {@link #update(Object)} is invoked.
     * 
     * @param controller
-    * @return
+    *        The controller to check for being enabled.
+    * @return True if the controller exists in this Entity and it's enabled.
     */
    public boolean isControllerEnabled( Controller controller )
    {
       return controllerEnabled.get( template.indexOf( controller ) );
    }
 
+   /**
+    * Sets whether the given controller is enabled on this Entity. If this
+    * Entity doesn't have the given Controller (or an alternative) then an
+    * {@link IndexOutOfBoundsException} is thrown. To avoid an exception,
+    * {@link #has(Controller)} should be tested first. An enabled controller
+    * will have it's {@link Control#update(Entity, Object)} method invoked
+    * if {@link #isEnabled()} is true and {@link #update(Object)} is invoked.
+    * 
+    * @param controller
+    *        The controller to enable or disable.
+    * @param enabled
+    *        True to enable the controller, false to disable it.
+    */
    public void setControllerEnabled( Controller controller, boolean enabled )
    {
       controllerEnabled.set( template.indexOf( controller ), enabled );
    }
 
+   /**
+    * Enables all controllers that exist in this Entity.
+    * @param enabled
+    */
    public void setControllerEnabledAll( boolean enabled )
    {
       controllerEnabled.set( 0, template.controllers.length, enabled );
