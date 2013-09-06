@@ -93,9 +93,11 @@ An EntityIterator takes an Entity (typically a container) and traverses all chil
 
 ##### Example
 
+_Iterating over all enabled entities with a position and velocity component and updating their position._
+
 (in Java)
 ```java
-EntityFilter filter = new AndFilter(new ComponentFilter(POSITION, VELOCITY), EnabledFilter.INSTANCE);
+EntityFilter filter = and(components(POSITION, VELOCITY), enabled());
 EntityIterator iterator = new EntityIterator(filter);
 
 Entity root = ...
