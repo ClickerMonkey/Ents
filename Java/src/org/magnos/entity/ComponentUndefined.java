@@ -31,29 +31,29 @@ package org.magnos.entity;
 class ComponentUndefined<T> extends Component<T>
 {
 
-   /**
-    * Instantiates a new ComponentUndefined.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    */
-   protected ComponentUndefined( int id, String name )
-   {
-      super( id, name );
-   }
+    /**
+     * Instantiates a new ComponentUndefined.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     */
+    protected ComponentUndefined( int id, String name )
+    {
+        super( id, name );
+    }
 
-   @Override
-   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
-   {
+    @Override
+    protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
+    {
 
-   }
+    }
 
-   @Override
-   protected TemplateComponent<T> add( Template template )
-   {
-      throw new RuntimeException( "An undefined component cannot be added to a Template" );
-   }
+    @Override
+    protected TemplateComponent<T> add( Template template )
+    {
+        throw new RuntimeException( "An undefined component cannot be added to a Template" );
+    }
 
 }

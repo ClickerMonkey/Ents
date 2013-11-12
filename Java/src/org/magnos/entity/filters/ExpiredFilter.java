@@ -31,19 +31,19 @@ import org.magnos.entity.EntityIterator;
 public class ExpiredFilter implements EntityFilter
 {
 
-   /**
-    * A single instance to a ExpiredFilter.
-    */
-   public static final ExpiredFilter INSTANCE = new ExpiredFilter();
-   
-   private ExpiredFilter()
-   {
-   }
-   
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.isExpired();
-   }
+    /**
+     * A single instance to a ExpiredFilter.
+     */
+    public static final ExpiredFilter INSTANCE = new ExpiredFilter();
+
+    private ExpiredFilter()
+    {
+    }
+
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.isExpired();
+    }
 
 }

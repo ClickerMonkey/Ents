@@ -33,17 +33,17 @@ public class EntityList extends Entity
 
    public EntityList()
    {
-      this( EntityCore.newTemplate(), DEFAULT_CAPACITY );
+      this( Ents.newTemplate(), DEFAULT_CAPACITY );
    }
 
    public EntityList( int initialCapacity )
    {
-      this( EntityCore.newTemplate(), initialCapacity );
+      this( Ents.newTemplate(), initialCapacity );
    }
 
    public EntityList( Entity... entities )
    {
-      this( EntityCore.newTemplate(), entities.length );
+      this( Ents.newTemplate(), entities.length );
 
       this.add( entities );
    }

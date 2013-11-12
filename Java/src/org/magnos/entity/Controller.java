@@ -38,26 +38,26 @@ package org.magnos.entity;
 public class Controller extends Id
 {
 
-   /**
-    * The Control implementation to invoke for this Controller.
-    */
-   public Control control;
+    /**
+     * The Control implementation to invoke for this Controller.
+     */
+    public Control control;
 
-   /**
-    * Instantiates a new Controller.
-    * 
-    * @param id
-    *        The id of the controller.
-    * @param name
-    *        The name of the controller.
-    * @param control
-    *        The {@link Control} implementation.
-    */
-   public Controller( int id, String name, Control control )
-   {
-      super( id, name );
+    /**
+     * Instantiates a new Controller.
+     * 
+     * @param id
+     *        The id of the controller.
+     * @param name
+     *        The name of the controller.
+     * @param control
+     *        The {@link Control} implementation.
+     */
+    public Controller( int id, String name, Control control )
+    {
+        super( id, name );
 
-      this.control = control;
-   }
+        this.control = control;
+    }
 
 }

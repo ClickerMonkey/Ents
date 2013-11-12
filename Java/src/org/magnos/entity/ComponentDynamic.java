@@ -31,85 +31,85 @@ package org.magnos.entity;
 class ComponentDynamic<T> extends Component<T>
 {
 
-   /**
-    * The interface that handles dynamically computing a value and dynamically
-    * modifying an entity based on some set value.
-    */
-   private final DynamicValue<T> dynamic;
+    /**
+     * The interface that handles dynamically computing a value and dynamically
+     * modifying an entity based on some set value.
+     */
+    private final DynamicValue<T> dynamic;
 
-   /**
-    * A cached handler.
-    */
-   private final ComponentDynamicHandler handler;
+    /**
+     * A cached handler.
+     */
+    private final ComponentDynamicHandler handler;
 
-   /**
-    * Instantiates a new ComponentDynamic.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    * @param dynamic
-    *        The DynamicValue implementation for this component.
-    */
-   protected ComponentDynamic( int id, String name, DynamicValue<T> dynamic )
-   {
-      super( id, name );
+    /**
+     * Instantiates a new ComponentDynamic.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     * @param dynamic
+     *        The DynamicValue implementation for this component.
+     */
+    protected ComponentDynamic( int id, String name, DynamicValue<T> dynamic )
+    {
+        super( id, name );
 
-      this.dynamic = dynamic;
-      this.handler = new ComponentDynamicHandler();
-   }
+        this.dynamic = dynamic;
+        this.handler = new ComponentDynamicHandler();
+    }
 
-   @Override
-   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
-   {
+    @Override
+    protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
+    {
 
-   }
+    }
 
-   @Override
-   protected TemplateComponent<T> add( Template template )
-   {
-      return handler;
-   }
+    @Override
+    protected TemplateComponent<T> add( Template template )
+    {
+        return handler;
+    }
 
-   private class ComponentDynamicHandler implements TemplateComponent<T>
-   {
+    private class ComponentDynamicHandler implements TemplateComponent<T>
+    {
 
-      @Override
-      public void set( Entity e, T value )
-      {
-         dynamic.set( e, value );
-      }
+        @Override
+        public void set( Entity e, T value )
+        {
+            dynamic.set( e, value );
+        }
 
-      @Override
-      public T get( Entity e )
-      {
-         return dynamic.get( e );
-      }
+        @Override
+        public T get( Entity e )
+        {
+            return dynamic.get( e );
+        }
 
-      @Override
-      public T take( Entity e, T target )
-      {
-         return dynamic.take( e, target );
-      }
+        @Override
+        public T take( Entity e, T target )
+        {
+            return dynamic.take( e, target );
+        }
 
-      @Override
-      public void remove( Template template )
-      {
+        @Override
+        public void remove( Template template )
+        {
 
-      }
+        }
 
-      @Override
-      public void postAdd( Entity e )
-      {
-         
-      }
-      
-      @Override
-      public void preRemove( Entity e )
-      {
-         
-      }
-   }
+        @Override
+        public void postAdd( Entity e )
+        {
+
+        }
+
+        @Override
+        public void preRemove( Entity e )
+        {
+
+        }
+    }
 
 }

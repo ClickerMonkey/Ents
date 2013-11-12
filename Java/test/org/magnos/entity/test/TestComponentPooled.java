@@ -10,7 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.ComponentPooled;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Template;
 import org.magnos.entity.test.helper.Vector;
 
@@ -23,11 +23,11 @@ public class TestComponentPooled
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
-   static ComponentPooled<Vector> POSITION = (ComponentPooled<Vector>)EntityCore.newComponentPooled( "position", new Vector() );
-   static Template POSITIONED = EntityCore.newTemplate( "positioned", POSITION );
+   static ComponentPooled<Vector> POSITION = (ComponentPooled<Vector>)Ents.newComponentPooled( "position", new Vector() );
+   static Template POSITIONED = Ents.newTemplate( "positioned", POSITION );
 
    @Test
    public void testGet()

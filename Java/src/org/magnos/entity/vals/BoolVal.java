@@ -31,58 +31,58 @@ import org.magnos.entity.ComponentValueFactory;
 public class BoolVal implements ComponentValueFactory<BoolVal>
 {
 
-   public boolean v;
+    public boolean v;
 
-   public BoolVal()
-   {
-   }
+    public BoolVal()
+    {
+    }
 
-   public BoolVal( boolean v )
-   {
-      this.v = v;
-   }
+    public BoolVal( boolean v )
+    {
+        this.v = v;
+    }
 
-   public BoolVal( BoolVal iv )
-   {
-      this.v = iv.v;
-   }
+    public BoolVal( BoolVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public BoolVal create()
-   {
-      return new BoolVal( v );
-   }
+    @Override
+    public BoolVal create()
+    {
+        return new BoolVal( v );
+    }
 
-   @Override
-   public BoolVal clone( BoolVal value )
-   {
-      return new BoolVal( value );
-   }
+    @Override
+    public BoolVal clone( BoolVal value )
+    {
+        return new BoolVal( value );
+    }
 
-   @Override
-   public BoolVal copy( BoolVal from, BoolVal to )
-   {
-      to.v = from.v;
+    @Override
+    public BoolVal copy( BoolVal from, BoolVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return (v ? 1231 : 1237);
-   }
+    @Override
+    public int hashCode()
+    {
+        return (v ? 1231 : 1237);
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof BoolVal) && ((BoolVal)obj).v == v;
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof BoolVal) && ((BoolVal)obj).v == v;
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

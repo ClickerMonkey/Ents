@@ -27,15 +27,15 @@ package org.magnos.entity;
 public interface ComponentFactory<T>
 {
 
-   /**
-    * Creates a new Component given the id and name of the component.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    * @return The reference to a newly created component.
-    */
-   public Component<T> create( int id, String name );
+    /**
+     * Creates a new Component given the id and name of the component.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     * @return The reference to a newly created component.
+     */
+    public Component<T> create( int id, String name );
 
 }

@@ -29,7 +29,7 @@ import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Bounds;
@@ -45,22 +45,22 @@ public class TestEntityBasic
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
    static class TestComponents
    {
 
-      public static Component<String> NAME = EntityCore.newComponent( "name", new ComponentFactoryNull<String>() );
-      public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-      public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
-      public static Component<IntVal> ID = EntityCore.newComponent( "id", new IntVal() );
-      public static Component<Vector> SPATIAL_POSITION = EntityCore.newComponent( "spatial position", new Vector() );
-      public static Component<Vector> SPATIAL_VELOCITY = EntityCore.newComponent( "spatial velocity", new Vector() );
-      public static Component<Vector> SPATIAL_POSITION_ALIAS = EntityCore.newComponentAlias( POSITION, SPATIAL_POSITION );
-      public static Component<Vector> SPATIAL_VELOCITY_ALIAS = EntityCore.newComponentAlias( VELOCITY, SPATIAL_VELOCITY );
-      public static Component<Vector> SIZE = EntityCore.newComponent( "size", new Vector() );
-      public static Component<Bounds> BOUNDS = EntityCore.newComponentDynamic( "bounds", new DynamicValue<Bounds>() {
+      public static Component<String> NAME = Ents.newComponent( "name", new ComponentFactoryNull<String>() );
+      public static Component<Vector> POSITION = Ents.newComponent( "position", new Vector() );
+      public static Component<Vector> VELOCITY = Ents.newComponent( "velocity", new Vector() );
+      public static Component<IntVal> ID = Ents.newComponent( "id", new IntVal() );
+      public static Component<Vector> SPATIAL_POSITION = Ents.newComponent( "spatial position", new Vector() );
+      public static Component<Vector> SPATIAL_VELOCITY = Ents.newComponent( "spatial velocity", new Vector() );
+      public static Component<Vector> SPATIAL_POSITION_ALIAS = Ents.newComponentAlias( POSITION, SPATIAL_POSITION );
+      public static Component<Vector> SPATIAL_VELOCITY_ALIAS = Ents.newComponentAlias( VELOCITY, SPATIAL_VELOCITY );
+      public static Component<Vector> SIZE = Ents.newComponent( "size", new Vector() );
+      public static Component<Bounds> BOUNDS = Ents.newComponentDynamic( "bounds", new DynamicValue<Bounds>() {
 
          public void set( Entity e, Bounds value )
          {
@@ -94,13 +94,13 @@ public class TestEntityBasic
    static class TestViews
    {
 
-      public static View SPRITE = EntityCore.newView( "sprite" );
+      public static View SPRITE = Ents.newView( "sprite" );
    }
 
    static class TestControllers
    {
 
-      public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
+      public static Controller PHYSICS = Ents.newController( "physics", new Control() {
 
          public void update( Entity e, Object updateState )
          {
@@ -112,7 +112,7 @@ public class TestEntityBasic
    static class TestTemplates
    {
 
-      public static Template SPRITE = EntityCore.newTemplate( "sprite",
+      public static Template SPRITE = Ents.newTemplate( "sprite",
          /*  components */ new ComponentSet( TestComponents.NAME, TestComponents.POSITION, TestComponents.VELOCITY, TestComponents.SIZE, TestComponents.SPATIAL_POSITION_ALIAS, TestComponents.SPATIAL_VELOCITY_ALIAS, TestComponents.BOUNDS ),
          /* controllers */ new ControllerSet( TestControllers.PHYSICS ),
          /*    view     */ TestViews.SPRITE

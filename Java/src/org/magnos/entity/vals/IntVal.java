@@ -31,58 +31,58 @@ import org.magnos.entity.ComponentValueFactory;
 public class IntVal implements ComponentValueFactory<IntVal>
 {
 
-   public int v;
+    public int v;
 
-   public IntVal()
-   {
-   }
+    public IntVal()
+    {
+    }
 
-   public IntVal( int v )
-   {
-      this.v = v;
-   }
+    public IntVal( int v )
+    {
+        this.v = v;
+    }
 
-   public IntVal( IntVal iv )
-   {
-      this.v = iv.v;
-   }
+    public IntVal( IntVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public IntVal create()
-   {
-      return new IntVal( v );
-   }
+    @Override
+    public IntVal create()
+    {
+        return new IntVal( v );
+    }
 
-   @Override
-   public IntVal clone( IntVal value )
-   {
-      return new IntVal( value );
-   }
+    @Override
+    public IntVal clone( IntVal value )
+    {
+        return new IntVal( value );
+    }
 
-   @Override
-   public IntVal copy( IntVal from, IntVal to )
-   {
-      to.v = from.v;
+    @Override
+    public IntVal copy( IntVal from, IntVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return v;
-   }
+    @Override
+    public int hashCode()
+    {
+        return v;
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof IntVal) && ((IntVal)obj).v == v;
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof IntVal) && ((IntVal)obj).v == v;
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

@@ -31,58 +31,58 @@ import org.magnos.entity.ComponentValueFactory;
 public class CharVal implements ComponentValueFactory<CharVal>
 {
 
-   public char v;
+    public char v;
 
-   public CharVal()
-   {
-   }
+    public CharVal()
+    {
+    }
 
-   public CharVal( char v )
-   {
-      this.v = v;
-   }
+    public CharVal( char v )
+    {
+        this.v = v;
+    }
 
-   public CharVal( CharVal iv )
-   {
-      this.v = iv.v;
-   }
+    public CharVal( CharVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public CharVal create()
-   {
-      return new CharVal( v );
-   }
+    @Override
+    public CharVal create()
+    {
+        return new CharVal( v );
+    }
 
-   @Override
-   public CharVal clone( CharVal value )
-   {
-      return new CharVal( value );
-   }
+    @Override
+    public CharVal clone( CharVal value )
+    {
+        return new CharVal( value );
+    }
 
-   @Override
-   public CharVal copy( CharVal from, CharVal to )
-   {
-      to.v = from.v;
+    @Override
+    public CharVal copy( CharVal from, CharVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return v;
-   }
+    @Override
+    public int hashCode()
+    {
+        return v;
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof CharVal) && ((CharVal)obj).v == v;
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof CharVal) && ((CharVal)obj).v == v;
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

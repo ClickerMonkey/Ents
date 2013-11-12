@@ -18,7 +18,7 @@ import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
@@ -36,7 +36,7 @@ public class TestEntity
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
    // @formatter:off
@@ -93,22 +93,22 @@ public class TestEntity
       public Renderer create( Entity e ) { return this; }
    };
    
-   static Component<FloatVal>   LEFT            = EntityCore.newComponent( "left", new FloatVal() );
-   static Component<FloatVal>   RIGHT           = EntityCore.newComponent( "right", new FloatVal() );
-   static Component<FloatVal>   SPEED           = EntityCore.newComponent( "speed", new FloatVal() );
-   static Component<FloatVal>   CENTER          = EntityCore.newComponentDynamic( "center", DYNAMIC_CENTER );
-   static Controller            MOTION          = EntityCore.newController( "motion", CONTROL_MOTION );
-   static Controller            NETWORKING      = EntityCore.newController( "networking" );
-   static View                  EXTENT_VIEW     = EntityCore.newView( "extent-view", RENDERER_EXTENT );
-   static Template              EXTENT          = EntityCore.newTemplate( "extent", new ComponentSet(LEFT, RIGHT, CENTER), new ControllerSet(MOTION), EXTENT_VIEW );
+   static Component<FloatVal>   LEFT            = Ents.newComponent( "left", new FloatVal() );
+   static Component<FloatVal>   RIGHT           = Ents.newComponent( "right", new FloatVal() );
+   static Component<FloatVal>   SPEED           = Ents.newComponent( "speed", new FloatVal() );
+   static Component<FloatVal>   CENTER          = Ents.newComponentDynamic( "center", DYNAMIC_CENTER );
+   static Controller            MOTION          = Ents.newController( "motion", CONTROL_MOTION );
+   static Controller            NETWORKING      = Ents.newController( "networking" );
+   static View                  EXTENT_VIEW     = Ents.newView( "extent-view", RENDERER_EXTENT );
+   static Template              EXTENT          = Ents.newTemplate( "extent", new ComponentSet(LEFT, RIGHT, CENTER), new ControllerSet(MOTION), EXTENT_VIEW );
    
-   static Component<IntVal>     DRAW_COUNT      = EntityCore.newComponent( "draw-count", new IntVal() );
-   static View                  DRAWS_VIEW      = EntityCore.newView( "draws-view", RENDERER_DRAWS );
-   static Template              DRAWS           = EntityCore.newTemplate( "draws", new ComponentSet(DRAW_COUNT), ControllerSet.NONE, DRAWS_VIEW );
+   static Component<IntVal>     DRAW_COUNT      = Ents.newComponent( "draw-count", new IntVal() );
+   static View                  DRAWS_VIEW      = Ents.newView( "draws-view", RENDERER_DRAWS );
+   static Template              DRAWS           = Ents.newTemplate( "draws", new ComponentSet(DRAW_COUNT), ControllerSet.NONE, DRAWS_VIEW );
    
-   static Component<IntVal>     UPDATE_COUNT    = EntityCore.newComponent( "update-count", new IntVal() );
-   static Controller            UPDATES_CONTROL = EntityCore.newController( "updates-control", CONTROL_UPDATES );
-   static Template              UPDATES         = EntityCore.newTemplate( "updates", new ComponentSet(UPDATE_COUNT), new ControllerSet(UPDATES_CONTROL) );
+   static Component<IntVal>     UPDATE_COUNT    = Ents.newComponent( "update-count", new IntVal() );
+   static Controller            UPDATES_CONTROL = Ents.newController( "updates-control", CONTROL_UPDATES );
+   static Template              UPDATES         = Ents.newTemplate( "updates", new ComponentSet(UPDATE_COUNT), new ControllerSet(UPDATES_CONTROL) );
    
    // @formatter:on
 

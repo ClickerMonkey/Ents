@@ -23,7 +23,6 @@ package org.magnos.entity;
  * {@link Entity#gets(Component, Object)},
  * {@link Entity#take(Component, Object)}, and
  * {@link Entity#takes(Component, Object)} methods.
- * 
  * <p>
  * If you want slightly quicker access to getting and setting the components of
  * an Entity you can call these methods directly and pass in the Entity. This is
@@ -45,63 +44,64 @@ package org.magnos.entity;
 public interface TemplateComponent<T>
 {
 
-   /**
-    * Sets the value on the Entity.
-    * 
-    * @param e
-    *        The entity to set the value to.
-    * @param value
-    *        The new value for the component.
-    */
-   public void set( Entity e, T value );
+    /**
+     * Sets the value on the Entity.
+     * 
+     * @param e
+     *        The entity to set the value to.
+     * @param value
+     *        The new value for the component.
+     */
+    public void set( Entity e, T value );
 
-   /**
-    * Gets the value from the Entity.
-    * 
-    * @param e
-    *        The entity to get the value from.
-    * @return The reference to the value on the Entity.
-    */
-   public T get( Entity e );
+    /**
+     * Gets the value from the Entity.
+     * 
+     * @param e
+     *        The entity to get the value from.
+     * @return The reference to the value on the Entity.
+     */
+    public T get( Entity e );
 
-   /**
-    * Sets target to the value on the Entity and returns it.
-    * 
-    * @param e
-    *        The entity to take from.
-    * @param target
-    *        The target value to set and return.
-    * @return The reference to target.
-    */
-   public T take( Entity e, T target );
+    /**
+     * Sets target to the value on the Entity and returns it.
+     * 
+     * @param e
+     *        The entity to take from.
+     * @param target
+     *        The target value to set and return.
+     * @return The reference to target.
+     */
+    public T take( Entity e, T target );
 
-   /**
-    * Removes this TemplateComponent from the given template. This is for
-    * internal use, do not call this directly.
-    * 
-    * @param template
-    *        The template to remove this TemplateComponent from.
-    */
-   public void remove( Template template );
+    /**
+     * Removes this TemplateComponent from the given template. This is for
+     * internal use, do not call this directly.
+     * 
+     * @param template
+     *        The template to remove this TemplateComponent from.
+     */
+    public void remove( Template template );
 
-   /**
-    * The method invoked after an Entity is created and is "added" to all
-    * of its components.
-    * 
-    * @param e
-    *        The entity that just had this component added to it.
-    */
-   public void postAdd( Entity e );
+    /**
+     * The method invoked after an Entity is created and is "added" to all
+     * of its components.
+     * 
+     * @param e
+     *        The entity that just had this component added to it.
+     */
+    public void postAdd( Entity e );
 
-   /**
-    * The method invoked after an Entity has this component replaced by another
-    * with the same ID or when an Entity is deleted. If {@link #postAdd(Entity)}
-    * is called this method will be called equally given the user properly
-    * deletes their Entities.
-    * 
-    * @param e
-    *        The entity that is having this component be removed.
-    */
-   public void preRemove( Entity e );
-   
+    /**
+     * The method invoked after an Entity has this component replaced by another
+     * with the same ID or when an Entity is deleted. If
+     * {@link #postAdd(Entity)} is called this method will be called equally
+     * given the user properly
+     * deletes their Entities.
+     * 
+     * @param e
+     *        The entity that is having this component be removed.
+     */
+    public void preRemove( Entity e );
+
 }

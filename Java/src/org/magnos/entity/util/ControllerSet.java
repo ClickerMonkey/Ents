@@ -17,12 +17,12 @@
 package org.magnos.entity.util;
 
 import org.magnos.entity.Controller;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Template;
 
 
 /**
- * A simple collection of {@link ControllerSet}s passed to {@link EntityCore} to
+ * A simple collection of {@link ControllerSet}s passed to {@link Ents} to
  * define what controllers a {@link Template} should have. The order of
  * controllers passed in define the order of controller execution for an Entity.
  * 
@@ -32,22 +32,22 @@ import org.magnos.entity.Template;
 public class ControllerSet
 {
 
-   public static final ControllerSet NONE = new ControllerSet();
+    public static final ControllerSet NONE = new ControllerSet();
 
-   /**
-    * The controllers passed into the constructor.
-    */
-   public final Controller[] values;
+    /**
+     * The controllers passed into the constructor.
+     */
+    public final Controller[] values;
 
-   /**
-    * Instantiates a new Controllers.
-    * 
-    * @param values
-    *        The controllers that should be added to a template.
-    */
-   public ControllerSet( Controller... values )
-   {
-      this.values = values;
-   }
+    /**
+     * Instantiates a new Controllers.
+     * 
+     * @param values
+     *        The controllers that should be added to a template.
+     */
+    public ControllerSet( Controller... values )
+    {
+        this.values = values;
+    }
 
 }

@@ -33,50 +33,50 @@ import org.magnos.entity.util.BitSet;
 public class ControllerFilter implements EntityFilter
 {
 
-   protected BitSet controllers;
+    protected BitSet controllers;
 
-   /**
-    * Instantiates a ControllerFilter without controllers. The
-    * {@link #set(Controller...)} method needs to be called, otherwise the
-    * filter will find no entities valid.
-    */
-   public ControllerFilter()
-   {
+    /**
+     * Instantiates a ControllerFilter without controllers. The
+     * {@link #set(Controller...)} method needs to be called, otherwise the
+     * filter will find no entities valid.
+     */
+    public ControllerFilter()
+    {
 
-   }
+    }
 
-   /**
-    * Instantiates a ControllerFilter.
-    * 
-    * @param controllers
-    *        The set of controllers each entity returned by the filter will
-    *        have.
-    */
-   public ControllerFilter( Controller... controllers )
-   {
-      set( controllers );
-   }
+    /**
+     * Instantiates a ControllerFilter.
+     * 
+     * @param controllers
+     *        The set of controllers each entity returned by the filter will
+     *        have.
+     */
+    public ControllerFilter( Controller... controllers )
+    {
+        set( controllers );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the set of controllers to
-    * filter by.
-    * 
-    * @param components
-    *        The set of controllers each entity returned by the filter will
-    *        have.
-    * @return The reference to this filter.
-    */
-   public ControllerFilter set( Controller... controllers )
-   {
-      this.controllers = new BitSet( controllers );
+    /**
+     * Resets and returns this filter by specifying the set of controllers to
+     * filter by.
+     * 
+     * @param components
+     *        The set of controllers each entity returned by the filter will
+     *        have.
+     * @return The reference to this filter.
+     */
+    public ControllerFilter set( Controller... controllers )
+    {
+        this.controllers = new BitSet( controllers );
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.hasControllers( controllers );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.hasControllers( controllers );
+    }
 
 }

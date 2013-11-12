@@ -31,58 +31,58 @@ import org.magnos.entity.ComponentValueFactory;
 public class LongVal implements ComponentValueFactory<LongVal>
 {
 
-   public long v;
+    public long v;
 
-   public LongVal()
-   {
-   }
+    public LongVal()
+    {
+    }
 
-   public LongVal( long v )
-   {
-      this.v = v;
-   }
+    public LongVal( long v )
+    {
+        this.v = v;
+    }
 
-   public LongVal( LongVal iv )
-   {
-      this.v = iv.v;
-   }
+    public LongVal( LongVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public LongVal create()
-   {
-      return new LongVal( v );
-   }
+    @Override
+    public LongVal create()
+    {
+        return new LongVal( v );
+    }
 
-   @Override
-   public LongVal clone( LongVal value )
-   {
-      return new LongVal( value );
-   }
+    @Override
+    public LongVal clone( LongVal value )
+    {
+        return new LongVal( value );
+    }
 
-   @Override
-   public LongVal copy( LongVal from, LongVal to )
-   {
-      to.v = from.v;
+    @Override
+    public LongVal copy( LongVal from, LongVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return (int)(v ^ (v >>> 32));
-   }
+    @Override
+    public int hashCode()
+    {
+        return (int)(v ^ (v >>> 32));
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof LongVal) && ((LongVal)obj).v == v;
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof LongVal) && ((LongVal)obj).v == v;
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

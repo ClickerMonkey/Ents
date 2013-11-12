@@ -31,52 +31,52 @@ import org.magnos.entity.EntityIterator;
 public class OrFilter implements EntityFilter
 {
 
-   protected EntityFilter first;
-   protected EntityFilter second;
+    protected EntityFilter first;
+    protected EntityFilter second;
 
-   /**
-    * Instantiates an OrFilter without two filters. The
-    * {@link #set(EntityFilter,EntityFilter)} method needs to be called,
-    * otherwise a {@link NullPointerException} will be thrown.
-    */
-   public OrFilter()
-   {
-   }
+    /**
+     * Instantiates an OrFilter without two filters. The
+     * {@link #set(EntityFilter,EntityFilter)} method needs to be called,
+     * otherwise a {@link NullPointerException} will be thrown.
+     */
+    public OrFilter()
+    {
+    }
 
-   /**
-    * Instantiates an OrFilter.
-    * 
-    * @param first
-    *        The first filter to check for valid entities.
-    * @param second
-    *        The second filter to check for valid entities.
-    */
-   public OrFilter( EntityFilter first, EntityFilter second )
-   {
-      set( first, second );
-   }
+    /**
+     * Instantiates an OrFilter.
+     * 
+     * @param first
+     *        The first filter to check for valid entities.
+     * @param second
+     *        The second filter to check for valid entities.
+     */
+    public OrFilter( EntityFilter first, EntityFilter second )
+    {
+        set( first, second );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the filters to combine.
-    * 
-    * @param first
-    *        The first filter to check for valid entities.
-    * @param second
-    *        The second filter to check for valid entities.
-    * @return The reference to this filter.
-    */
-   public OrFilter set( EntityFilter first, EntityFilter second )
-   {
-      this.first = first;
-      this.second = second;
+    /**
+     * Resets and returns this filter by specifying the filters to combine.
+     * 
+     * @param first
+     *        The first filter to check for valid entities.
+     * @param second
+     *        The second filter to check for valid entities.
+     * @return The reference to this filter.
+     */
+    public OrFilter set( EntityFilter first, EntityFilter second )
+    {
+        this.first = first;
+        this.second = second;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return first.isValid( e ) || second.isValid( e );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return first.isValid( e ) || second.isValid( e );
+    }
 
 }

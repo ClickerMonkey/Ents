@@ -24,7 +24,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
@@ -39,19 +39,19 @@ public class TestView
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
-   public static final Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-   public static final View SPRITE_VIEW = EntityCore.newView( "sprite-view" );
-   public static final Template SPRITE = EntityCore.newTemplate( "sprite", new ComponentSet( POSITION ), new ControllerSet(), SPRITE_VIEW );
+   public static final Component<Vector> POSITION = Ents.newComponent( "position", new Vector() );
+   public static final View SPRITE_VIEW = Ents.newView( "sprite-view" );
+   public static final Template SPRITE = Ents.newTemplate( "sprite", new ComponentSet( POSITION ), new ControllerSet(), SPRITE_VIEW );
 
    @Test
    public void testDraw()
    {
       final AtomicInteger DRAW_COUNTER = new AtomicInteger();
 
-      EntityCore.setViewDefault( SPRITE_VIEW, new Renderer() {
+      Ents.setViewDefault( SPRITE_VIEW, new Renderer() {
          public void begin( Entity entity, Object drawState )
          {
             DRAW_COUNTER.incrementAndGet();

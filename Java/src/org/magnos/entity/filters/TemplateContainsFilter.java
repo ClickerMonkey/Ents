@@ -33,50 +33,50 @@ import org.magnos.entity.Template;
 public class TemplateContainsFilter implements EntityFilter
 {
 
-   protected Template template;
+    protected Template template;
 
-   /**
-    * Instantiates a TemplateContainsFilter without a template. The
-    * {@link #set(Template)} method needs to be called,
-    * otherwise a {@link NullPointerException} will be thrown.
-    */
-   public TemplateContainsFilter()
-   {
+    /**
+     * Instantiates a TemplateContainsFilter without a template. The
+     * {@link #set(Template)} method needs to be called,
+     * otherwise a {@link NullPointerException} will be thrown.
+     */
+    public TemplateContainsFilter()
+    {
 
-   }
+    }
 
-   /**
-    * Instantiates a TemplateContainsFilter.
-    * 
-    * @param template
-    *        The template to use which has the components, controllers, and view
-    *        the entities returned will have.
-    */
-   public TemplateContainsFilter( Template template )
-   {
-      set( template );
-   }
+    /**
+     * Instantiates a TemplateContainsFilter.
+     * 
+     * @param template
+     *        The template to use which has the components, controllers, and
+     *        view the entities returned will have.
+     */
+    public TemplateContainsFilter( Template template )
+    {
+        set( template );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the template used to check
-    * for containment.
-    * 
-    * @param template
-    *        The template to use which has the components, controllers, and view
-    *        the entities returned will have.
-    * @return The reference to this filter.
-    */
-   public TemplateContainsFilter set( Template template )
-   {
-      this.template = template;
+    /**
+     * Resets and returns this filter by specifying the template used to check
+     * for containment.
+     * 
+     * @param template
+     *        The template to use which has the components, controllers, and
+     *        view the entities returned will have.
+     * @return The reference to this filter.
+     */
+    public TemplateContainsFilter set( Template template )
+    {
+        this.template = template;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.getTemplate().contains( template );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.getTemplate().contains( template );
+    }
 
 }

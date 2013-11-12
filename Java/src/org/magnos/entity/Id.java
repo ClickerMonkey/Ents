@@ -16,17 +16,38 @@
 
 package org.magnos.entity;
 
+/**
+ * A generic way to identify an object. That object has both a unique
+ * identifier, and a unique name.
+ * 
+ * @author Philip Diffenderfer
+ * 
+ */
 public class Id
 {
 
-   public final int id;
+    /**
+     * The unique identifier of this object, with respect to the object's type.
+     */
+    public final int id;
 
-   public final String name;
+    /**
+     * The unique name of this object, with respect to the object's type.
+     */
+    public final String name;
 
-   public Id( int id, String name )
-   {
-      this.id = id;
-      this.name = name;
-   }
+    /**
+     * Instantiates a new Id.
+     * 
+     * @param id
+     *      The unique identifier of this object.
+     * @param name  
+     *      The unique name of this object.
+     */
+    public Id( int id, String name )
+    {
+        this.id = id;
+        this.name = name;
+    }
 
 }

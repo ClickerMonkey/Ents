@@ -33,42 +33,43 @@ package org.magnos.entity;
 public abstract class Component<T> extends Id
 {
 
-   /**
-    * Instantiates a Component with the given id and name.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    */
-   protected Component( int id, String name )
-   {
-      super( id, name );
-   }
+    /**
+     * Instantiates a Component with the given id and name.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     */
+    protected Component( int id, String name )
+    {
+        super( id, name );
+    }
 
-   /**
-    * When a component is added to a template it returns a
-    * {@link TemplateComponent} which is responsible for handling how a
-    * components value is gotten or set for an entity. It also handles being
-    * removed from the template.
-    * 
-    * @param template
-    *        The template to add a component to.
-    * @return A TemplateComponent implementation for this component.
-    */
-   protected abstract TemplateComponent<T> add( Template template );
+    /**
+     * When a component is added to a template it returns a
+     * {@link TemplateComponent} which is responsible for handling how a
+     * components value is gotten or set for an entity. It also handles being
+     * removed from the template.
+     * 
+     * @param template
+     *        The template to add a component to.
+     * @return A TemplateComponent implementation for this component.
+     */
+    protected abstract TemplateComponent<T> add( Template template );
 
-   /**
-    * The method invoked after a component is successfully dynamically added to
-    * an {@link Entity} for the first time.
-    * 
-    * @param e
-    *        The entity that has just had this component added to it.
-    * @param template
-    *        The template adding this component to the given entity.
-    * @param templateComponent
-    *        The TemplateComponent created by the {@link #add(Template)} method.
-    */
-   protected abstract void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent );
+    /**
+     * The method invoked after a component is successfully dynamically added to
+     * an {@link Entity} for the first time.
+     * 
+     * @param e
+     *        The entity that has just had this component added to it.
+     * @param template
+     *        The template adding this component to the given entity.
+     * @param templateComponent
+     *        The TemplateComponent created by the {@link #add(Template)}
+     *        method.
+     */
+    protected abstract void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent );
 
 }

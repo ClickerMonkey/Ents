@@ -31,19 +31,19 @@ import org.magnos.entity.EntityIterator;
 public class EnabledFilter implements EntityFilter
 {
 
-   /**
-    * A single instance to a EnabledFilter.
-    */
-   public static final EnabledFilter INSTANCE = new EnabledFilter();
-   
-   private EnabledFilter()
-   {
-   }
-   
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.isEnabled();
-   }
+    /**
+     * A single instance to a EnabledFilter.
+     */
+    public static final EnabledFilter INSTANCE = new EnabledFilter();
+
+    private EnabledFilter()
+    {
+    }
+
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.isEnabled();
+    }
 
 }

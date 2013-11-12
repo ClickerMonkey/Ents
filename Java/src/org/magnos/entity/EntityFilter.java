@@ -26,13 +26,13 @@ package org.magnos.entity;
 public interface EntityFilter
 {
 
-   /**
-    * Determines whether the given Entity is valid.
-    * 
-    * @param e
-    *        The entity to validate.
-    * @return True if the entity should be iterated over, otherwise false.
-    */
-   public boolean isValid( Entity e );
+    /**
+     * Determines whether the given Entity is valid.
+     * 
+     * @param e
+     *        The entity to validate.
+     * @return True if the entity should be iterated over, otherwise false.
+     */
+    public boolean isValid( Entity e );
 
 }

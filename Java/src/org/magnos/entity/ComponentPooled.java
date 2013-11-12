@@ -35,185 +35,184 @@ import org.magnos.entity.util.EntityUtility;
 public class ComponentPooled<T> extends Component<T>
 {
 
-   public static final int DEFAULT_POOL_SIZE = 16;
+    public static final int DEFAULT_POOL_SIZE = 16;
 
-   /**
-    * The pool that handles creating and reusing values.
-    */
-   private final ComponentValuePool<T> pool;
+    /**
+     * The pool that handles creating and reusing values.
+     */
+    private final ComponentValuePool<T> pool;
 
-   /**
-    * A BitSet that keeps track of which entities had their values created by
-    * this component recycled and placed inside the pool already. This keeps the
-    * pool from having the same value (by reference) in it and it keeps user
-    * created values from entering the pool.
-    */
-   private final BitSet recycled = new BitSet();
+    /**
+     * A BitSet that keeps track of which entities had their values created by
+     * this component recycled and placed inside the pool already. This keeps
+     * the pool from having the same value (by reference) in it and it keeps
+     * user created values from entering the pool.
+     */
+    private final BitSet recycled = new BitSet();
 
-   /**
-    * Instantiates a ComponentPooled.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    * @param factory
-    *        The factory used to create and clone values.
-    */
-   protected ComponentPooled( int id, String name, ComponentValueFactory<T> factory )
-   {
-      super( id, name );
+    /**
+     * Instantiates a ComponentPooled.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     * @param factory
+     *        The factory used to create and clone values.
+     */
+    protected ComponentPooled( int id, String name, ComponentValueFactory<T> factory )
+    {
+        super( id, name );
 
-      this.pool = new ComponentValuePool<T>( factory, DEFAULT_POOL_SIZE );
-   }
+        this.pool = new ComponentValuePool<T>( factory, DEFAULT_POOL_SIZE );
+    }
 
-   /**
-    * Creates a TemplateComponent to be added to the given template. This
-    * component uses itself as a factory to ensure
-    * {@link ComponentValueFactory#create()} returns a pooled value instead of a
-    * new
-    * one. It also ensures when {@link Entity#clone(boolean)} is called the
-    * value passed to the clone is a pooled value as well.
-    */
-   @Override
-   protected TemplateComponent<T> add( Template template )
-   {
-      final ComponentValueFactory<?>[] factories = template.factories;
+    /**
+     * Creates a TemplateComponent to be added to the given template. This
+     * component uses itself as a factory to ensure
+     * {@link ComponentValueFactory#create()} returns a pooled value instead of
+     * a new one. It also ensures when {@link Entity#clone(boolean)} is called
+     * the value passed to the clone is a pooled value as well.
+     */
+    @Override
+    protected TemplateComponent<T> add( Template template )
+    {
+        final ComponentValueFactory<?>[] factories = template.factories;
 
-      int factoryIndex = EntityUtility.indexOfSame( factories, null );
+        int factoryIndex = EntityUtility.indexOfSame( factories, null );
 
-      if (factoryIndex == -1)
-      {
-         factoryIndex = factories.length;
+        if (factoryIndex == -1)
+        {
+            factoryIndex = factories.length;
 
-         template.factories = EntityUtility.append( factories, pool );
-      }
-      else
-      {
-         factories[factoryIndex] = pool;
-      }
+            template.factories = EntityUtility.append( factories, pool );
+        }
+        else
+        {
+            factories[factoryIndex] = pool;
+        }
 
-      return new ComponentPooledHandler( factoryIndex );
-   }
+        return new ComponentPooledHandler( factoryIndex );
+    }
 
-   /**
-    * Adds a default value directly to the entity using {@link #pop()}.
-    */
-   @Override
-   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
-   {
-      ComponentPooledHandler handler = (ComponentPooledHandler)templateComponent;
+    /**
+     * Adds a default value directly to the entity using {@link #pop()}.
+     */
+    @Override
+    protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
+    {
+        ComponentPooledHandler handler = (ComponentPooledHandler)templateComponent;
 
-      if (handler.componentIndex >= e.values.length)
-      {
-         e.values = Arrays.copyOf( e.values, handler.componentIndex + 1 );
-      }
+        if (handler.componentIndex >= e.values.length)
+        {
+            e.values = Arrays.copyOf( e.values, handler.componentIndex + 1 );
+        }
 
-      e.values[handler.componentIndex] = pool.pop();
-   }
+        e.values[handler.componentIndex] = pool.pop();
+    }
 
-   /**
-    * @return The pool that handles creating and reusing values.
-    */
-   public ComponentValuePool<T> pool()
-   {
-      return pool;
-   }
+    /**
+     * @return The pool that handles creating and reusing values.
+     */
+    public ComponentValuePool<T> pool()
+    {
+        return pool;
+    }
 
-   /**
-    * A handler that keeps track of where the value is stored on the entity and
-    * ensures values created by this component are recycled.
-    * 
-    * @author Philip Diffenderfer
-    * 
-    */
-   private class ComponentPooledHandler implements TemplateComponent<T>
-   {
+    /**
+     * A handler that keeps track of where the value is stored on the entity and
+     * ensures values created by this component are recycled.
+     * 
+     * @author Philip Diffenderfer
+     * 
+     */
+    private class ComponentPooledHandler implements TemplateComponent<T>
+    {
 
-      /**
-       * The index in {@link Entity#values} where the value for this component
-       * is stored.
-       */
-      private final int componentIndex;
+        /**
+         * The index in {@link Entity#values} where the value for this component
+         * is stored.
+         */
+        private final int componentIndex;
 
-      /**
-       * Instantiates a ComponentPooledHandler.
-       * 
-       * @param componentIndex
-       *        The index in {@link Entity#values} where the value for this
-       *        component is stored.
-       */
-      private ComponentPooledHandler( int componentIndex )
-      {
-         this.componentIndex = componentIndex;
-      }
+        /**
+         * Instantiates a ComponentPooledHandler.
+         * 
+         * @param componentIndex
+         *        The index in {@link Entity#values} where the value for this
+         *        component is stored.
+         */
+        private ComponentPooledHandler( int componentIndex )
+        {
+            this.componentIndex = componentIndex;
+        }
 
-      /**
-       * Sets the value of this component to the entity. If the current value is
-       * indicated as being generated by this component, (i.e. no recycled) it
-       * is pushed back onto this component and it is marked as recycled to
-       * avoid accidental pooling of it again or accidental pooling of a value
-       * that was not created by this component.
-       */
-      @Override
-      public void set( Entity e, T value )
-      {
-         T existing = (T)e.values[componentIndex];
+        /**
+         * Sets the value of this component to the entity. If the current value
+         * is indicated as being generated by this component, (i.e. no recycled)
+         * it is pushed back onto this component and it is marked as recycled to
+         * avoid accidental pooling of it again or accidental pooling of a value
+         * that was not created by this component.
+         */
+        @Override
+        public void set( Entity e, T value )
+        {
+            T existing = (T)e.values[componentIndex];
 
-         // If the existing value is non-null, not equal to the new value, and has not been recycled yet...
-         if (existing != null && existing != value && !recycled.get( e.id ))
-         {
-            // Give it back to the component for future use.
-            pool.push( existing );
+            // If the existing value is non-null, not equal to the new value, and has not been recycled yet...
+            if (existing != null && existing != value && !recycled.get( e.id ))
+            {
+                // Give it back to the component for future use.
+                pool.push( existing );
 
-            // Mark the value as recycled.
-            recycled.set( e.id, true );
-         }
+                // Mark the value as recycled.
+                recycled.set( e.id, true );
+            }
 
-         e.values[componentIndex] = value;
-      }
+            e.values[componentIndex] = value;
+        }
 
-      @Override
-      public T get( Entity e )
-      {
-         return (T)e.values[componentIndex];
-      }
+        @Override
+        public T get( Entity e )
+        {
+            return (T)e.values[componentIndex];
+        }
 
-      @Override
-      public T take( Entity e, T target )
-      {
-         return pool.copy( (T)e.values[componentIndex], target );
-      }
+        @Override
+        public T take( Entity e, T target )
+        {
+            return pool.copy( (T)e.values[componentIndex], target );
+        }
 
-      @Override
-      public void remove( Template template )
-      {
-         template.factories[componentIndex] = null;
-      }
+        @Override
+        public void remove( Template template )
+        {
+            template.factories[componentIndex] = null;
+        }
 
-      @Override
-      public void postAdd( Entity e )
-      {
-         // Marks the value on the entity as not-recycled.
-         recycled.set( e.id, false );
-      }
+        @Override
+        public void postAdd( Entity e )
+        {
+            // Marks the value on the entity as not-recycled.
+            recycled.set( e.id, false );
+        }
 
-      @Override
-      public void preRemove( Entity e )
-      {
-         T existing = (T)e.values[componentIndex];
+        @Override
+        public void preRemove( Entity e )
+        {
+            T existing = (T)e.values[componentIndex];
 
-         // If the existing value is non-null and it has not been recycled yet...
-         if (existing != null && !recycled.get( e.id ))
-         {
-            // Give it back to the component for future use.
-            pool.push( existing );
+            // If the existing value is non-null and it has not been recycled yet...
+            if (existing != null && !recycled.get( e.id ))
+            {
+                // Give it back to the component for future use.
+                pool.push( existing );
 
-            // Mark the value as recycled.
-            recycled.set( e.id, true );
-         }
-      }
+                // Mark the value as recycled.
+                recycled.set( e.id, true );
+            }
+        }
 
-   }
+    }
 
 }

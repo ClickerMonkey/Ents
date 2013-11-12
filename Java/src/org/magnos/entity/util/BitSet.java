@@ -16,12 +16,13 @@
 
 package org.magnos.entity.util;
 
+import org.magnos.entity.Ents;
 import org.magnos.entity.Id;
 
 
 /**
  * An extension to {@link java.util.BitSet} adding new constructors for
- * EntityCore as well as a containment method that doesn't require needless
+ * {@link Ents} as well as a containment method that doesn't require needless
  * allocation.
  * 
  * @author Philip Diffenderfer
@@ -30,126 +31,127 @@ import org.magnos.entity.Id;
 public class BitSet extends java.util.BitSet
 {
 
-   private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-   /**
-    * Instantiates an empty BitSet.
-    */
-   public BitSet()
-   {
-   }
+    /**
+     * Instantiates an empty BitSet.
+     */
+    public BitSet()
+    {
+    }
 
-   /**
-    * Instantiates a pre-sized BitSet.
-    * 
-    * @param size
-    *        The initial size of the BitSet in bits.
-    * @param enabled
-    *        True if all bits should be set, otherwise false.
-    */
-   public BitSet( int size, boolean enabled )
-   {
-      super( size );
+    /**
+     * Instantiates a pre-sized BitSet.
+     * 
+     * @param size
+     *        The initial size of the BitSet in bits.
+     * @param enabled
+     *        True if all bits should be set, otherwise false.
+     */
+    public BitSet( int size, boolean enabled )
+    {
+        super( size );
 
-      if (enabled)
-      {
-         set( 0, size, enabled );
-      }
-   }
+        if (enabled)
+        {
+            set( 0, size, enabled );
+        }
+    }
 
-   /**
-    * Instantiates a BitSet given an array of bit indices to set to true.
-    * 
-    * @param indices
-    *        The bit indices to set to true.
-    */
-   public BitSet( int... indices )
-   {
-      super( indices.length );
+    /**
+     * Instantiates a BitSet given an array of bit indices to set to true.
+     * 
+     * @param indices
+     *        The bit indices to set to true.
+     */
+    public BitSet( int... indices )
+    {
+        super( indices.length );
 
-      setFromIndices( indices );
-   }
+        setFromIndices( indices );
+    }
 
-   /**
-    * Instantiates a BitSet that uses an array of Id to set bits true. The bits
-    * set to true based on the "id" of the Id passed in.
-    * 
-    * @param ids
-    *        The array of Id.
-    */
-   public BitSet( Id... ids )
-   {
-      super( ids.length );
+    /**
+     * Instantiates a BitSet that uses an array of Id to set bits true. The bits
+     * set to true based on the "id" of the Id passed in.
+     * 
+     * @param ids
+     *        The array of Id.
+     */
+    public BitSet( Id... ids )
+    {
+        super( ids.length );
 
-      setFromIds( ids );
-   }
+        setFromIds( ids );
+    }
 
-   /**
-    * Instantiates a new BitSet with the same value as another.
-    * 
-    * @param bits
-    *        The BitSet to copy.
-    */
-   public BitSet( BitSet bits )
-   {
-      super( bits != null ? bits.size() : 0 );
+    /**
+     * Instantiates a new BitSet with the same value as another.
+     * 
+     * @param bits
+     *        The BitSet to copy.
+     */
+    public BitSet( BitSet bits )
+    {
+        super( bits != null ? bits.size() : 0 );
 
-      if (bits != null)
-      {
-         this.or( bits );
-      }
-   }
+        if (bits != null)
+        {
+            this.or( bits );
+        }
+    }
 
-   /**
-    * Sets bits at the indices given to true.
-    * 
-    * @param indices
-    *        The indices to set to true.
-    */
-   public void setFromIndices( int... indices )
-   {
-      for (int i = 0; i < indices.length; i++)
-      {
-         set( indices[i] );
-      }
-   }
+    /**
+     * Sets bits at the indices given to true.
+     * 
+     * @param indices
+     *        The indices to set to true.
+     */
+    public void setFromIndices( int... indices )
+    {
+        for (int i = 0; i < indices.length; i++)
+        {
+            set( indices[i] );
+        }
+    }
 
-   /**
-    * Sets bits at the indices defined by {@link Id#id} to true.
-    * 
-    * @param ids
-    *        The array of Id.
-    */
-   public void setFromIds( Id... ids )
-   {
-      for (int i = 0; i < ids.length; i++)
-      {
-         set( ids[i].id );
-      }
-   }
+    /**
+     * Sets bits at the indices defined by {@link Id#id} to true.
+     * 
+     * @param ids
+     *        The array of Id.
+     */
+    public void setFromIds( Id... ids )
+    {
+        for (int i = 0; i < ids.length; i++)
+        {
+            set( ids[i].id );
+        }
+    }
 
-   /**
-    * Returns whether this BitSet has at least all on-bits that the other BitSet
-    * has.
-    * 
-    * @param other
-    *        The other BitSet to check for containment.
-    * @return True if this BitSet contains true for every bit the other BitSet
-    *         does.
-    */
-   public boolean contains( BitSet other )
-   {
-      int i = -1;
+    /**
+     * Returns whether this BitSet has at least all on-bits that the other
+     * BitSet
+     * has.
+     * 
+     * @param other
+     *        The other BitSet to check for containment.
+     * @return True if this BitSet contains true for every bit the other BitSet
+     *         does.
+     */
+    public boolean contains( BitSet other )
+    {
+        int i = -1;
 
-      while ((i = other.nextSetBit( i + 1 )) >= 0)
-      {
-         if (!get( i ))
-         {
-            return false;
-         }
-      }
+        while ((i = other.nextSetBit( i + 1 )) >= 0)
+        {
+            if (!get( i ))
+            {
+                return false;
+            }
+        }
 
-      return true;
-   }
+        return true;
+    }
 
 }

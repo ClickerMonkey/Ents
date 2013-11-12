@@ -1,4 +1,4 @@
-<project name="EntityCore" default="build" basedir=".">
+<project name="Ents" default="build" basedir=".">
 
 	<property file="build.properties"/>
 

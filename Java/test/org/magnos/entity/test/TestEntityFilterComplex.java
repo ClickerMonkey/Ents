@@ -12,7 +12,7 @@ import org.magnos.entity.Component;
 import org.magnos.entity.ComponentFactoryNull;
 import org.magnos.entity.Entity;
 import org.magnos.entity.EntityChain;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.EntityFilter;
 import org.magnos.entity.EntityIterator;
 import org.magnos.entity.EntityList;
@@ -27,17 +27,17 @@ public class TestEntityFilterComplex
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
-   static Component<String> NAME = EntityCore.newComponent( "name", new ComponentFactoryNull<String>() );
-   static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector( 0f, 0f ) );
-   static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector( 0f, 0f ) );
-   static Component<FloatVal> RADIUS = EntityCore.newComponent( "radius", new FloatVal( 0f ) );
-   static Component<FloatVal> SCALE = EntityCore.newComponent( "scale", new FloatVal( 0f ) );
+   static Component<String> NAME = Ents.newComponent( "name", new ComponentFactoryNull<String>() );
+   static Component<Vector> POSITION = Ents.newComponent( "position", new Vector( 0f, 0f ) );
+   static Component<Vector> VELOCITY = Ents.newComponent( "velocity", new Vector( 0f, 0f ) );
+   static Component<FloatVal> RADIUS = Ents.newComponent( "radius", new FloatVal( 0f ) );
+   static Component<FloatVal> SCALE = Ents.newComponent( "scale", new FloatVal( 0f ) );
 
-   static Template BASIC_OBJECT = EntityCore.newTemplate( "basic", NAME, POSITION, VELOCITY, RADIUS );
-   static Template BASICER_OBJECT = EntityCore.newTemplate( "basic'er", POSITION, VELOCITY );
+   static Template BASIC_OBJECT = Ents.newTemplate( "basic", NAME, POSITION, VELOCITY, RADIUS );
+   static Template BASICER_OBJECT = Ents.newTemplate( "basic'er", POSITION, VELOCITY );
 
    @Test
    public void testDefaultFilter()

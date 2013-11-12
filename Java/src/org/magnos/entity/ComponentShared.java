@@ -30,85 +30,86 @@ package org.magnos.entity;
 class ComponentShared<T> extends Component<T>
 {
 
-   /**
-    * The factory that creates the default value on the template.
-    */
-   private final ComponentValueFactory<T> factory;
+    /**
+     * The factory that creates the default value on the template.
+     */
+    private final ComponentValueFactory<T> factory;
 
-   /**
-    * Instantiates a new ComponentShared.
-    * 
-    * @param id
-    *        The id of the component.
-    * @param name
-    *        The name of the component.
-    * @param factory
-    *        The factory implementation responsible for creating default values.
-    */
-   protected ComponentShared( int id, String name, ComponentValueFactory<T> factory )
-   {
-      super( id, name );
+    /**
+     * Instantiates a new ComponentShared.
+     * 
+     * @param id
+     *        The id of the component.
+     * @param name
+     *        The name of the component.
+     * @param factory
+     *        The factory implementation responsible for creating default
+     *        values.
+     */
+    protected ComponentShared( int id, String name, ComponentValueFactory<T> factory )
+    {
+        super( id, name );
 
-      this.factory = factory;
-   }
+        this.factory = factory;
+    }
 
-   @Override
-   protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
-   {
+    @Override
+    protected void postCustomAdd( Entity e, Template template, TemplateComponent<?> templateComponent )
+    {
 
-   }
+    }
 
-   @Override
-   protected TemplateComponent<T> add( Template template )
-   {
-      return new ComponentSharedHandler( factory.create() );
-   }
+    @Override
+    protected TemplateComponent<T> add( Template template )
+    {
+        return new ComponentSharedHandler( factory.create() );
+    }
 
-   private class ComponentSharedHandler implements TemplateComponent<T>
-   {
+    private class ComponentSharedHandler implements TemplateComponent<T>
+    {
 
-      private T value;
+        private T value;
 
-      private ComponentSharedHandler( T value )
-      {
-         this.value = value;
-      }
+        private ComponentSharedHandler( T value )
+        {
+            this.value = value;
+        }
 
-      @Override
-      public void set( Entity e, T value )
-      {
-         this.value = value;
-      }
+        @Override
+        public void set( Entity e, T value )
+        {
+            this.value = value;
+        }
 
-      @Override
-      public T get( Entity e )
-      {
-         return value;
-      }
+        @Override
+        public T get( Entity e )
+        {
+            return value;
+        }
 
-      @Override
-      public T take( Entity e, T target )
-      {
-         return factory.copy( value, target );
-      }
+        @Override
+        public T take( Entity e, T target )
+        {
+            return factory.copy( value, target );
+        }
 
-      @Override
-      public void remove( Template template )
-      {
+        @Override
+        public void remove( Template template )
+        {
 
-      }
-      
-      @Override
-      public void postAdd( Entity e )
-      {
-         
-      }
-      
-      @Override
-      public void preRemove( Entity e )
-      {
-         
-      }
-   }
+        }
+
+        @Override
+        public void postAdd( Entity e )
+        {
+
+        }
+
+        @Override
+        public void preRemove( Entity e )
+        {
+
+        }
+    }
 
 }

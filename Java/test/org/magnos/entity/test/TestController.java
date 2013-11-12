@@ -24,7 +24,7 @@ import org.magnos.entity.Component;
 import org.magnos.entity.Control;
 import org.magnos.entity.Controller;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Template;
 import org.magnos.entity.test.helper.Vector;
 import org.magnos.entity.util.ComponentSet;
@@ -37,14 +37,14 @@ public class TestController
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
-   public static Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-   public static Component<Vector> VELOCITY = EntityCore.newComponent( "velocity", new Vector() );
-   public static Component<Vector> ACCELERATION = EntityCore.newComponent( "acceleration", new Vector() );
+   public static Component<Vector> POSITION = Ents.newComponent( "position", new Vector() );
+   public static Component<Vector> VELOCITY = Ents.newComponent( "velocity", new Vector() );
+   public static Component<Vector> ACCELERATION = Ents.newComponent( "acceleration", new Vector() );
 
-   public static Controller PHYSICS_SIMPLE = EntityCore.newController( "physics-simple", new Control() {
+   public static Controller PHYSICS_SIMPLE = Ents.newController( "physics-simple", new Control() {
 
       public void update( Entity e, Object updateState )
       {
@@ -53,7 +53,7 @@ public class TestController
       }
    } );
 
-   public static Controller PHYSICS = EntityCore.newController( "physics", new Control() {
+   public static Controller PHYSICS = Ents.newController( "physics", new Control() {
 
       public void update( Entity e, Object updateState )
       {
@@ -63,7 +63,7 @@ public class TestController
       }
    } );
 
-   public static Template SPRITE = EntityCore.newTemplate( "sprite", new ComponentSet( POSITION, VELOCITY ), new ControllerSet( PHYSICS_SIMPLE ), null );
+   public static Template SPRITE = Ents.newTemplate( "sprite", new ComponentSet( POSITION, VELOCITY ), new ControllerSet( PHYSICS_SIMPLE ), null );
 
    @Test
    public void testUpdate()

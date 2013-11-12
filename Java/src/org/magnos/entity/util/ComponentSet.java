@@ -17,12 +17,12 @@
 package org.magnos.entity.util;
 
 import org.magnos.entity.Component;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Template;
 
 
 /**
- * A simple collection of {@link Component}s passed to {@link EntityCore} to
+ * A simple collection of {@link Component}s passed to {@link Ents} to
  * define what components a {@link Template} should have. The order of
  * components passed in define the order in which they are added to a Template
  * and subsequently any Entity.
@@ -33,22 +33,22 @@ import org.magnos.entity.Template;
 public class ComponentSet
 {
 
-   public static final ComponentSet NONE = new ComponentSet();
+    public static final ComponentSet NONE = new ComponentSet();
 
-   /**
-    * The components passed into the constructor.
-    */
-   public final Component<?>[] values;
+    /**
+     * The components passed into the constructor.
+     */
+    public final Component<?>[] values;
 
-   /**
-    * Instantiates a new Components.
-    * 
-    * @param values
-    *        The components that should be added to a template.
-    */
-   public ComponentSet( Component<?>... values )
-   {
-      this.values = values;
-   }
+    /**
+     * Instantiates a new Components.
+     * 
+     * @param values
+     *        The components that should be added to a template.
+     */
+    public ComponentSet( Component<?>... values )
+    {
+        this.values = values;
+    }
 
 }

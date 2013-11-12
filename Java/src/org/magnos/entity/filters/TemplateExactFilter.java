@@ -34,47 +34,47 @@ import org.magnos.entity.Template;
 public class TemplateExactFilter implements EntityFilter
 {
 
-   protected Template template;
+    protected Template template;
 
-   /**
-    * Instantiates a TemplateExactFilter without a template. The
-    * {@link #set(Template)} method needs to be called, otherwise a
-    * {@link NullPointerException} will be thrown.
-    */
-   public TemplateExactFilter()
-   {
-   }
+    /**
+     * Instantiates a TemplateExactFilter without a template. The
+     * {@link #set(Template)} method needs to be called, otherwise a
+     * {@link NullPointerException} will be thrown.
+     */
+    public TemplateExactFilter()
+    {
+    }
 
-   /**
-    * Instantiates a TemplateExactFilter.
-    * 
-    * @param template
-    *        The template the Entities filtered must have.
-    */
-   public TemplateExactFilter( Template template )
-   {
-      set( template );
-   }
+    /**
+     * Instantiates a TemplateExactFilter.
+     * 
+     * @param template
+     *        The template the Entities filtered must have.
+     */
+    public TemplateExactFilter( Template template )
+    {
+        set( template );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the template the Entities
-    * must have.
-    * 
-    * @param template
-    *        The template the Entities filtered must have.
-    * @return The reference to this filter.
-    */
-   public TemplateExactFilter set( Template template )
-   {
-      this.template = template;
+    /**
+     * Resets and returns this filter by specifying the template the Entities
+     * must have.
+     * 
+     * @param template
+     *        The template the Entities filtered must have.
+     * @return The reference to this filter.
+     */
+    public TemplateExactFilter set( Template template )
+    {
+        this.template = template;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.getTemplate() == template;
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.getTemplate() == template;
+    }
 
 }

@@ -33,48 +33,50 @@ import org.magnos.entity.util.BitSet;
 public class ComponentFilter implements EntityFilter
 {
 
-   protected final BitSet components = new BitSet();
+    protected final BitSet components = new BitSet();
 
-   /**
-    * Instantiates a ComponentFilter without components. The
-    * {@link #set(Component...)} method needs to be called, otherwise the filter
-    * will find no entities valid.
-    */
-   public ComponentFilter()
-   {
-   }
+    /**
+     * Instantiates a ComponentFilter without components. The
+     * {@link #set(Component...)} method needs to be called, otherwise the
+     * filter will find no entities valid.
+     */
+    public ComponentFilter()
+    {
+    }
 
-   /**
-    * Instantiates a ComponentFilter.
-    * 
-    * @param components
-    *        The set of components each entity returned by the filter will have.
-    */
-   public ComponentFilter( Component<?>... components )
-   {
-      set( components );
-   }
+    /**
+     * Instantiates a ComponentFilter.
+     * 
+     * @param components
+     *        The set of components each entity returned by the filter will
+     *        have.
+     */
+    public ComponentFilter( Component<?>... components )
+    {
+        set( components );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the set of components to
-    * filter by.
-    * 
-    * @param components
-    *        The set of components each entity returned by the filter will have.
-    * @return The reference to this filter.
-    */
-   public ComponentFilter set( Component<?>... components )
-   {
-      this.components.clear();
-      this.components.setFromIds( components );
+    /**
+     * Resets and returns this filter by specifying the set of components to
+     * filter by.
+     * 
+     * @param components
+     *        The set of components each entity returned by the filter will
+     *        have.
+     * @return The reference to this filter.
+     */
+    public ComponentFilter set( Component<?>... components )
+    {
+        this.components.clear();
+        this.components.setFromIds( components );
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.hasComponents( components );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.hasComponents( components );
+    }
 
 }

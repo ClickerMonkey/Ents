@@ -25,7 +25,7 @@ import org.magnos.entity.Component;
 import org.magnos.entity.ComponentValueFactory;
 import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
-import org.magnos.entity.EntityCore;
+import org.magnos.entity.Ents;
 import org.magnos.entity.Renderer;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
@@ -42,7 +42,7 @@ public class TestNewDesign
    @AfterClass
    public static void afterTest()
    {
-      EntityCore.clear();
+      Ents.clear();
    }
 
    public static interface CollisionHandler
@@ -122,19 +122,19 @@ public class TestNewDesign
    @Test
    public void test()
    {
-      final Component<Vector> POSITION = EntityCore.newComponent( "position", new Vector() );
-      final Component<FloatVal> RADIUS = EntityCore.newComponent( "radius", new FloatVal() );
-      final Component<CollisionHandler> COLLISION_HANDLER = EntityCore.newComponent( "collision-callback" ); // by default, there is no collision handler
-      final Component<Shape> SHAPE = EntityCore.newComponent( "collision-shape" ); // by default, there is no collision shape on an entity
-      final Component<Bounds> BOUNDS = EntityCore.newComponent( "bounds" ); // by default, an entity has a bounds component 
+      final Component<Vector> POSITION = Ents.newComponent( "position", new Vector() );
+      final Component<FloatVal> RADIUS = Ents.newComponent( "radius", new FloatVal() );
+      final Component<CollisionHandler> COLLISION_HANDLER = Ents.newComponent( "collision-callback" ); // by default, there is no collision handler
+      final Component<Shape> SHAPE = Ents.newComponent( "collision-shape" ); // by default, there is no collision shape on an entity
+      final Component<Bounds> BOUNDS = Ents.newComponent( "bounds" ); // by default, an entity has a bounds component 
 
-      final Component<CollisionHandler> COLLISION_HANDLER_SHIP = EntityCore.newComponentSharedAlternative( COLLISION_HANDLER, new CollisionHandlerDefault() );
-      final Component<CollisionHandler> COLLISION_HANDLER_ASTEROID = EntityCore.newComponentSharedAlternative( COLLISION_HANDLER, new CollisionHandlerDefault() );
+      final Component<CollisionHandler> COLLISION_HANDLER_SHIP = Ents.newComponentSharedAlternative( COLLISION_HANDLER, new CollisionHandlerDefault() );
+      final Component<CollisionHandler> COLLISION_HANDLER_ASTEROID = Ents.newComponentSharedAlternative( COLLISION_HANDLER, new CollisionHandlerDefault() );
 
-      final Component<Shape> SHAPE_SHIP = EntityCore.newComponentSharedAlternative( SHAPE, new Shape() );
-      final Component<Shape> SHAPE_ASTEROID = EntityCore.newComponentSharedAlternative( SHAPE, new Shape() );
+      final Component<Shape> SHAPE_SHIP = Ents.newComponentSharedAlternative( SHAPE, new Shape() );
+      final Component<Shape> SHAPE_ASTEROID = Ents.newComponentSharedAlternative( SHAPE, new Shape() );
 
-      final Component<Bounds> BOUNDS_DYNAMIC = EntityCore.newComponentDynamicAlternative( BOUNDS, new DynamicValue<Bounds>() {
+      final Component<Bounds> BOUNDS_DYNAMIC = Ents.newComponentDynamicAlternative( BOUNDS, new DynamicValue<Bounds>() {
 
          public Bounds get( Entity e )
          {
@@ -159,11 +159,11 @@ public class TestNewDesign
          }
       } );
 
-      final View SHIP_VIEW = EntityCore.newView( "ship", new ViewDefault() );
-      final View ASTEROID_VIEW = EntityCore.newView( "asteroid", new ViewDefault() );
+      final View SHIP_VIEW = Ents.newView( "ship", new ViewDefault() );
+      final View ASTEROID_VIEW = Ents.newView( "asteroid", new ViewDefault() );
 
-      final Template SHIP = EntityCore.newTemplate( "ship", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC ), new ControllerSet(), SHIP_VIEW );
-      final Template ASTEROID = EntityCore.newTemplate( "asteroid", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC ), new ControllerSet(), ASTEROID_VIEW );
+      final Template SHIP = Ents.newTemplate( "ship", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_SHIP, SHAPE_SHIP, BOUNDS_DYNAMIC ), new ControllerSet(), SHIP_VIEW );
+      final Template ASTEROID = Ents.newTemplate( "asteroid", new ComponentSet( POSITION, RADIUS, COLLISION_HANDLER_ASTEROID, SHAPE_ASTEROID, BOUNDS_DYNAMIC ), new ControllerSet(), ASTEROID_VIEW );
 
       assertTrue( SHIP.has( SHAPE ) );
       assertTrue( SHIP.has( BOUNDS ) );

@@ -31,58 +31,58 @@ import org.magnos.entity.ComponentValueFactory;
 public class FloatVal implements ComponentValueFactory<FloatVal>
 {
 
-   public float v;
+    public float v;
 
-   public FloatVal()
-   {
-   }
+    public FloatVal()
+    {
+    }
 
-   public FloatVal( float v )
-   {
-      this.v = v;
-   }
+    public FloatVal( float v )
+    {
+        this.v = v;
+    }
 
-   public FloatVal( FloatVal iv )
-   {
-      this.v = iv.v;
-   }
+    public FloatVal( FloatVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public FloatVal create()
-   {
-      return new FloatVal( v );
-   }
+    @Override
+    public FloatVal create()
+    {
+        return new FloatVal( v );
+    }
 
-   @Override
-   public FloatVal clone( FloatVal value )
-   {
-      return new FloatVal( value );
-   }
+    @Override
+    public FloatVal clone( FloatVal value )
+    {
+        return new FloatVal( value );
+    }
 
-   @Override
-   public FloatVal copy( FloatVal from, FloatVal to )
-   {
-      to.v = from.v;
+    @Override
+    public FloatVal copy( FloatVal from, FloatVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      return Float.floatToIntBits( v );
-   }
+    @Override
+    public int hashCode()
+    {
+        return Float.floatToIntBits( v );
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof FloatVal) && (Float.floatToIntBits( ((FloatVal)obj).v ) == Float.floatToIntBits( v ));
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof FloatVal) && (Float.floatToIntBits( ((FloatVal)obj).v ) == Float.floatToIntBits( v ));
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

@@ -34,35 +34,36 @@ package org.magnos.entity;
 public interface DynamicValue<T>
 {
 
-   /**
-    * Dynamically computes a value for the given Entity.
-    * 
-    * @param e
-    *        The entity to compute a value for.
-    * @return The reference to the dynamically computed value.
-    */
-   public T get( Entity e );
+    /**
+     * Dynamically computes a value for the given Entity.
+     * 
+     * @param e
+     *        The entity to compute a value for.
+     * @return The reference to the dynamically computed value.
+     */
+    public T get( Entity e );
 
-   /**
-    * Dynamically modifies the state of the Entity based on the value passed in.
-    * 
-    * @param e
-    *        The entity to modify.
-    * @param value
-    *        The value that modifies the state of the entity.
-    */
-   public void set( Entity e, T value );
+    /**
+     * Dynamically modifies the state of the Entity based on the value passed
+     * in.
+     * 
+     * @param e
+     *        The entity to modify.
+     * @param value
+     *        The value that modifies the state of the entity.
+     */
+    public void set( Entity e, T value );
 
-   /**
-    * Dynamically computes a value for the given Entity, sets it to the target
-    * value passed in, and returns the reference of target.
-    * 
-    * @param e
-    *        The entity to compute a value for.
-    * @param target
-    *        The value to set to the computed value.
-    * @return The reference to the computed value.
-    */
-   public T take( Entity e, T target );
+    /**
+     * Dynamically computes a value for the given Entity, sets it to the target
+     * value passed in, and returns the reference of target.
+     * 
+     * @param e
+     *        The entity to compute a value for.
+     * @param target
+     *        The value to set to the computed value.
+     * @return The reference to the computed value.
+     */
+    public T take( Entity e, T target );
 
 }

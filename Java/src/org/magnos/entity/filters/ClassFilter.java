@@ -34,53 +34,54 @@ import org.magnos.entity.EntityList;
 public class ClassFilter implements EntityFilter
 {
 
-   protected Class<? extends Entity> entityClass;
+    protected Class<? extends Entity> entityClass;
 
-   /**
-    * Instantiates a ClassFilter without a class. The {@link #set(Class)} method
-    * needs to be called, otherwise the filter will find no entities valid.
-    */
-   public ClassFilter()
-   {
-   }
+    /**
+     * Instantiates a ClassFilter without a class. The {@link #set(Class)}
+     * method needs to be called, otherwise the filter will find no entities
+     * valid.
+     */
+    public ClassFilter()
+    {
+    }
 
-   /**
-    * Instantiates a new ClassFilter.
-    * 
-    * @param entityClass
-    *        The class of the entities to return.
-    * @see Entity
-    * @see EntityChain
-    * @see EntityList
-    * @see EntityLayers
-    */
-   public ClassFilter( Class<? extends Entity> entityClass )
-   {
-      set( entityClass );
-   }
+    /**
+     * Instantiates a new ClassFilter.
+     * 
+     * @param entityClass
+     *        The class of the entities to return.
+     * @see Entity
+     * @see EntityChain
+     * @see EntityList
+     * @see EntityLayers
+     */
+    public ClassFilter( Class<? extends Entity> entityClass )
+    {
+        set( entityClass );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the Entity class.
-    * 
-    * @param entityClass
-    *        The class of the entities to return.
-    * @return The reference to this filter.
-    * @see Entity
-    * @see EntityChain
-    * @see EntityList
-    * @see EntityLayers
-    */
-   public ClassFilter set( Class<? extends Entity> entityClass )
-   {
-      this.entityClass = entityClass;
+    /**
+     * Resets and returns this filter by specifying the Entity class.
+     * 
+     * @param entityClass
+     *        The class of the entities to return.
+     * @return The reference to this filter.
+     * @see Entity
+     * @see EntityChain
+     * @see EntityList
+     * @see EntityLayers
+     */
+    public ClassFilter set( Class<? extends Entity> entityClass )
+    {
+        this.entityClass = entityClass;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.getClass() == entityClass;
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.getClass() == entityClass;
+    }
 
 }

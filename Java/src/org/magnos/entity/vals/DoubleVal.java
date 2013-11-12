@@ -31,60 +31,60 @@ import org.magnos.entity.ComponentValueFactory;
 public class DoubleVal implements ComponentValueFactory<DoubleVal>
 {
 
-   public double v;
+    public double v;
 
-   public DoubleVal()
-   {
-   }
+    public DoubleVal()
+    {
+    }
 
-   public DoubleVal( double v )
-   {
-      this.v = v;
-   }
+    public DoubleVal( double v )
+    {
+        this.v = v;
+    }
 
-   public DoubleVal( DoubleVal iv )
-   {
-      this.v = iv.v;
-   }
+    public DoubleVal( DoubleVal iv )
+    {
+        this.v = iv.v;
+    }
 
-   @Override
-   public DoubleVal create()
-   {
-      return new DoubleVal( v );
-   }
+    @Override
+    public DoubleVal create()
+    {
+        return new DoubleVal( v );
+    }
 
-   @Override
-   public DoubleVal clone( DoubleVal value )
-   {
-      return new DoubleVal( value );
-   }
+    @Override
+    public DoubleVal clone( DoubleVal value )
+    {
+        return new DoubleVal( value );
+    }
 
-   @Override
-   public DoubleVal copy( DoubleVal from, DoubleVal to )
-   {
-      to.v = from.v;
+    @Override
+    public DoubleVal copy( DoubleVal from, DoubleVal to )
+    {
+        to.v = from.v;
 
-      return to;
-   }
+        return to;
+    }
 
-   @Override
-   public int hashCode()
-   {
-      long bits = Double.doubleToLongBits( v );
+    @Override
+    public int hashCode()
+    {
+        long bits = Double.doubleToLongBits( v );
 
-      return (int)(bits ^ (bits >>> 32));
-   }
+        return (int)(bits ^ (bits >>> 32));
+    }
 
-   @Override
-   public boolean equals( Object obj )
-   {
-      return (obj instanceof DoubleVal) && (Double.doubleToLongBits( ((DoubleVal)obj).v ) == Double.doubleToLongBits( v ));
-   }
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof DoubleVal) && (Double.doubleToLongBits( ((DoubleVal)obj).v ) == Double.doubleToLongBits( v ));
+    }
 
-   @Override
-   public String toString()
-   {
-      return String.valueOf( v );
-   }
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

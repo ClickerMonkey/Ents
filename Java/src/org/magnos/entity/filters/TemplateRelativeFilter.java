@@ -35,47 +35,47 @@ import org.magnos.entity.Template;
 public class TemplateRelativeFilter implements EntityFilter
 {
 
-   protected Template template;
+    protected Template template;
 
-   /**
-    * Instantiates a TemplateRelativeFilter without a template. The
-    * {@link #set(Template)} method needs to be called, otherwise a
-    * {@link NullPointerException} will be thrown.
-    */
-   public TemplateRelativeFilter()
-   {
-   }
+    /**
+     * Instantiates a TemplateRelativeFilter without a template. The
+     * {@link #set(Template)} method needs to be called, otherwise a
+     * {@link NullPointerException} will be thrown.
+     */
+    public TemplateRelativeFilter()
+    {
+    }
 
-   /**
-    * Instantiates a TemplateRelativeFilter
-    * 
-    * @param template
-    *        The template the Entities filtered must be a relative to.
-    */
-   public TemplateRelativeFilter( Template template )
-   {
-      set( template );
-   }
+    /**
+     * Instantiates a TemplateRelativeFilter
+     * 
+     * @param template
+     *        The template the Entities filtered must be a relative to.
+     */
+    public TemplateRelativeFilter( Template template )
+    {
+        set( template );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the template the Entities
-    * must be a relative to.
-    * 
-    * @param template
-    *        The template the Entities filtered must be a relative to.
-    * @return The reference to this filter.
-    */
-   public TemplateRelativeFilter set( Template template )
-   {
-      this.template = template;
+    /**
+     * Resets and returns this filter by specifying the template the Entities
+     * must be a relative to.
+     * 
+     * @param template
+     *        The template the Entities filtered must be a relative to.
+     * @return The reference to this filter.
+     */
+    public TemplateRelativeFilter set( Template template )
+    {
+        this.template = template;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.getTemplate().isRelative( template );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.getTemplate().isRelative( template );
+    }
 
 }

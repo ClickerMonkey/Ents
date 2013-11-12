@@ -28,61 +28,61 @@ import org.magnos.entity.ComponentValueFactory;
  * @author Philip Diffenderfer
  * 
  */
-public class ShortVal implements ComponentValueFactory<ShortVal> 
+public class ShortVal implements ComponentValueFactory<ShortVal>
 {
-	
-	public short v;
-	
-	public ShortVal()
-	{
-	}
-	
-	public ShortVal(short v)
-	{
-		this.v = v;
-	}
-	
-	public ShortVal(ShortVal iv)
-	{
-		this.v = iv.v;
-	}
 
-	@Override
-	public ShortVal create() 
-	{
-		return new ShortVal( v );
-	}
+    public short v;
 
-	@Override
-	public ShortVal clone(ShortVal value) 
-	{
-		return new ShortVal( value );
-	}
+    public ShortVal()
+    {
+    }
 
-	@Override
-	public ShortVal copy(ShortVal from, ShortVal to) 
-	{
-		to.v = from.v;
-		
-		return to;
-	}
+    public ShortVal( short v )
+    {
+        this.v = v;
+    }
 
-	@Override
-	public int hashCode() 
-	{
-		return v;
-	}
+    public ShortVal( ShortVal iv )
+    {
+        this.v = iv.v;
+    }
 
-	@Override
-	public boolean equals(Object obj) 
-	{
-		return (obj instanceof ShortVal) && ((ShortVal)obj).v == v;
-	}
+    @Override
+    public ShortVal create()
+    {
+        return new ShortVal( v );
+    }
 
-	@Override
-	public String toString() 
-	{
-		return String.valueOf( v );
-	}
+    @Override
+    public ShortVal clone( ShortVal value )
+    {
+        return new ShortVal( value );
+    }
+
+    @Override
+    public ShortVal copy( ShortVal from, ShortVal to )
+    {
+        to.v = from.v;
+
+        return to;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return v;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        return (obj instanceof ShortVal) && ((ShortVal)obj).v == v;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.valueOf( v );
+    }
 
 }

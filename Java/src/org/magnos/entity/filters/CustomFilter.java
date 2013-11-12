@@ -33,19 +33,19 @@ import org.magnos.entity.EntityIterator;
 public class CustomFilter implements EntityFilter
 {
 
-   /**
-    * A single instance to a CustomFilter.
-    */
-   public static final CustomFilter INSTANCE = new CustomFilter();
+    /**
+     * A single instance to a CustomFilter.
+     */
+    public static final CustomFilter INSTANCE = new CustomFilter();
 
-   private CustomFilter()
-   {
-   }
+    private CustomFilter()
+    {
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.isCustom();
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.isCustom();
+    }
 
 }

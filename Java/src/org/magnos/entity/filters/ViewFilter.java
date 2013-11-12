@@ -32,47 +32,48 @@ import org.magnos.entity.View;
 public class ViewFilter implements EntityFilter
 {
 
-   protected View view;
+    protected View view;
 
-   /**
-    * Instantiates a ViewFilter without a view. The {@link #set(View)} method
-    * needs to be called, otherwise a {@link NullPointerException} will be
-    * thrown.
-    */
-   public ViewFilter()
-   {
+    /**
+     * Instantiates a ViewFilter without a view. The {@link #set(View)} method
+     * needs to be called, otherwise a {@link NullPointerException} will be
+     * thrown.
+     */
+    public ViewFilter()
+    {
 
-   }
+    }
 
-   /**
-    * Instantiates a ViewFilter.
-    * 
-    * @param view
-    *        The view each entity returned by the filter will have.
-    */
-   public ViewFilter( View view )
-   {
-      set( view );
-   }
+    /**
+     * Instantiates a ViewFilter.
+     * 
+     * @param view
+     *        The view each entity returned by the filter will have.
+     */
+    public ViewFilter( View view )
+    {
+        set( view );
+    }
 
-   /**
-    * Resets and returns this filter by specifying the view an entity must have.
-    * 
-    * @param view
-    *        The view each entity returned by the filter will have.
-    * @return The reference to this filter.
-    */
-   public ViewFilter set( View view )
-   {
-      this.view = view;
+    /**
+     * Resets and returns this filter by specifying the view an entity must
+     * have.
+     * 
+     * @param view
+     *        The view each entity returned by the filter will have.
+     * @return The reference to this filter.
+     */
+    public ViewFilter set( View view )
+    {
+        this.view = view;
 
-      return this;
-   }
+        return this;
+    }
 
-   @Override
-   public boolean isValid( Entity e )
-   {
-      return e.has( view );
-   }
+    @Override
+    public boolean isValid( Entity e )
+    {
+        return e.has( view );
+    }
 
 }

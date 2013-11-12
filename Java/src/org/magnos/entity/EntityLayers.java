@@ -29,12 +29,12 @@ public class EntityLayers extends Entity
    
    public <E extends Enum<E>> EntityLayers(Class<E> enumClass )
    {
-      this( EntityCore.newTemplate(), enumClass.getEnumConstants().length );
+      this( Ents.newTemplate(), enumClass.getEnumConstants().length );
    }
    
    public EntityLayers(int layerCount)
    {
-      this( EntityCore.newTemplate(), layerCount );
+      this( Ents.newTemplate(), layerCount );
    }
    
    public <E extends Enum<E>> EntityLayers(Template template, Class<E> enumClass )

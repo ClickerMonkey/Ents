@@ -16,19 +16,41 @@
 
 package org.magnos.entity;
 
+/**
+ * A view is an identifiable object for a Renderer.
+ * 
+ * @author Philip Diffenderfer
+ * @see Renderer
+ */
 public class View extends Id
 {
 
-   public static final View NONE = null;
+    /**
+     * The View for an Entity or Template that doesn't have one.
+     */
+    public static final View NONE = null;
 
-   public Renderer renderer;
+    /**
+     * The default renderer for Entities created with this View (or with
+     * a template that has this View).
+     */
+    public Renderer renderer;
 
-   public View( int id, String name, Renderer renderer )
-   {
-      super( id, name );
+    /**
+     * Instantiates a new View.
+     * 
+     * @param id
+     *      The unique identifier of this View.
+     * @param name  
+     *      The unique name of this View.
+     * @param renderer
+     *      The default renderer of this View.
+     */
+    public View( int id, String name, Renderer renderer )
+    {
+        super( id, name );
 
-      this.renderer = renderer;
-   }
+        this.renderer = renderer;
+    }
 
 }
-
