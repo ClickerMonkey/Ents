@@ -48,11 +48,10 @@ Components are values on an Entity. Components in EntityCore can be one of many 
 | Dynamic    | Generated upon request (like the visual bounds of the entity) |
 | Alias      | A component that actually takes value from another (useful when you need to have a "center" component but you already store the center as the "position" component) |
 | Pooled     | On the entity, when an entity is deleted it caches it's value for use by the next entity to be created |
-| Tracker    | Defined by the wrapped component, this merely keeps track of entities with the given component |
 
 ##### Alternatives
 
-You can define "alternative" components. You could define a component as a distinct component that stores the Entity's center, then optionally you could create a dynamic alternative which can compute the center upon request but space isn't wasted on storing the center if the Entity stores position by some other means.  
+You can define "alternative" components/controllers/views. You could define a component as a distinct component that stores the Entity's center, then optionally you could create a dynamic alternative which can compute the center upon request but space isn't wasted on storing the center if the Entity stores position by some other means.  
 There's a great power that lies in this, using distinct components is like having simple getters and setters on your object, but with alternatives you can override what the setters and getters do without the mess of actually extending a class. Alternatives offer a dynamic and clean way to have fine control on your data. These benefits also apply going the other direction, you could define a component as being shared between all entities of a given template, however you could make one of those entities actually have it's own distinct component value.
 
 #### Entity <a name=entity/>
