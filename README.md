@@ -12,6 +12,13 @@ No more creating classes, no more messy update logic, no more rendering coupled 
 You add components to your Entities (i.e. position, velocity, size, angle, image), controllers (i.e. user input, physics, networking, AI), and a view.
 EntityCore is designed to promote modular development, you are no longer creating a sprite which has physics, you are defining Entities that can have position and velocity, and you create a Physics controller that takes velocity and adds it to position.
 
+#### Why is this better than other frameworks?
+
+ 1. EntityCore doesn't require you to extend a Component class, you can use any existing object in your language as a Component. This enables it to integrate cleanly and easily with any other library you're using.
+ 2. Takes up less memory in practive.
+ 3. The different components offered enable you to simulate the strengths of object-oriented programming with out all of the maintainence and code bloat.
+ 4. With filtering, you can quickly and precisely search through all of the entities in your game. Other frameworks have systems that keep lists of entities. This can be problematic for entities that change dynamically, and systems also take up unnecessary memory!
+
 ### Concepts
 * [View](#views-)
 * [Controller](#controllers-)
@@ -23,7 +30,7 @@ EntityCore is designed to promote modular development, you are no longer creatin
 
 #### Views <a name=views/>
 
-A view is responsible for drawing an entity when the Entity.draw method is called. A view can be created and linked at a later time, enabling graphics library decoupling. In other words you can make an OpenGL renderer for your game and a DirectX renderer which are entirely decoupled therefore easily interchangeable.
+A view is responsible for drawing an entity when the Entity.draw method is called. A view can be created and linked at a later time, enabling graphics library decoupling. In other words you can make an OpenGL renderer for your game and a DirectX renderer which are entirely decoupled therefore easily interchangeable. The view gives each entity a renderer. All entities which have a view can share a renderer or each can have their own depending on the renderer implementation.
 
 #### Controllers <a name=controllers/>
 
@@ -41,11 +48,10 @@ Components are values on an Entity. Components in EntityCore can be one of many 
 | Dynamic    | Generated upon request (like the visual bounds of the entity) |
 | Alias      | A component that actually takes value from another (useful when you need to have a "center" component but you already store the center as the "position" component) |
 | Pooled     | On the entity, when an entity is deleted it caches it's value for use by the next entity to be created |
-| Tracker    | Defined by the wrapped component, this merely keeps track of entities with the given component |
 
 ##### Alternatives
 
-You can define "alternative" components. You could define a component as a distinct component that stores the Entity's center, then optionally you could create a dynamic alternative which can compute the center upon request but space isn't wasted on storing the center if the Entity stores position by some other means.  
+You can define "alternative" components/controllers/views. You could define a component as a distinct component that stores the Entity's center, then optionally you could create a dynamic alternative which can compute the center upon request but space isn't wasted on storing the center if the Entity stores position by some other means.  
 There's a great power that lies in this, using distinct components is like having simple getters and setters on your object, but with alternatives you can override what the setters and getters do without the mess of actually extending a class. Alternatives offer a dynamic and clean way to have fine control on your data. These benefits also apply going the other direction, you could define a component as being shared between all entities of a given template, however you could make one of those entities actually have it's own distinct component value.
 
 #### Entity <a name=entity/>
@@ -74,7 +80,7 @@ An EntityIterator takes an Entity (typically a container) and traverses all chil
 | Filter                 | Definition "A filter that returns enitities that ..." |
 |:---------------------- |:--------------------------------- |
 | ComponentFilter        | have a set of components |
-| ControllerFilter       | have a ser of controllers |
+| ControllerFilter       | have a set of controllers |
 | CustomFilter           | are customly created (had components, controllers, and views dynamically added to them) |
 | DefaultFilter          | *all entities* |
 | EnabledFilter          | are enabled (entities that can be updated) |
