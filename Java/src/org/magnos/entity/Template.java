@@ -645,11 +645,6 @@ public class Template extends Id
      */
     public Template add( Controller controller )
     {
-        if (instances != 0)
-        {
-            throw new RuntimeException( "You cannot directly add components to a Template which was used to create Entities" );
-        }
-
         if (!has( controller ))
         {
             ensureControllerFit( controller.id );
