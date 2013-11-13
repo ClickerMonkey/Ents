@@ -1,23 +1,31 @@
-EntityCore
+Ents
 ==========
 
 ![Development](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_development.png)
 
-A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. EntityCore is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks.
+A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. Ents is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks.
 
-#### What are you talking about?
+#### Use Case?
 
-EntityCore is a library for aiding in creating games where you create your game objects through composition. 
+Ents is a library for aiding in creating games where you create your game objects through composition. 
 No more creating classes, no more messy update logic, no more rendering coupled to a specific graphics library.
 You add components to your Entities (i.e. position, velocity, size, angle, image), controllers (i.e. user input, physics, networking, AI), and a view.
-EntityCore is designed to promote modular development, you are no longer creating a sprite which has physics, you are defining Entities that can have position and velocity, and you create a Physics controller that takes velocity and adds it to position.
+Ents is designed to promote modular development, you are no longer creating a sprite which has physics, you are defining Entities that can have position and velocity, and you create a Physics controller that takes velocity and adds it to position.
 
 #### Why is this better than other frameworks?
 
- 1. EntityCore doesn't require you to extend a Component class, you can use any existing object in your language as a Component. This enables it to integrate cleanly and easily with any other library you're using.
+ 1. Ents doesn't require you to extend a Component class, you can use any existing object in your language as a Component. This enables it to integrate cleanly and easily with any other library you're using.
  2. Takes up less memory in practive.
  3. The different components offered enable you to simulate the strengths of object-oriented programming with out all of the maintainence and code bloat.
- 4. With filtering, you can quickly and precisely search through all of the entities in your game. Other frameworks have systems that keep lists of entities. This can be problematic for entities that change dynamically, and systems also take up unnecessary memory!
+ 4. With filtering, you can quickly and precisely search through all of the entities in your game. Other frameworks have systems that keep lists of entities. This can be problematic for entities that change dynamically, and systems also waste memory!
+
+#### Freedom of Choice
+
+There are many features in Ents you can ignore, it's not going to strap you down to how it wants to be used.
+
+* Controllers (and Entity.update) - If you want to handle updating your entities yourself, you don't need to use Controllers.
+* Views (and Entity.draw) - If you want to handle rendering your entities yourself, you don't need to use Views.
+* Templates - If you want all of your entities to be dynamically built - go for it. Templates are there to define structure and minimize memory usage - they are optional (they are still used behind the scenes).
 
 ### Concepts
 * [View](#views-)
@@ -38,7 +46,7 @@ Controllers are invoked on an Entity that has them when the Entity.update method
 
 #### Components  <a name=components/>
 
-Components are values on an Entity. Components in EntityCore can be one of many types:  
+Components are values on an Entity. Components in Ents can be one of many types:  
 
 | Type       | Definition (where the component value is store) |
 |:---------- |:--------------------------------- |
