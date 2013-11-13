@@ -52,7 +52,7 @@ Components are values on an Entity. Components in Ents can be one of many types:
 |:---------- |:--------------------------------- |
 | Distinct   | On the entity, each entity has it's own value for the given component |
 | Shared     | On the entity's template, therefore entities of the same type point to the same component. (think a collision callback that gets invoked when two things collide, so you can have a different algorithm for ships and asteroids while NOT wasting space storing the callback on each entity) |
-| Constant   | Shared between all entities |
+| Global     | Shared between all entities |
 | Dynamic    | Generated upon request (like the visual bounds of the entity) |
 | Alias      | A component that actually takes value from another (useful when you need to have a "center" component but you already store the center as the "position" component) |
 | Pooled     | On the entity, when an entity is deleted it caches it's value for use by the next entity to be created |
@@ -89,7 +89,7 @@ An EntityIterator takes an Entity (typically a container) and traverses all chil
 |:---------------------- |:--------------------------------- |
 | ComponentFilter        | have a set of components |
 | ControllerFilter       | have a set of controllers |
-| CustomFilter           | are customly created (had components, controllers, and views dynamically added to them) |
+| CustomFilter           | had components, controllers, or a view dynamically added |
 | DefaultFilter          | *all entities* |
 | EnabledFilter          | are enabled (entities that can be updated) |
 | ExpiredFilter          | have expired (are ready for removal) |
