@@ -21,294 +21,561 @@ import java.util.Collection;
 import java.util.Iterator;
 
 
+/**
+ * An Entity which contains an array of Entities. An EntityList can remove and
+ * delete expired entities from the internal array every time the
+ * {@link #clean()} or {@link #update(Object)} methods are called. An EntityList
+ * is the first Entity returned when iterated over, while it's children follow.
+ * The child Entity in the list are drawn between
+ * {@link Renderer#begin(Entity, Object)} and
+ * {@link Renderer#end(Entity, Object)} when {@link #draw(Object)} is invoked.
+ * 
+ * @author Philip Diffenderfer
+ * 
+ */
 public class EntityList extends Entity
 {
 
-   public static int DEFAULT_CAPACITY = 16;
+    /**
+     * The default size of the backing array of Entities. The backing array will
+     * automatically grow when it needs to and only shrinks when
+     * {@link #shrink()} is invoked.
+     */
+    public static int DEFAULT_CAPACITY = 16;
 
-   protected Entity[] entities = {};
-   protected int entityCount = 0;
-   protected boolean inheritVisible;
-   protected boolean inheritEnabled;
+    /**
+     * The backing array of entities.
+     */
+    protected Entity[] entities = {};
 
-   public EntityList()
-   {
-      this( Ents.newTemplate(), DEFAULT_CAPACITY );
-   }
+    /**
+     * The number of live entities in the list.
+     */
+    protected int entityCount = 0;
 
-   public EntityList( int initialCapacity )
-   {
-      this( Ents.newTemplate(), initialCapacity );
-   }
+    /**
+     * @see #setInheritVisible(boolean)
+     */
+    protected boolean inheritVisible;
 
-   public EntityList( Entity... entities )
-   {
-      this( Ents.newTemplate(), entities.length );
+    /**
+     * @see #setInheritEnabled(boolean)
+     */
+    protected boolean inheritEnabled;
 
-      this.add( entities );
-   }
+    /**
+     * Instantiates a custom EntityList that by default does not have
+     * components, controllers, or a view. The child entities of this
+     * EntityList do not inherit the visibility and enabled from this
+     * EntityList.
+     * 
+     * @see Entity#Entity()
+     */
+    public EntityList()
+    {
+        this( Ents.newTemplate(), DEFAULT_CAPACITY );
+    }
 
-   public EntityList( Template template, Entity... entities )
-   {
-      this( template, entities.length );
+    /**
+     * Instantiates a custom EntityList with a given initial capacity in child
+     * entities that by default does not have components, controllers, or a
+     * view. The child entities of this EntityList do not inherit the visibility
+     * and enabled from this EntityList.
+     * 
+     * @param initialCapacity
+     *        The initial capacity of this EntityList. This represents the
+     *        number of entities that can be added to this EntityList before the
+     *        backing array has to be resized.
+     * @see Entity#Entity()
+     */
+    public EntityList( int initialCapacity )
+    {
+        this( Ents.newTemplate(), initialCapacity );
+    }
 
-      this.add( entities );
-   }
+    /**
+     * Instantiates a custom EntityList populated with the given array of
+     * entities that by default does not have components, controllers, or a
+     * view. The child entities of this EntityList do not inherit the visibility
+     * and enabled from this EntityList.
+     * 
+     * @param entities
+     *        The initial set of entities in this EntityList.
+     * @see Entity#Entity()
+     */
+    public EntityList( Entity... entities )
+    {
+        this( Ents.newTemplate(), entities.length );
 
-   public EntityList( Template template, int initialCapacity )
-   {
-      super( template );
+        this.add( entities );
+    }
 
-      this.entities = new Entity[initialCapacity];
-   }
+    /**
+     * Instantiates an EntityList given a {@link Template} and array of
+     * child entities. This entity will have the Template's components,
+     * controllers, and view. The child entities of this EntityList do not
+     * inherit the visibility and enabled from this EntityList. <br/>
+     * <br/>
+     * All controllers that exist in the Template are enabled by default on the
+     * EntityList. In other words, when update is called after Entity creation
+     * all controllers will modify the Entity. To control which controllers are
+     * enabled use the {@link #setControllerEnabled(Controller, boolean)} method
+     * (or any of it's variants).
+     * 
+     * @param template
+     *        The template of the EntityList.
+     * @param entities
+     *        The initial set of entities in this EntityList.
+     * @see Entity#Entity(Template)
+     */
+    public EntityList( Template template, Entity... entities )
+    {
+        this( template, entities.length );
 
-   protected EntityList( Template template, Object[] values, Renderer renderer )
-   {
-      super( template, values, renderer );
-   }
+        this.add( entities );
+    }
 
-   protected void onEntityAdd( Entity e, int index )
-   {
-   }
 
-   protected void onEntityRemove( Entity e, int index )
-   {
-   }
+    /**
+     * Instantiates an EntityList given a {@link Template} and initial
+     * entity capacity. This entity will have the Template's components,
+     * controllers, and view. The child entities of this EntityList do not
+     * inherit the visibility and enabled from this EntityList. <br/>
+     * <br/>
+     * All controllers that exist in the Template are enabled by default on the
+     * EntityList. In other words, when update is called after Entity creation
+     * all controllers will modify the Entity. To control which controllers are
+     * enabled use the {@link #setControllerEnabled(Controller, boolean)} method
+     * (or any of it's variants).
+     * 
+     * @param template
+     *        The template of the EntityList.
+     * @param initialCapacity
+     *        The initial capacity of this EntityList. This represents the
+     *        number of entities that can be added to this EntityList before the
+     *        backing array has to be resized.
+     * @see Entity#Entity(Template)
+     */
+    public EntityList( Template template, int initialCapacity )
+    {
+        super( template );
 
-   protected void onEntityUpdated( Entity e, int index, Object updateState )
-   {
-   }
+        this.entities = new Entity[initialCapacity];
+    }
 
-   public void pad( int count )
-   {
-      if (entityCount + count >= entities.length)
-      {
-         int nextCapacity = entities.length + (entities.length >> 1);
-         int minimumCapacity = entityCount + count;
+    /**
+     * A constructor for the clone method.
+     * 
+     * @param template
+     *        The template of the clone.
+     * @param values
+     *        The values of the clone.
+     * @param renderer
+     *        The renderer of the clone.
+     */
+    protected EntityList( Template template, Object[] values, Renderer renderer )
+    {
+        super( template, values, renderer );
+    }
 
-         entities = Arrays.copyOf( entities, Math.max( nextCapacity, minimumCapacity ) );
-      }
-   }
+    /**
+     * A method invoked every time an Entity is added to this EntityList.
+     * 
+     * @param e
+     *        The entity added to this EntityList.
+     * @param index
+     *        The index of the entity (and the current size of the list before
+     *        the addition).
+     */
+    protected void onEntityAdd( Entity e, int index )
+    {
+    }
 
-   private void internalAdd( Entity entity )
-   {
-      entities[entityCount] = entity;
+    /**
+     * A method invoked every time an expired Entity is found and is about to be
+     * deleted (Entity{@link #delete()}).
+     * 
+     * @param e
+     *        The entity removed.
+     * @param index
+     *        The index of the entity removed in the backing array.
+     */
+    protected void onEntityRemove( Entity e, int index )
+    {
+    }
 
-      onEntityAdd( entity, entityCount );
+    /**
+     * A method invoked every time an Entity is updated.
+     * 
+     * @param e
+     *        The entity updated.
+     * @param index
+     *        The index of the entity in the backing array.
+     * @param updateState
+     *        The updateState passed from {@link #update(Object)}.
+     */
+    protected void onEntityUpdated( Entity e, int index, Object updateState )
+    {
+    }
 
-      entityCount++;
-   }
+    /**
+     * Ensures the free space in the backing array is able to fit the given
+     * number of entities.
+     * 
+     * @param count
+     *        The number of entities about to be added to this EntityList.
+     */
+    public void pad( int count )
+    {
+        if (entityCount + count >= entities.length)
+        {
+            int nextCapacity = entities.length + (entities.length >> 1);
+            int minimumCapacity = entityCount + count;
 
-   public void add( Entity entity )
-   {
-      pad( 1 );
-      internalAdd( entity );
-   }
+            entities = Arrays.copyOf( entities, Math.max( nextCapacity, minimumCapacity ) );
+        }
+    }
 
-   public void add( Entity... entityArray )
-   {
-      pad( entityArray.length );
+    /**
+     * Adds the entity to the backing array. This does not check to see if
+     * there's room, {@link #pad(int)} must be called before hand with the
+     * expected number of {@link #internalAdd(Entity)} invocations. This also
+     * handles invoking {@link #onEntityAdd(Entity, int)} on the entity passed
+     * in.
+     * 
+     * @param entity
+     *        The entity to add to this EntityList.
+     */
+    private void internalAdd( Entity entity )
+    {
+        entities[entityCount] = entity;
 
-      for (int i = 0; i < entityArray.length; i++)
-      {
-         internalAdd( entityArray[i] );
-      }
-   }
+        onEntityAdd( entity, entityCount );
 
-   public void addRange( Entity[] entityArray, int from, int to )
-   {
-      pad( to - from );
+        entityCount++;
+    }
 
-      while (from < to)
-      {
-         internalAdd( entityArray[from++] );
-      }
-   }
+    /**
+     * Adds a single entity to this EntityList.
+     * 
+     * @param entity
+     *        The entity to add.
+     */
+    public void add( Entity entity )
+    {
+        pad( 1 );
+        internalAdd( entity );
+    }
 
-   public void addAll( EntityList list )
-   {
-      addRange( list.entities, 0, list.entityCount );
-   }
+    /**
+     * Adds an array of entities to this EntityList.
+     * 
+     * @param entityArray
+     *        The array of entities to add.
+     */
+    public void add( Entity... entityArray )
+    {
+        pad( entityArray.length );
 
-   public void addAll( Collection<Entity> entityCollection )
-   {
-      pad( entityCollection.size() );
+        for (int i = 0; i < entityArray.length; i++)
+        {
+            internalAdd( entityArray[i] );
+        }
+    }
 
-      for (Entity e : entityCollection)
-      {
-         internalAdd( e );
-      }
-   }
+    /**
+     * Adds a range of entities from the given array into this EntityList.
+     * 
+     * @param entityArray
+     *        The array of entities to take from.
+     * @param from
+     *        The index of the first entity to be taken (inclusive).
+     * @param to
+     *        The index of the last entity to be taken (exclusive).
+     */
+    public void addRange( Entity[] entityArray, int from, int to )
+    {
+        pad( to - from );
 
-   public void addAll( Iterator<Entity> iterator )
-   {
-      while (iterator.hasNext())
-      {
-         add( iterator.next() );
-      }
-   }
+        while (from < to)
+        {
+            internalAdd( entityArray[from++] );
+        }
+    }
 
-   public void addAll( Iterable<Entity> iterable )
-   {
-      addAll( iterable.iterator() );
-   }
+    /**
+     * Adds all entities in the given EntityList to this EntityList.
+     * 
+     * @param list
+     *        The EntityList to add to this EntityList.
+     */
+    public void addAll( EntityList list )
+    {
+        addRange( list.entities, 0, list.entityCount );
+    }
 
-   public void clean()
-   {
-      int alive = 0;
+    /**
+     * Adds all entities in the collection to this EntityList.
+     * 
+     * @param entityCollection
+     *        The collection to take entities from to add to this EntityList.
+     */
+    public void addAll( Collection<Entity> entityCollection )
+    {
+        pad( entityCollection.size() );
 
-      for (int i = 0; i < entityCount; i++)
-      {
-         final Entity e = entities[i];
+        for (Entity e : entityCollection)
+        {
+            internalAdd( e );
+        }
+    }
 
-         if (e.isExpired())
-         {
-            onEntityRemove( e, i );
-            
-            e.delete();
-         }
-         else
-         {
-            entities[alive++] = e;
-         }
-      }
+    /**
+     * Adds all entities in the iterator to this EntityList.
+     * 
+     * @param iterator
+     *        The iterator to iterate through.
+     */
+    public void addAll( Iterator<Entity> iterator )
+    {
+        while (iterator.hasNext())
+        {
+            add( iterator.next() );
+        }
+    }
 
-      while (entityCount > alive)
-      {
-         entities[--entityCount] = null;
-      }
-   }
-   
-   @Override
-   public boolean delete()
-   {
-      boolean deletable = super.delete();
-      
-      if (deletable)
-      {
-         for (int i = 0 ; i < entityCount; i++)
-         {
-            entities[i].delete();
-         }
-      }
-      
-      return deletable;
-   }
+    /**
+     * Adds all entities in the iterable to this EntityList.
+     * 
+     * @param iterable
+     *        The iterable to iterate through.
+     */
+    public void addAll( Iterable<Entity> iterable )
+    {
+        addAll( iterable.iterator() );
+    }
 
-   @Override
-   public void draw( Object drawState )
-   {
-      if (visible || !inheritVisible)
-      {
-         final boolean draw = (visible && renderer != null);
-         
-         if (draw)
-         {
-            renderer.begin( this, drawState );
-         }
-         
-         for (int i = 0; i < entityCount; i++)
-         {
+    /**
+     * Removes all expired entities from this EntityList and calls
+     * {@link Entity#delete()} on them.
+     */
+    public void clean()
+    {
+        int alive = 0;
+
+        for (int i = 0; i < entityCount; i++)
+        {
             final Entity e = entities[i];
-            
-            if (!e.isExpired())
+
+            if (e.isExpired())
             {
-               entities[i].draw( drawState );   
+                onEntityRemove( e, i );
+
+                e.delete();
             }
-         }
-         
-         if (draw)
-         {
-            renderer.end( this, drawState );   
-         }
-      }
-   }
-
-   @Override
-   public void update( Object updateState )
-   {
-      if (enabled || !inheritEnabled)
-      {
-         super.update( updateState );
-
-         if (isExpired())
-         {
-            return;
-         }
-
-         for (int i = 0; i < entityCount; i++)
-         {
-            final Entity e = entities[i];
-
-            if (!e.isExpired())
+            else
             {
-               e.update( updateState );
-
-               onEntityUpdated( e, i, updateState );   
+                entities[alive++] = e;
             }
-         }
+        }
 
-         this.clean();   
-      }
-   }
+        while (entityCount > alive)
+        {
+            entities[--entityCount] = null;
+        }
+    }
 
-   public int size()
-   {
-      return entityCount;
-   }
+    /**
+     * Shrinks the backing array of this EntityList to have the same length as
+     * {@link #size()}. This should be called infrequently to avoid constantly
+     * resizing/allocating the backing array. An ideal method would wait some
+     * length of time and if the free space in the EntityList has maintained
+     * a certain amount that entire time, shrink the EntityList.
+     */
+    public void shrink()
+    {
+        entities = Arrays.copyOf( entities, entityCount );
+    }
 
-   public Entity at( int index )
-   {
-      return entities[index];
-   }
+    @Override
+    public boolean delete()
+    {
+        boolean deletable = super.delete();
 
-   public boolean isInheritVisible()
-   {
-      return inheritVisible;
-   }
+        if (deletable)
+        {
+            for (int i = 0; i < entityCount; i++)
+            {
+                entities[i].delete();
+            }
+        }
 
-   public void setInheritVisible( boolean inheritVisible )
-   {
-      this.inheritVisible = inheritVisible;
-   }
+        return deletable;
+    }
 
-   public boolean isInheritEnabled()
-   {
-      return inheritEnabled;
-   }
+    @Override
+    public void draw( Object drawState )
+    {
+        if (visible || !inheritVisible)
+        {
+            final boolean draw = (visible && renderer != null);
 
-   public void setInheritEnabled( boolean inheritEnabled )
-   {
-      this.inheritEnabled = inheritEnabled;
-   }
+            if (draw)
+            {
+                renderer.begin( this, drawState );
+            }
 
-   @Override
-   public EntityList clone( boolean deep )
-   {
-      EntityList clone = cloneState( new EntityList( template, template.createClonedValues( values, deep ), renderer ) );
+            for (int i = 0; i < entityCount; i++)
+            {
+                final Entity e = entities[i];
 
-      clone.inheritEnabled = inheritEnabled;
-      clone.inheritVisible = inheritVisible;
-      clone.pad( entityCount );
+                if (!e.isExpired())
+                {
+                    entities[i].draw( drawState );
+                }
+            }
 
-      for (int i = 0; i < entityCount; i++)
-      {
-         clone.internalAdd( entities[i].clone( deep ) );
-      }
-      
-      return clone;
-   }
-   
-   @Override
-   protected int getEntitySize()
-   {
-      return entityCount + 1;
-   }
+            if (draw)
+            {
+                renderer.end( this, drawState );
+            }
+        }
+    }
 
-   @Override
-   protected Entity getEntity( int index )
-   {
-      return (index == 0 ? this : entities[index - 1]);
-   }
+    @Override
+    public void update( Object updateState )
+    {
+        if (enabled || !inheritEnabled)
+        {
+            super.update( updateState );
+
+            if (isExpired())
+            {
+                return;
+            }
+
+            for (int i = 0; i < entityCount; i++)
+            {
+                final Entity e = entities[i];
+
+                if (!e.isExpired())
+                {
+                    e.update( updateState );
+
+                    onEntityUpdated( e, i, updateState );
+                }
+            }
+
+            this.clean();
+        }
+    }
+
+    /**
+     * The number of live entities currently in this EntityList. A live entity
+     * is one that has not expired (since the last {@link #update(Object)} or
+     * {@link #clean()} invocation).
+     * 
+     * @return The number of live entities in this EntityList.
+     */
+    public int size()
+    {
+        return entityCount;
+    }
+
+    /**
+     * @return The total amount of space in the backing array to store entities.
+     */
+    public int capacity()
+    {
+        return entities.length;
+    }
+
+    /**
+     * Gets the Entity at the given index. A check is not done here to ensure
+     * index is positive and less than {@link #size()}.
+     * 
+     * @param index
+     *        The index of the entity.
+     * @return The reference of the entity at the given index.
+     */
+    public Entity at( int index )
+    {
+        return entities[index];
+    }
+
+    /**
+     * @return True if visibility of the child entities are inherited from this
+     *         EntityList.
+     * @see #setInheritVisible(boolean)
+     */
+    public boolean isInheritVisible()
+    {
+        return inheritVisible;
+    }
+
+    /**
+     * Sets whether or not the visibility of the child entities is dependent on
+     * the visibility of this EntityList. If this is true and this EntityList is
+     * not visibility, the child entities will not be drawn.
+     * 
+     * @param inheritVisible
+     *        True if the visibility of the child entities is inherited.
+     */
+    public void setInheritVisible( boolean inheritVisible )
+    {
+        this.inheritVisible = inheritVisible;
+    }
+
+    /**
+     * @return True if enabled of the child entities are inherited from this
+     *         EntityList.
+     * @see #setInheritEnabled(boolean)
+     */
+    public boolean isInheritEnabled()
+    {
+        return inheritEnabled;
+    }
+
+    /**
+     * Sets whether or not the enabled of the child entities is dependent on the
+     * enabled of this EntityList. If this is true and this EntityList is not
+     * enabled, the child entities will not be updated.
+     * 
+     * @param inheritEnabled
+     *        True if the enabled of the child entities is inherited.
+     */
+    public void setInheritEnabled( boolean inheritEnabled )
+    {
+        this.inheritEnabled = inheritEnabled;
+    }
+
+    @Override
+    public EntityList clone( boolean deep )
+    {
+        EntityList clone = cloneState( new EntityList( template, template.createClonedValues( values, deep ), renderer ) );
+
+        clone.inheritEnabled = inheritEnabled;
+        clone.inheritVisible = inheritVisible;
+        clone.pad( entityCount );
+
+        for (int i = 0; i < entityCount; i++)
+        {
+            clone.internalAdd( entities[i].clone( deep ) );
+        }
+
+        return clone;
+    }
+
+    @Override
+    protected int getEntitySize()
+    {
+        return entityCount + 1;
+    }
+
+    @Override
+    protected Entity getEntity( int index )
+    {
+        return (index == 0 ? this : entities[index - 1]);
+    }
 
 }

@@ -174,7 +174,7 @@ public class Entity
         this.values = values;
         this.controllerEnabled = new BitSet( template.controllers.length, true );
         this.id = Ents.register( this );
-        this.template.addtoComponents( this );
+        this.template.addToComponents( this );
     }
 
     /**

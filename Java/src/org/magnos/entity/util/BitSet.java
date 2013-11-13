@@ -131,8 +131,7 @@ public class BitSet extends java.util.BitSet
 
     /**
      * Returns whether this BitSet has at least all on-bits that the other
-     * BitSet
-     * has.
+     * BitSet has.
      * 
      * @param other
      *        The other BitSet to check for containment.
