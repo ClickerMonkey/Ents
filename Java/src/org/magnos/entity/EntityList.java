@@ -135,7 +135,6 @@ public class EntityList extends Entity
         this.add( entities );
     }
 
-
     /**
      * Instantiates an EntityList given a {@link Template} and initial
      * entity capacity. This entity will have the Template's components,
@@ -383,6 +382,34 @@ public class EntityList extends Entity
         {
             entities[--entityCount] = null;
         }
+    }
+
+    /**
+     * Removes all entities from the EntityList, optionally deleting them.
+     * 
+     * @param delete
+     *        True if {@link Entity#delete()} should be invoked on all entities
+     *        in this EntityList.
+     */
+    public void clear( boolean delete )
+    {
+        if (delete)
+        {
+            for (int i = 0; i < entityCount; i++)
+            {
+                entities[i].delete();
+                entities[i] = null;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < entityCount; i++)
+            {
+                entities[i] = null;
+            }
+        }
+
+        entityCount = 0;
     }
 
     /**

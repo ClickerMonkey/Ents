@@ -12,10 +12,10 @@ class EntityListener
 	virtual void onEntityAdd( Entity &e, const size_t &id ) = 0;
 	virtual void onEntityRemove( Entity &e );
 	virtual void onCoreClear() = 0;
-	virtual void onViewAdd( View& view, const bool &definition ) = 0;
-	virtual void onControllerAdd( Controller& controller, const bool &definition ) = 0;
-	virtual void onComponentAdd( Id component, const bool &definition ) = 0;
-	virtual void onTemplateAdd( const Template* temp ) = 0;
+	virtual void onViewAdd( View &view, const bool &definition ) = 0;
+	virtual void onControllerAdd( Controller &controller, const bool &definition ) = 0;
+	virtual void onComponentAdd( Id &component, const bool &definition ) = 0;
+	virtual void onTemplateAdd( Template &temp ) = 0;
 };
 
 struct Renderer
@@ -26,14 +26,30 @@ struct Renderer
 	virtual void destroy(Entity& e) = 0;
 };
 
+struct View : Id 
+{
+	const std::shared_ptr<Renderer> renderer;
+
+	View(const size_t &m_id, const std::string &m_name, const std::shared_ptr<Renderer> m_renderer)
+	 : Id( m_id, m_name ), renderer( m_renderer )
+	{
+	}
+
+};
+
 class Ents
 {
+private:
+	Ents() {};
+	Ents(Ents const&);
+	void operator=(S const&);
+
 protected:
 	static EntityListener* listener;
 
 	static size_t register( Entity& e )
 	{
-		IndexPool indices = getEntityIds();
+		IndexPool indices = getIndices();
 		size_t id = indices.pop();
 
 		if (listener != nullptr)
@@ -46,7 +62,7 @@ protected:
 
 	static void unregister( Entity& e )
 	{
-		IndexPool indices = getEntityIds();
+		IndexPool indices = getIndices();
 		indices.push( e.id );
 
 		if (listener != nullptr)
@@ -86,7 +102,7 @@ protected:
 		return component;
 	}
 
-	static Template* registerTemplate( Template *temp )
+	static Template& registerTemplate( Template &temp )
 	{
 		if (listener != nullptr)
 		{
@@ -97,6 +113,35 @@ protected:
 	}
 
 public:
+
+	/*
+	 * Containers
+	 */
+
+	static IndexPool& getIndices() {
+		static IndexPool indices;
+		return indices;
+	}
+
+	static IdContainer<View>& getViews() {
+		static IdContainer<View> views;
+		return views;
+	}
+
+	static IdContainer<Controller>& getControllers() {
+		static IdContainer<Controller> controllers;
+		return controllers;
+	}
+
+	static IdContainer<Id>& getComponents() {
+		static IdContainer<Id> components;
+		return components;
+	}
+
+	static IdContainer<Template>& getTemplates() {
+		static IdContainer<Template> templates;
+		return templates;
+	}
 
 	/*
 	 * VIEWS
@@ -188,43 +233,18 @@ public:
 		return registerComponent( false, components.addInstance( ComponentDistinct<T>( component.id, component.name ) ) );
 	}
 
-	static Template* newTemplate()
+	static Template& newTemplate()
 	{
-		return new Template();
+		return (new Template())*;
 	}
 
-	static Template* newTemplate( const std::string &name, std::initializer_list<Id> &components, std::initializer_list<Controller> &controllers, View &view)
+	static Template& newTemplate( const std::string &name, std::initializer_list<Id> &components, std::initializer_list<Controller> &controllers, View &view)
 	{
-		IdContainer<Template*> templates = getTemplates();
+		IdContainer<Template> templates = getTemplates();
 
-		return registerTemplate( templates.addDefinition( new Template( templates.nextId(), name, nullptr, components, controllers, view ) ) );
+		return registerTemplate( templates.addDefinition( Template( templates.nextId(), name, nullptr, components, controllers, view ) ) );
 	}
 
 };
-
-IndexPool& getEntityIds() {
-	static IndexPool indices;
-	return indices;
-}
-
-IdContainer<View>& getViews() {
-	static IdContainer<View> views;
-	return views;
-}
-
-IdContainer<Controller>& getControllers() {
-	static IdContainer<Controller> controllers;
-	return controllers;
-}
-
-IdContainer<Id>& getComponents() {
-	static IdContainer<Id> components;
-	return components;
-}
-
-IdContainer<Template*>& getTemplates() {
-	static IdContainer<Template*> templates;
-	return templates;
-}
 
 #endif

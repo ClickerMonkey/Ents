@@ -6,7 +6,7 @@ struct Id
 	const size_t id;
 	const std::string name;
 
-	Id(const size_t m_id, const std::string m_name) 
+	Id(const size_t &m_id, const std::string &m_name) 
 		: id(m_id), name(m_name)
 	{
 	}

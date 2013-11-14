@@ -180,6 +180,25 @@ public class EntityIterator implements Iterator<Entity>, Iterable<Entity>
     }
 
     /**
+     * Counts the number of entities left in this Iterator. This finishes the
+     * iteration and there will be no entities left to iterate.
+     * 
+     * @return The number of entities left to iterate.
+     */
+    public int count()
+    {
+        int total = 0;
+        
+        while (hasNext()) 
+        {
+            next();
+            total++;
+        }
+        
+        return total;
+    }
+
+    /**
      * Returns the reference to this iterator, used when in for-each loops.
      */
     public Iterator<Entity> iterator()

@@ -50,6 +50,7 @@ public class GameInput implements KeyListener, MouseInputListener
 			keyUp[i] = false;
 		}
 
+		mouseUpCount = 0;
 		mouseEvents.clear();
 
 		for (int i = 0; i < mouseUp.length; i++)
@@ -140,6 +141,7 @@ public class GameInput implements KeyListener, MouseInputListener
 		mouseDown[e.getButton()] = false;
 		mouseUp[e.getButton()] = true;
 		mouseUpCount++;
+		mouseDownCount--;
 
 		if (mouseEventsQueue)
 		{

@@ -170,11 +170,11 @@ public class Entity
     protected Entity( Template template, Object[] values, Renderer renderer )
     {
         this.setTemplate( template );
-        this.setRenderer( renderer );
         this.values = values;
         this.controllerEnabled = new BitSet( template.controllers.length, true );
         this.id = Ents.register( this );
         this.template.addToComponents( this );
+        this.setRenderer( renderer );
     }
 
     /**

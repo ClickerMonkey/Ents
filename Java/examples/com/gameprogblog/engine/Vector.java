@@ -1,6 +1,8 @@
 
 package com.gameprogblog.engine;
 
+import org.magnos.entity.ComponentValueFactory;
+
 
 
 /**
@@ -40,7 +42,7 @@ package com.gameprogblog.engine;
  * @author Philip Diffenderfer
  * 
  */
-public class Vector
+public class Vector implements ComponentValueFactory<Vector>
 {
 
    /**
@@ -1201,7 +1203,27 @@ public class Vector
          array[length] = new Vector();
       }
 
-      return array;
+      return array;
    }
+   
+   @Override
+   public Vector create()
+   {
+       return new Vector();
+   }
+   
+   @Override
+   public Vector clone( Vector value )
+   {
+       return new Vector( value );
+   }
+   
+   @Override
+   public Vector copy( Vector from, Vector to )
+   {
+       to.set( from );
+       return to;
+   }
+  
 
 }
