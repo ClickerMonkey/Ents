@@ -47,11 +47,11 @@ public class OpenGLText
 	private static int[][] GLYPHS = new int[256][];
 
 	private static Vector[] GLYPH_POINTS = {
-		new Vector( 0.0f, 0.0f ), new Vector( 0.5f, 0.0f ), new Vector( 1.0f, 0.0f ),
-		new Vector( 0.0f, 0.25f ), new Vector( 0.5f, 0.25f ), new Vector( 1.0f, 0.25f ),
-		new Vector( 0.0f, 0.5f ), new Vector( 0.5f, 0.5f ), new Vector( 1.0f, 0.5f ),
-		new Vector( 0.0f, 0.72f ), new Vector( 0.5f, 0.75f ), new Vector( 1.0f, 0.75f ),
-		new Vector( 0.0f, 1.0f ), new Vector( 0.5f, 1.0f ), new Vector( 1.0f, 1.0f )
+		new Vector( 0.00f, 0.00f ), new Vector( 0.50f, 0.00f ), new Vector( 1.00f, 0.00f ),
+		new Vector( 0.00f, 0.25f ), new Vector( 0.50f, 0.25f ), new Vector( 1.00f, 0.25f ),
+		new Vector( 0.00f, 0.50f ), new Vector( 0.50f, 0.50f ), new Vector( 1.00f, 0.50f ),
+		new Vector( 0.00f, 0.72f ), new Vector( 0.50f, 0.75f ), new Vector( 1.00f, 0.75f ),
+		new Vector( 0.00f, 1.00f ), new Vector( 0.50f, 1.00f ), new Vector( 1.00f, 1.00f )
 	};
 
 	static
@@ -94,8 +94,36 @@ public class OpenGLText
 		GLYPHS['9'] = new int[] { 0x02, 0x06, 0x68, 0x2E };
 		GLYPHS['0'] = new int[] { 0x02, 0x2E, 0x0C, 0xCE };
 
-		GLYPHS[':'] = new int[] { 0x44, 0xAA };
+		GLYPHS['!'] = new int[] { 0x1A, 0xDD };
+		GLYPHS['@'] = new int[] { 0x78, 0x7A, 0xAB, 0x2B, 0x02, 0x0C, 0xCE };
+		GLYPHS['\'']= new int[] { 0x17 };
+		GLYPHS['"'] = new int[] { 0x17, 0x28 };
+		GLYPHS['$'] = new int[] { 0x15, 0x13, 0x3B, 0xBD, 0x9D, 0x1D };
+		GLYPHS['%'] = new int[] { 0x2C, 0x01, 0x14, 0x34, 0x03, 0xDE, 0xAB, 0xAD, 0xBE };
+		GLYPHS['#'] = new int[] { 0x1C, 0x2D, 0x35, 0x9B };
+		GLYPHS['^'] = new int[] { 0x16, 0x18 };
+		GLYPHS['&'] = new int[] { 0x13, 0x15, 0x59, 0x3E, 0x9D, 0xDB, 0x8B };
+		GLYPHS['*'] = new int[] { 0x4A, 0x68, 0x3B, 0x59 };
+		GLYPHS['('] = new int[] { 0x24, 0x4A, 0xAE };
+		GLYPHS[')'] = new int[] { 0x04, 0x4A, 0xAC };
 		GLYPHS['-'] = new int[] { 0x68 };
+		GLYPHS['_'] = new int[] { 0xCE };
+		GLYPHS['='] = new int[] { 0x35, 0x9B };
+		GLYPHS['+'] = new int[] { 0x68, 0x4A };
+		GLYPHS['{'] = new int[] { 0x12, 0x14, 0x46, 0x6A,0xAD, 0xDE };
+		GLYPHS['}'] = new int[] { 0x01, 0x14, 0x48, 0x8A, 0xAD, 0xCD };
+		GLYPHS['['] = new int[] { 0x12, 0x1D, 0xDE };
+		GLYPHS[']'] = new int[] { 0x01, 0x1D, 0xCD };
+        GLYPHS[':'] = new int[] { 0x44, 0xAA };
+        GLYPHS[';'] = new int[] { 0x44, 0xAC };
+        GLYPHS['<'] = new int[] { 0x56, 0x6B };
+        GLYPHS['>'] = new int[] { 0x38, 0x89 };
+        GLYPHS['.'] = new int[] { 0xDD };
+        GLYPHS[','] = new int[] { 0xAC };
+        GLYPHS['/'] = new int[] { 0x2C };
+        GLYPHS['\\']= new int[] { 0x0E };
+        GLYPHS['?'] = new int[] { 0x13, 0x15, 0x57, 0x7A, 0xDD };
+        GLYPHS['|'] = new int[] { 0x1D };
 	}
 
 	public void drawString( float x, float y, float w, float h, float kerning, float lineWidth, String format, Object... args )
@@ -131,9 +159,10 @@ public class OpenGLText
 			{
 				Vector a = GLYPH_POINTS[(lines[i] >> 4) & 15];
 				Vector b = GLYPH_POINTS[(lines[i] >> 0) & 15];
-
-				glVertex2f( a.x * cw + ox, a.y * ch + oy );
-				glVertex2f( b.x * cw + ox, b.y * ch + oy );
+				float off = (a.isEqual( b ) ? 1 : 0);
+				
+                glVertex2f( a.x * cw + ox, a.y * ch + oy );
+                glVertex2f( b.x * cw + ox + off, b.y * ch + oy + off );   
 			}
 
 			return cw;

@@ -74,36 +74,6 @@ public class OpenGLAsteroids
 	public boolean[] keyDown = new boolean[ 256 ];
 	public boolean[] keyUp = new boolean[ 256 ];
 	public OpenGLText text;
-	
-	public void run()
-	{
-		start();
-
-		long time = System.nanoTime();
-
-		Display.update();
-		
-		while (playing && !Display.isCloseRequested())
-		{
-			long currentTime = System.nanoTime();
-			float dt = (currentTime - time) * 0.000000001f;
-
-			input();
-
-			if (!paused)
-			{
-				update( dt );
-			}
-			
-			glClear( GL_COLOR_BUFFER_BIT );
-
-			draw();
-
-			Display.update();
-			
-			time = currentTime;
-		}
-	}
 
 	public void start()
 	{
@@ -142,13 +112,6 @@ public class OpenGLAsteroids
 
 	public void input()
 	{
-		for (int i = 0; i < 256; i++)
-		{
-			boolean down = Keyboard.isKeyDown( i ); 
-			keyUp[i] = !down && keyDown[i];
-			keyDown[i] = down;
-		}
-		
 		if (keyDown[Keyboard.KEY_ESCAPE])
 		{
 			playing = false;
@@ -215,5 +178,42 @@ public class OpenGLAsteroids
 	{
 		glColor4f( c.getRed() * COMPONENT_SCALE, c.getGreen() * COMPONENT_SCALE, c.getBlue() * COMPONENT_SCALE, c.getAlpha() * COMPONENT_SCALE );
 	}
+
+    public void run()
+    {
+        start();
+
+        long time = System.nanoTime();
+
+        Display.update();
+        
+        while (playing && !Display.isCloseRequested())
+        {
+            long currentTime = System.nanoTime();
+            float dt = (currentTime - time) * 0.000000001f;
+
+            for (int i = 0; i < 256; i++)
+            {
+                boolean down = Keyboard.isKeyDown( i ); 
+                keyUp[i] = !down && keyDown[i];
+                keyDown[i] = down;
+            }
+            
+            input();
+
+            if (!paused)
+            {
+                update( dt );
+            }
+            
+            glClear( GL_COLOR_BUFFER_BIT );
+
+            draw();
+
+            Display.update();
+            
+            time = currentTime;
+        }
+    }
 	
 }

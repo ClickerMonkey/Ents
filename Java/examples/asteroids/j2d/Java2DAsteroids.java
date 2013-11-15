@@ -84,40 +84,6 @@ public class Java2DAsteroids extends JPanel implements KeyListener, MouseListene
 	public boolean[] keyUp = new boolean[ 256 ];
 	public Vector mouse = new Vector();
 	public int mouseDownCount;
-	
-	public void run()
-	{
-		start();
-		
-		long time = System.nanoTime();
-		
-		while (playing)
-		{
-			long currentTime = System.nanoTime();
-			float dt = (currentTime - time) * 0.000000001f;
-			
-			input();
-			
-			if (!paused)
-			{
-				update( dt );	
-			}
-			
-			Graphics2D g2d = buffer.createGraphics();
-			g2d.setColor( Color.black );
-			g2d.fillRect( 0, 0, WIDTH, HEIGHT );
-			g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-			
-			draw( g2d );
-			
-			Graphics gr = getGraphics();
-			gr.drawImage( buffer, 0, 0, this );
-			
-			time = currentTime;
-		}
-		
-		destroy();
-	}
 
 	public void start()
 	{
@@ -164,11 +130,6 @@ public class Java2DAsteroids extends JPanel implements KeyListener, MouseListene
 		a.shipForce.y = (keyDown[KeyEvent.VK_W] ? -1 : (keyDown[KeyEvent.VK_S] ? 1 : 0)) * SHIP_SPEED;
 		a.shipLook.set( mouse );
 		a.shooting = (keyDown[KeyEvent.VK_SPACE] || mouseDownCount > 0);
-		
-		for (int i = 0; i < keyUp.length; i++)
-		{
-			keyUp[i] = false;
-		}
 	}
 
 	public void update( float dt )
@@ -195,6 +156,45 @@ public class Java2DAsteroids extends JPanel implements KeyListener, MouseListene
 	{
 		a.delete();
 	}
+
+    public void run()
+    {
+        start();
+        
+        long time = System.nanoTime();
+        
+        while (playing)
+        {
+            long currentTime = System.nanoTime();
+            float dt = (currentTime - time) * 0.000000001f;
+            
+            input();
+            
+            for (int i = 0; i < keyUp.length; i++)
+            {
+                keyUp[i] = false;
+            }
+            
+            if (!paused)
+            {
+                update( dt );   
+            }
+            
+            Graphics2D g2d = buffer.createGraphics();
+            g2d.setColor( Color.black );
+            g2d.fillRect( 0, 0, WIDTH, HEIGHT );
+            g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+            
+            draw( g2d );
+            
+            Graphics gr = getGraphics();
+            gr.drawImage( buffer, 0, 0, this );
+            
+            time = currentTime;
+        }
+        
+        destroy();
+    }
 
 	@Override
 	public void keyTyped( KeyEvent e )
