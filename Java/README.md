@@ -1,7 +1,11 @@
 Ents for Java
 ==========
 
-![Alpha](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_alpha.png)
+![Stable](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_stable.png)
+
+### Complete Examples (+walkthroughs)
+
+* [Asteroids](https://github.com/ClickerMonkey/Ents/tree/master/Java/examples/asteroids) (has Java2D and OpenGL back-ends available)
 
 ### Simple Example
 
