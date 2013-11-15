@@ -1,6 +1,10 @@
 Asteroids (with Ents)
 ==========
 
+#### Play
+* [Java2D](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/asteroids-java2d.jar)
+* [OpenGL through LWJGL](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/asteroids-lwjgl.jar)
+
 #### Screenshot
 ![Screenshot](https://raw.github.com/ClickerMonkey/Ents/master/Java/examples/asteroids/screenshot.png)
 
