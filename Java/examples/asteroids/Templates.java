@@ -42,9 +42,9 @@ public class Templates
     );
     
     public static Template PARTICLE_SYSTEM = Ents.newTemplate( "particle-system",
-   	 new ComponentSet(),
-   	 new ControllerSet(),
-   	 Views.PARTICLE_SYSTEM
+		new ComponentSet(),
+		new ControllerSet(),
+		Views.PARTICLE_SYSTEM
     );
     
     public static final int TEMPLATE_COUNT = Ents.getTemplates().size();

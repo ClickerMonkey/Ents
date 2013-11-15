@@ -48,7 +48,7 @@ public class Controllers
         }
     });
     
-    public static Controller DRAG = Ents.newController( "ents", new Control() {
+    public static Controller DRAG = Ents.newController( "drag", new Control() {
         public void update( Entity e, Object updateState ) {
             UpdateState state = (UpdateState)updateState;
             Vector vel = e.get( VELOCITY );
