@@ -3,9 +3,14 @@ Ents for Java
 
 ![Stable](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_stable.png)
 
+### Build
+
+* [Ents (latest)](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.0.jar)
+* [Ents (latest) with source](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.0-src.jar)
+
 ### Complete Examples (+walkthroughs)
 
-* [Asteroids](https://github.com/ClickerMonkey/Ents/tree/master/Java/examples/asteroids) (has Java2D and OpenGL back-ends available)
+* [Asteroids](https://github.com/ClickerMonkey/Ents/tree/master/Java/examples/asteroids) (has Java2D [(jar)](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/asteroids-java2d.jar) and OpenGL [(jar)](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/asteroids-lwjgl.jar) back-ends available)
 
 ### Simple Example
 
