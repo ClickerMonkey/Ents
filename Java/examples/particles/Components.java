@@ -23,4 +23,6 @@ public class Components
     public static Component<Color> COLOR = Ents.newComponent( "color", Color.WHITE );
     
     public static Component<Aged> AGE = Ents.newComponent( "age", Aged.DEAD );
+    
+    public static Component<Emitter> EMITTER = Ents.newComponent( "emitter", Emitter.FACTORY );
 }
