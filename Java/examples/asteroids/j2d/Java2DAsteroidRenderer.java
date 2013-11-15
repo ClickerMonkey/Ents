@@ -16,10 +16,7 @@
 
 package asteroids.j2d;
 
-import static asteroids.Components.ANGLE;
-import static asteroids.Components.COLOR;
-import static asteroids.Components.POSITION;
-import static asteroids.Components.RADIUS;
+import static asteroids.Components.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -29,36 +26,38 @@ import java.util.Random;
 
 import org.magnos.entity.Entity;
 import org.magnos.entity.Renderer;
+import org.magnos.entity.RendererSingle;
 
 import asteroids.Vector;
 
-public class Java2DAsteroidRenderer implements Renderer
+
+public class Java2DAsteroidRenderer extends RendererSingle
 {
 
     public float dentPercent;
     public int spokeCount;
     public Random random;
     public Path2D.Float path;
-    
-    public Java2DAsteroidRenderer(float dentPercent, int spokeCount, Random random)
+
+    public Java2DAsteroidRenderer( float dentPercent, int spokeCount, Random random )
     {
         this( dentPercent, spokeCount, random, null );
     }
-    
-    public Java2DAsteroidRenderer(float dentPercent, int spokeCount, Random random, Path2D.Float path)
+
+    public Java2DAsteroidRenderer( float dentPercent, int spokeCount, Random random, Path2D.Float path )
     {
         this.dentPercent = dentPercent;
         this.spokeCount = spokeCount;
         this.random = random;
         this.path = path;
     }
-    
+
     @Override
     public Renderer create( Entity e )
     {
         final float angleIncrease = (float)(Math.PI * 2 / spokeCount);
         float angle = angleIncrease;
-        
+
         Path2D.Float path = new Path2D.Float();
         path.moveTo( nextSpoke(), 0 );
 
@@ -68,12 +67,12 @@ public class Java2DAsteroidRenderer implements Renderer
             path.lineTo( Math.cos( angle ) * s, Math.sin( angle ) * s );
             angle += angleIncrease;
         }
-        
+
         path.closePath();
-        
+
         return new Java2DAsteroidRenderer( dentPercent, spokeCount, random, path );
     }
-    
+
     private float nextSpoke()
     {
         return 1.0f - (random.nextFloat() * dentPercent);
@@ -87,7 +86,7 @@ public class Java2DAsteroidRenderer implements Renderer
         float ang = e.get( ANGLE ).v;
         float rad = e.get( RADIUS ).v;
         Color clr = e.get( COLOR );
-        
+
         AffineTransform popped = gr.getTransform();
         gr.translate( pos.x, pos.y );
         gr.rotate( ang );
@@ -99,18 +98,6 @@ public class Java2DAsteroidRenderer implements Renderer
         gr.setColor( clr );
         gr.fill( path );
         gr.setTransform( popped );
-    }
-
-    @Override
-    public void end( Entity e, Object drawState )
-    {
-        
-    }
-
-    @Override
-    public void destroy( Entity e )
-    {
-        
     }
 
 }

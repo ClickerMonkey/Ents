@@ -25,13 +25,12 @@ import org.junit.Test;
 import org.magnos.entity.Component;
 import org.magnos.entity.Entity;
 import org.magnos.entity.Ents;
-import org.magnos.entity.Renderer;
+import org.magnos.entity.RendererSingle;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.test.helper.Vector;
 import org.magnos.entity.util.ComponentSet;
 import org.magnos.entity.util.ControllerSet;
-
 
 public class TestView
 {
@@ -51,17 +50,11 @@ public class TestView
    {
       final AtomicInteger DRAW_COUNTER = new AtomicInteger();
 
-      Ents.setViewDefault( SPRITE_VIEW, new Renderer() {
+      Ents.setViewDefault( SPRITE_VIEW, new RendererSingle() {
          public void begin( Entity entity, Object drawState )
          {
             DRAW_COUNTER.incrementAndGet();
          }
-         public Renderer create( Entity e )
-         {
-            return this;
-         }
-         public void destroy( Entity e ) {}
-         public void end(Entity e, Object drawState) {}
       } );
 
       Entity e = new Entity( SPRITE );

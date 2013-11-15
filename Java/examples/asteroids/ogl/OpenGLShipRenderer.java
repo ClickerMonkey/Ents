@@ -16,32 +16,22 @@
 
 package asteroids.ogl;
 
+import static asteroids.Components.*;
 import static org.lwjgl.opengl.GL11.*;
-
-import static asteroids.Components.ANGLE;
-import static asteroids.Components.COLOR;
-import static asteroids.Components.POSITION;
-import static asteroids.Components.RADIUS;
 
 import java.awt.Color;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.Renderer;
+import org.magnos.entity.RendererSingle;
 
 import asteroids.Vector;
 
 
-public class OpenGLShipRenderer implements Renderer
+public class OpenGLShipRenderer extends RendererSingle
 {
 
 	int callList = -1;
 	
-	@Override
-	public Renderer create( Entity e )
-	{
-		return this;
-	}
-
 	@Override
 	public void begin( Entity e, Object drawState )
 	{
@@ -76,12 +66,6 @@ public class OpenGLShipRenderer implements Renderer
         }
         
         glPopMatrix();
-	}
-
-	@Override
-	public void end( Entity e, Object drawState )
-	{
-		
 	}
 
 	@Override

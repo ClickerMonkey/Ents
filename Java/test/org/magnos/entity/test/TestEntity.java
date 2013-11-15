@@ -20,6 +20,7 @@ import org.magnos.entity.DynamicValue;
 import org.magnos.entity.Entity;
 import org.magnos.entity.Ents;
 import org.magnos.entity.Renderer;
+import org.magnos.entity.RendererSingle;
 import org.magnos.entity.Template;
 import org.magnos.entity.View;
 import org.magnos.entity.util.ComponentSet;
@@ -74,23 +75,17 @@ public class TestEntity
       }
    };
    
-   static Renderer RENDERER_EXTENT = new Renderer() {
+   static Renderer RENDERER_EXTENT = new RendererSingle() {
       public void begin( Entity e, Object drawState ) {
          String graphics = drawState.toString();
          System.out.println( "Drawing extent at {" + e.get( LEFT ) + "->" + e.get( RIGHT ) + "} with " + graphics );
       }
-      public void end(Entity e, Object drawState) {}
-      public void destroy( Entity e ) { }
-      public Renderer create( Entity e ) { return this; }
    };
    
-   static Renderer RENDERER_DRAWS = new Renderer() {
+   static Renderer RENDERER_DRAWS = new RendererSingle() {
       public void begin( Entity e, Object drawState ) {
          e.get( DRAW_COUNT ).v++;
       }
-      public void end(Entity e, Object drawState) {}
-      public void destroy( Entity e ) { }
-      public Renderer create( Entity e ) { return this; }
    };
    
    static Component<FloatVal>   LEFT            = Ents.newComponent( "left", new FloatVal() );
@@ -438,7 +433,7 @@ public class TestEntity
       final AtomicBoolean flagCreated = new AtomicBoolean( false );
       final AtomicBoolean flagDestroyed = new AtomicBoolean( false );
 
-      e.setRenderer( new Renderer() {
+      e.setRenderer( new RendererSingle() {
 
          public Renderer create( Entity e )
          {
@@ -450,9 +445,7 @@ public class TestEntity
          {
             flagDestroyed.set( true );
          }
-
          public void begin(Entity e, Object drawState) {}
-         public void end( Entity e, Object drawState ) {}
       } );
 
       assertTrue( flagCreated.get() );

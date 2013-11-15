@@ -137,11 +137,13 @@ public class OpenGLAsteroidRenderer implements Renderer
 	@Override
 	public void destroy( Entity e )
 	{
-		if (callList != -1)
-		{
-			glDeleteLists( callList, 1 );
-			callList = -1;
-		}
+		glDeleteLists( callList, 1 );
 	}
+    
+    @Override
+    public void notify( Entity e, int message ) 
+    {
+        
+    } 
 
 }

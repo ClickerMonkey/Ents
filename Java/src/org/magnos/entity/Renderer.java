@@ -29,8 +29,8 @@ package org.magnos.entity;
  * depending on the Entity implementation. If the Entity implementation has a
  * set of entities, most likely {@link #begin(Entity, Object)} will be called,
  * all sub-entities will be drawn, and finally {@link #end(Entity, Object)} will
- * be called.
- * <br/><br/>
+ * be called. <br/>
+ * <br/>
  * It's common for the {@link #create(Entity)} method to return the reference
  * to this Renderer. Renderer implementations that don't have Entity specific
  * rendering information don't need to create a new instance of a Renderer.
@@ -47,7 +47,7 @@ public interface Renderer
      * be the reference to this Renderer.
      * 
      * @param e
-     *      The entity that requires a Renderer.
+     *        The entity that requires a Renderer.
      * @return The reference to a Renderer for the given Entity.
      */
     public Renderer create( Entity e );
@@ -56,9 +56,9 @@ public interface Renderer
      * Invoked at the start of the Entity drawing process.
      * 
      * @param e
-     *      The entity to draw.
+     *        The entity to draw.
      * @param drawState
-     *      The drawState passed to {@link Entity#draw(Object)}.
+     *        The drawState passed to {@link Entity#draw(Object)}.
      */
     public void begin( Entity e, Object drawState );
 
@@ -66,9 +66,9 @@ public interface Renderer
      * Invoked at the end of the Entity drawing process.
      * 
      * @param e
-     *      The entity to draw.
+     *        The entity to draw.
      * @param drawState
-     *      The drawState passed to {@link Entity#draw(Object)}.
+     *        The drawState passed to {@link Entity#draw(Object)}.
      */
     public void end( Entity e, Object drawState );
 
@@ -77,8 +77,20 @@ public interface Renderer
      * has expired and has been deleted from it's parent Entity.
      * 
      * @param e
-     *      The entity which has this Renderer to destroy.
+     *        The entity which has this Renderer to destroy.
      */
     public void destroy( Entity e );
-    
+
+    /**
+     * Sends a generic message to the renderer. This is typically done by a
+     * controller to signal to the Renderer that there has been a component
+     * value change for an entity that may affect it.
+     * 
+     * @param e
+     *        The entity changed.
+     * @param message
+     *        A message the Renderer implementation knows what to do with.
+     */
+    public void notify( Entity e, int message );
+
 }

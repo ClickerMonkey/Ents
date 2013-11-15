@@ -16,21 +16,18 @@
 
 package asteroids.ogl;
 
+import static asteroids.Components.*;
 import static org.lwjgl.opengl.GL11.*;
-
-import static asteroids.Components.COLOR;
-import static asteroids.Components.POSITION;
-import static asteroids.Components.VELOCITY;
 
 import java.awt.Color;
 
 import org.magnos.entity.Entity;
-import org.magnos.entity.Renderer;
+import org.magnos.entity.RendererSingle;
 
 import asteroids.Vector;
 
 
-public class OpenGLLaserRenderer implements Renderer
+public class OpenGLLaserRenderer extends RendererSingle
 {
 
     public static final Color TRANSPARENT = new Color( 0, 0, 0, 0 );
@@ -40,12 +37,6 @@ public class OpenGLLaserRenderer implements Renderer
 	public OpenGLLaserRenderer( float tailLength )
 	{
 		this.tailLength = tailLength;
-	}
-
-	@Override
-	public Renderer create( Entity e )
-	{
-		return this;
 	}
 
 	@Override
@@ -68,18 +59,6 @@ public class OpenGLLaserRenderer implements Renderer
 		glEnd();
 		
 		glLineWidth( 1.0f );
-	}
-
-	@Override
-	public void end( Entity e, Object drawState )
-	{
-
-	}
-
-	@Override
-	public void destroy( Entity e )
-	{
-		
 	}
 
 }
