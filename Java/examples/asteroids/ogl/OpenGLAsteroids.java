@@ -156,6 +156,9 @@ public class OpenGLAsteroids
 			text.drawString( 210, 220, 30, 42, 1.3f, 4.0f, "PAUSED" );	
 		}
 		
+//		text.drawString( 10, 40, 8, 12, 1.3f, 1.5f, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" );
+//		text.drawString( 10, 60, 8, 12, 1.3f, 1.5f, "!@#$%^&*()_-+={[}]|\\:;\"'?/>.<," );
+		
 		errorCheck();
 	}
 

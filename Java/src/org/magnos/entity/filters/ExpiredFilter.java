@@ -22,7 +22,7 @@ import org.magnos.entity.EntityIterator;
 
 
 /**
- * A filter that only returns Entities that are expired.
+ * A filter that only returns Entities that are expired or alive.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -32,18 +32,26 @@ public class ExpiredFilter implements EntityFilter
 {
 
     /**
-     * A single instance to a ExpiredFilter.
+     * A single instance to a ExpiredFilter that returns expired entities.
      */
-    public static final ExpiredFilter INSTANCE = new ExpiredFilter();
+    public static final ExpiredFilter TRUE = new ExpiredFilter( true );
+    
+    /**
+     * A single instance to a ExpiredFilter that returns non-expired entities.
+     */
+    public static final ExpiredFilter FALSE = new ExpiredFilter( false );
 
-    private ExpiredFilter()
+    public final boolean expired;
+    
+    private ExpiredFilter( boolean expired )
     {
+    	this.expired = expired;
     }
 
     @Override
     public boolean isValid( Entity e )
     {
-        return e.isExpired();
+        return e.isExpired() == expired;
     }
 
 }

@@ -80,11 +80,20 @@ public class Filters
 
     /**
      * @see CustomFilter
-     * @see CustomFilter#INSTANCE
+     * @see CustomFilter#TRUE
      */
     public static CustomFilter custom()
     {
-        return CustomFilter.INSTANCE;
+        return CustomFilter.TRUE;
+    }
+
+    /**
+     * @see CustomFilter
+     * @see CustomFilter#FALSE
+     */
+    public static CustomFilter templated()
+    {
+        return CustomFilter.FALSE;
     }
 
     /**
@@ -98,20 +107,38 @@ public class Filters
 
     /**
      * @see EnabledFilter
-     * @see EnabledFilter#INSTANCE
+     * @see EnabledFilter#TRUE
      */
     public static EnabledFilter enabled()
     {
-        return EnabledFilter.INSTANCE;
+        return EnabledFilter.TRUE;
+    }
+
+    /**
+     * @see EnabledFilter
+     * @see EnabledFilter#FALSE
+     */
+    public static EnabledFilter disabled()
+    {
+        return EnabledFilter.FALSE;
     }
 
     /**
      * @see ExpiredFilter
-     * @see ExpiredFilter#INSTANCE
+     * @see ExpiredFilter#TRUE
      */
     public static ExpiredFilter expired()
     {
-        return ExpiredFilter.INSTANCE;
+        return ExpiredFilter.TRUE;
+    }
+
+    /**
+     * @see ExpiredFilter
+     * @see ExpiredFilter#FALSE
+     */
+    public static ExpiredFilter alive()
+    {
+        return ExpiredFilter.FALSE;
     }
 
     /**
@@ -179,11 +206,20 @@ public class Filters
 
     /**
      * @see VisibleFilter
-     * @see VisibleFilter#INSTANCE
+     * @see VisibleFilter#TRUE
      */
     public static VisibleFilter visible()
     {
-        return VisibleFilter.INSTANCE;
+        return VisibleFilter.TRUE;
+    }
+
+    /**
+     * @see VisibleFilter
+     * @see VisibleFilter#FALSE
+     */
+    public static VisibleFilter invisible()
+    {
+        return VisibleFilter.FALSE;
     }
 
     /**

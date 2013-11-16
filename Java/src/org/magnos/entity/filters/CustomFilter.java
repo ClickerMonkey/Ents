@@ -22,9 +22,9 @@ import org.magnos.entity.EntityIterator;
 
 
 /**
- * A filter that returns all Entities that are considered "Custom". An entity is
- * considered custom if it was defined without a template or has had a
- * component, controller, or view added/set directly to it.
+ * A filter that returns all Entities that are considered "Custom" or not
+ * Custom. An entity is considered custom if it was defined without a template
+ * or has had a component, controller, or view added/set directly to it.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -33,19 +33,27 @@ import org.magnos.entity.EntityIterator;
 public class CustomFilter implements EntityFilter
 {
 
-    /**
-     * A single instance to a CustomFilter.
-     */
-    public static final CustomFilter INSTANCE = new CustomFilter();
+	/**
+	 * A single instance to a CustomFilter for custom entities.
+	 */
+	public static final CustomFilter TRUE = new CustomFilter( true );
 
-    private CustomFilter()
-    {
-    }
+	/**
+	 * A single instance to a CustomFilter for non-custom entities..
+	 */
+	public static final CustomFilter FALSE = new CustomFilter( false );
 
-    @Override
-    public boolean isValid( Entity e )
-    {
-        return e.isCustom();
-    }
+	public final boolean custom;
+
+	private CustomFilter( boolean custom )
+	{
+		this.custom = custom;
+	}
+
+	@Override
+	public boolean isValid( Entity e )
+	{
+		return e.isCustom() == custom;
+	}
 
 }

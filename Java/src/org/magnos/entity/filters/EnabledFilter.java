@@ -22,7 +22,7 @@ import org.magnos.entity.EntityIterator;
 
 
 /**
- * A filter that only returns Entities that are enabled.
+ * A filter that only returns Entities that are enabled or disabled.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -32,18 +32,26 @@ public class EnabledFilter implements EntityFilter
 {
 
     /**
-     * A single instance to a EnabledFilter.
+     * A single instance to a EnabledFilter for enabled entities.
      */
-    public static final EnabledFilter INSTANCE = new EnabledFilter();
+    public static final EnabledFilter TRUE = new EnabledFilter( true );
 
-    private EnabledFilter()
+    /**
+     * A single instance to a EnabledFilter for disable entities.
+     */
+    public static final EnabledFilter FALSE = new EnabledFilter( false );
+
+    public final boolean enabled;
+    
+    private EnabledFilter(boolean enabled)
     {
+    	this.enabled = enabled;
     }
 
     @Override
     public boolean isValid( Entity e )
     {
-        return e.isEnabled();
+        return e.isEnabled() == enabled;
     }
 
 }

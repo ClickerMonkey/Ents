@@ -22,7 +22,7 @@ import org.magnos.entity.EntityIterator;
 
 
 /**
- * A filter that only returns Entities that are visible.
+ * A filter that only returns Entities that are visible or invisible.
  * 
  * @author Philip Diffenderfer
  * @see EntityIterator
@@ -32,18 +32,26 @@ public class VisibleFilter implements EntityFilter
 {
 
     /**
-     * A single instance to a ViewFilter.
+     * A single instance to a ViewFilter for visible entities.
      */
-    public static final VisibleFilter INSTANCE = new VisibleFilter();
+    public static final VisibleFilter TRUE = new VisibleFilter( true );
 
-    private VisibleFilter()
+    /**
+     * A single instance to a ViewFilter for invisible entities.
+     */
+    public static final VisibleFilter FALSE = new VisibleFilter( false );
+
+    public final boolean visible;
+    
+    private VisibleFilter(boolean visible)
     {
+    	this.visible = visible;
     }
 
     @Override
     public boolean isValid( Entity e )
     {
-        return e.isVisible();
+        return e.isVisible() == visible;
     }
 
 }
