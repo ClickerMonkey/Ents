@@ -5,8 +5,8 @@ Ents for Java
 
 ### Build
 
-* [Ents (latest)](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.0.jar)
-* [Ents (latest) with source](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.0-src.jar)
+* [Ents (latest)](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.1.jar)
+* [Ents (latest) with source](https://github.com/ClickerMonkey/Ents/raw/master/Java/build/Ents-1.1-src.jar)
 
 ### Complete Examples (+walkthroughs)
 
