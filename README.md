@@ -1,7 +1,7 @@
 Ents
 ==========
 
-A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. Ents is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks.
+A hybrid of the Entity-Component-System and Model-View-Controller patterns with new concepts developed specifically for games. Ents is easy to integrate into your game, is developed to be decoupled from a graphics library, and is very memory conscious compared to similar frameworks. [(asteroids example)](https://github.com/ClickerMonkey/Ents/tree/master/Java/examples/asteroids)
 
 #### Use Case?
 
